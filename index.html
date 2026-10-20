@@ -279,11 +279,14 @@ th{background:#064e3b;color:white;padding:7px;text-align:left}td{padding:7px;bor
 
 <script>
 // ================= V11.0 ADVANCED PROFESSIONAL - ZERO ERRORS - REVIEWED ENGLISH CODE =================
-const USERS=[
-  {user:"admin",pass:"admin123",name:"Admin",role:"admin"},
-  {user:"pharmacy",pass:"pharmacy2024",name:"Pharmacist",role:"pharmacist"},
-  {user:"grace",pass:"grace123",name:"Grace Staff",role:"pharmacist"}
-];
+const firebaseConfig = {
+  apiKey: "AIzaSyBqhd4QJ5X7K1VrL7YfoJcFcHDbZO8iwhQ",
+  authDomain: "the-grace-pharmacy.firebaseapp.com",
+  projectId: "the-grace-pharmacy",
+  storageBucket: "the-grace-pharmacy.firebasestorage.app",
+  messagingSenderId: "270639582399",
+  appId: "1:270639582399:web:64b06a431264e6cb800a0a"
+};
 // Security Utils
 function sanitize(s){try{if(typeof s!=="string") return ""; return s.replace(/[<>"'`;(){}=]/g,"").trim().substring(0,200);}catch(e){return "";}}
 function sanitizeName(s){try{if(typeof s!=="string") return ""; return s.replace(/[<>"'`;(){}=]/g,"").trim().substring(0,100);}catch(e){return "";}}
