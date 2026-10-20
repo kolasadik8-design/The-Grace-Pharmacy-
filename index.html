@@ -343,28 +343,36 @@ setInterval(updateShiftDisplays,60000);
 var currentUser=null;
 function doLogin(){
   try{
-    var uEl=document.getElementById("loginUser"); var pEl=document.getElementById("loginPass"); var errEl=document.getElementById("loginError");
-    if(!uEl||!pEl||!errEl) return;
-    var u=sanitize(uEl.value.trim().toLowerCase());
-    var p=pEl.value.trim();
-    if(u.length<3||p.length<3){errEl.textContent="Min 3 chars each"; errEl.style.display="block"; return;}
-    var f=null; for(var i=0;i<USERS.length;i++){if(USERS[i].user===u&&USERS[i].pass===p){f=USERS[i]; break;}}
+    var uEl=document.getElementById("loginUser"); 
+    var pEl=document.getElementById("loginPass"); 
+    var errEl=document.getElementById("loginError");
+    var u=(uEl.value||"").trim().toLowerCase();
+    var p=(pEl.value||"").trim();
+    if(u.length<2||p.length<2){errEl.textContent="اكتب اليوزر والباسورد"; errEl.style.display="block"; return;}
+    var f=null; 
+    for(var i=0;i<USERS.length;i++){if(USERS[i].user===u&&USERS[i].pass===p){f=USERS[i]; break;}}
     if(f){
       currentUser=f;
-      localStorage.setItem("tGP_v11_user",f.name);
-      localStorage.setItem("tGP_v11_role",f.role);
-      localStorage.setItem("tGP_v11_time",Date.now().toString());
+      try{localStorage.setItem("tGP_v11_user",f.name);}catch(e){}
+      try{localStorage.setItem("tGP_v11_role",f.role);}catch(e){}
+      try{localStorage.setItem("tGP_v11_time",Date.now().toString());}catch(e){}
       document.getElementById("loginScreen").classList.add("hidden");
       var lu=document.getElementById("loggedUser"); if(lu) lu.textContent=f.name;
       var ro=document.getElementById("userRole"); if(ro) ro.textContent=f.role.toUpperCase();
-      errEl.style.display="none"; uEl.value=""; pEl.value="";
-      addLog("LOGIN","User "+f.name+" logged in as "+f.role+" - Shift: "+getActiveShift());
-      updateShiftDisplays(); renderAll();
+      errEl.style.display="none";
+      // حاول تعمل log لكن لو فشل ما يعلق
+      try{addLog("LOGIN","User "+f.name+" logged in");}catch(e){}
+      try{updateShiftDisplays();}catch(e){}
+      try{renderAll();}catch(e){console.log(e);}
     }else{
-      errEl.textContent="Invalid! Use admin/admin123 or pharmacy/pharmacy2024 or grace/grace123"; errEl.style.display="block";
-      addLog("LOGIN_FAILED","Failed login for "+u);
+      errEl.textContent="خطأ! جرب: admin / admin123 أو pharmacy / pharmacy2024 أو grace / grace123"; 
+      errEl.style.display="block";
     }
-  }catch(e){try{document.getElementById("loginError").textContent="Login error: "+e.message; document.getElementById("loginError").style.display="block";}catch(ex){}}
+  }catch(e){
+    alert("Login error: "+e.message+" - افتح F12 وشوف الخطأ");
+    var errEl2=document.getElementById("loginError");
+    if(errEl2){errEl2.textContent="Error: "+e.message; errEl2.style.display="block";}
+  }
 }
 function doLogout(){
   try{if(currentUser) addLog("LOGOUT","User "+currentUser.name+" logged out - Shift: "+getActiveShift());}
@@ -376,6 +384,7 @@ function doLogout(){
   updateShiftDisplays();
 }
 (function checkLogin(){
+(function checkLogin(){
   try{
     var user=localStorage.getItem("tGP_v11_user");
     var role=localStorage.getItem("tGP_v11_role");
@@ -385,7 +394,8 @@ function doLogout(){
       var ls=document.getElementById("loginScreen"); if(ls) ls.classList.add("hidden");
       var lu=document.getElementById("loggedUser"); if(lu) lu.textContent=user;
       var ro=document.getElementById("userRole"); if(ro) ro.textContent=role.toUpperCase();
-    }else{ localStorage.removeItem("tGP_v11_user"); localStorage.removeItem("tGP_v11_role"); localStorage.removeItem("tGP_v11_time"); }
+      setTimeout(function(){try{renderAll();}catch(e){}},500);
+    }
   }catch(e){}
 })();
 // Default Medicines
