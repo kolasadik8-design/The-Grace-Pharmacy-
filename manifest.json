@@ -1,7 +1,7 @@
 {
   "name": "The Grace Pharmacy Pro",
   "short_name": "GracePro",
-  "description": "Give your health a new lift - Firebase Live",
+  "description": "Give your health a new lift - Offline Ready",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#22B573",
