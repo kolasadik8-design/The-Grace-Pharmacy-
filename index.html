@@ -9,40 +9,110 @@
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
-<style>:root{--g:#22B573;--b:#2D9ED9}body{font-family:'Outfit',sans-serif}.btn-pro{height:48px;padding:0 18px;border-radius:14px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 14px rgba(34,181,115,.22)}.card{border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.06);border:1px solid #EEF2F7;background:white}.sidebar-active{background:var(--g);color:white!important}.dev{font-family:'Space Grotesk',sans-serif}@media(max-width:1024px){#sidebar{transform:translateX(-100%);position:fixed;z-index:50;top:0;left:0;height:100vh;width:280px;transition:.3s}#sidebar.open{transform:translateX(0)}#overlay{display:block!important}main{padding:12px!important}.grid-pos{grid-template-columns:1fr!important}}#overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:40}@media print{body *{visibility:hidden}#receipt,#receipt *{visibility:visible}#receipt{position:absolute;left:0;top:0;width:80mm}}</style>
+<style>
+:root{--g:#22B573;--b:#2D9ED9}
+body{font-family:'Outfit',sans-serif}
+.btn-pro{height:48px;padding:0 18px;border-radius:14px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 14px rgba(34,181,115,.22);transition:.2s}
+.card{border-radius:20px;box-shadow:0 8px 28px rgba(0,0,0,.06);border:1px solid #EEF2F7;background:white}
+.sidebar-active{background:var(--g)!important;color:white!important}
+.pill{padding:8px 16px;border-radius:999px;border:1px solid #E5E7EB;background:white;font-size:14px}
+.pill-active{background:#0F172A;color:white;border-color:#0F172A;font-weight:700;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.input-office{height:52px;border:1.5px solid #E5E7EB;border-radius:14px;padding:0 16px;width:100%;outline:none}
+.input-office:focus{border-color:var(--g)}
+.input-amount{height:52px;border:1.5px solid #FECACA;background:#FFF1F2;border-radius:14px;padding:0 16px;width:100%;outline:none}
+.input-amount:focus{border-color:var(--g);background:white}
+#overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:40}
+@media(max-width:1024px){#sidebar{transform:translateX(-100%);position:fixed;z-index:50;top:0;left:0;height:100vh;width:280px;transition:.3s}#sidebar.open{transform:translateX(0)}#overlay.show{display:block!important}main{padding:12px!important}.grid-pos{grid-template-columns:1fr!important}}
+@media print{body *{visibility:hidden}#receipt,#receipt *{visibility:visible}#receipt{position:absolute;left:0;top:0;width:80mm;background:white}}
+.dev{font-family:'Space Grotesk',sans-serif}
+</style>
 </head>
 <body class="bg-[#F6F9FB]">
-<div class="lg:hidden bg-white border-b p-3 flex items-center justify-between sticky top-0 z-30"><button onclick="toggleSidebar()" class="w-10 h-10 rounded-xl bg-black text-white flex items-center justify-center"><i data-lucide="menu"></i></button><div class="flex items-center gap-2"><img src="logo.png" class="w-8 h-8"><b class="text-sm" style="color:var(--g)">GRACE PRO</b><span id="liveDot" class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span></div><div class="w-10"></div></div>
+<div id="fileWarn" class="hidden fixed inset-0 z-[100] bg-white p-6 flex items-center justify-center"><div class="card p-6 max-w-sm text-center"><p class="font-black text-red-600">افتح السيستم عبر localhost</p><p class="text-sm mt-2">Chrome يمنع Firebase لما تفتح file://<br>شغل في CMD: <b>python -m http.server 8080</b> وافتح http://localhost:8080</p></div></div>
+<div class="lg:hidden bg-white border-b p-3 flex items-center justify-between sticky top-0 z-30"><button onclick="toggleSidebar()" class="w-10 h-10 rounded-xl bg-black text-white flex items-center justify-center"><i data-lucide="menu"></i></button><div class="flex items-center gap-2"><img src="logo.png" class="w-8 h-8" onerror="this.style.display='none'"><b class="text-sm" style="color:var(--g)">GRACE PRO</b><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span></div><div class="w-10"></div></div>
 <div id="overlay" onclick="toggleSidebar()"></div>
 
 <div id="login" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#22B573]/15 via-white to-[#2D9ED9]/15 p-4">
 <div class="bg-white card w-full max-w-[460px] p-6 md:p-8 border-t-[7px]" style="border-color:var(--g)">
-<center><div class="w-28 h-28 bg-white rounded-full shadow-xl p-2 border-2 flex items-center justify-center" style="border-color:var(--g)"><img src="logo.png" class="w-24 h-24 object-contain"></div><h1 class="text-[22px] font-black tracking-widest mt-4" style="color:var(--g)">THE GRACE PHARMACY PRO</h1><p class="text-[11px] italic text-gray-500 tracking-[3px]">Give your health a new lift - Firebase Live</p></center>
-<input id="u" class="w-full h-[52px] border-2 rounded-xl px-5 mt-8 focus:outline-none focus:border-[#22B573]" placeholder="Username"><input id="p" type="password" class="w-full h-[52px] border-2 rounded-xl px-5 mt-3" placeholder="Password"><button onclick="doLogin()" class="w-full btn-pro text-white mt-6" style="background:var(--g)"><i data-lucide="cloud" class="w-5 h-5"></i> LOGIN - Firebase</button><p id="loginError" class="text-xs text-red-600 mt-3 hidden text-center"></p>
+<center><div class="w-28 h-28 bg-white rounded-full shadow-xl p-2 border-2 flex items-center justify-center" style="border-color:var(--g)"><img src="logo.png" class="w-24 h-24 object-contain" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4320/4320337.png'"></div><h1 class="text-[22px] font-black tracking-widest mt-4" style="color:var(--g)">THE GRACE PHARMACY PRO</h1><p class="text-[11px] italic text-gray-500 tracking-[3px]">Give your health a new lift</p></center>
+<input id="u" class="w-full h-[52px] border-2 rounded-xl px-5 mt-8 focus:outline-none focus:border-[#22B573]" placeholder="Username"><input id="p" type="password" class="w-full h-[52px] border-2 rounded-xl px-5 mt-3 focus:outline-none focus:border-[#22B573]" placeholder="Password"><button onclick="doLogin()" class="w-full btn-pro text-white mt-6" style="background:var(--g)"><i data-lucide="cloud"></i> SECURE LOGIN</button><p id="loginError" class="text-xs text-red-600 mt-3 hidden text-center"></p>
 <div class="mt-8 pt-5 border-t border-dashed text-center"><p class="dev text-[14px] font-bold"><span style="color:var(--g)">Developed by</span> <span class="text-black">E-Mutwokil Sadik</span></p><p class="mt-2 flex justify-center items-center gap-2 text-[14px] font-black"><span class="w-8 h-8 rounded-full flex items-center justify-center text-white" style="background:var(--g)">☎</span><span style="color:var(--b)">+211928813308</span></p></div>
 </div>
 </div>
 
 <div id="app" class="hidden min-h-screen flex">
-<aside id="sidebar" class="w-[280px] bg-white border-r flex flex-col"><div class="p-5 border-b flex items-center justify-between"><div class="flex items-center gap-3"><div class="w-12 h-12 rounded-full border-2 p-1" style="border-color:var(--g)"><img src="logo.png" class="w-full h-full object-contain"></div><div><b style="color:var(--g)">GRACE PRO</b><div class="text-[10px] text-gray-500 flex items-center gap-1"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span><span id="online">Connecting...</span></div></div></div><button onclick="toggleSidebar()" class="lg:hidden w-8 h-8 bg-gray-100 rounded-full">✕</button></div>
-<nav class="p-3 space-y-2 flex-1 overflow-y-auto"><button onclick="tab('pos');toggleSidebar()" id="nav-pos" class="w-full btn-pro sidebar-active"><i data-lucide="scan-line"></i> POS + Camera</button><button onclick="tab('stock');toggleSidebar()" id="nav-stock" class="w-full btn-pro bg-gray-100 text-gray-700"><i data-lucide="boxes"></i> Stock - Firebase</button><button onclick="tab('debt');toggleSidebar()" id="nav-debt" class="w-full btn-pro bg-gray-100 text-gray-700"><i data-lucide="wallet"></i> Debts - Firebase</button><button onclick="tab('delivery');toggleSidebar()" id="nav-delivery" class="w-full btn-pro bg-gray-100 text-gray-700"><i data-lucide="truck"></i> Delivery - Firebase</button><button onclick="tab('expenses');toggleSidebar()" id="nav-expenses" class="w-full btn-pro bg-gray-100 text-gray-700 admin-only hidden"><i data-lucide="receipt-text"></i> Expenses - Firebase</button><button onclick="tab('paysheet');toggleSidebar()" id="nav-paysheet" class="w-full btn-pro bg-gray-100 text-gray-700 admin-only hidden"><i data-lucide="badge-dollar-sign"></i> Paysheet - Firebase</button><button onclick="tab('admin');toggleSidebar()" id="nav-admin" class="w-full btn-pro bg-gray-100 text-gray-700 admin-only hidden"><i data-lucide="bar-chart-3"></i> Admin + Rate</button></nav>
-<div class="p-4 border-t text-[11px]">Rate 1$=<b id="rateDisplay">4200</b> SSP | Firebase Live<button onclick="location.reload()" class="w-full mt-3 h-10 rounded-xl bg-black text-white">Logout (<span id="userBadge"></span>)</button></div></aside>
+<aside id="sidebar" class="w-[280px] bg-white border-r flex flex-col"><div class="p-5 border-b flex items-center justify-between"><div class="flex items-center gap-3"><div class="w-12 h-12 rounded-full border-2 p-1" style="border-color:var(--g)"><img src="logo.png" class="w-full h-full object-contain"></div><div><b style="color:var(--g)">GRACE PRO</b><div class="text-[10px] text-gray-500 flex items-center gap-1"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span><span id="online">Firebase Live</span></div></div></div><button onclick="toggleSidebar()" class="lg:hidden w-8 h-8 bg-gray-100 rounded-full">✕</button></div>
+<nav class="p-3 space-y-2 flex-1 overflow-y-auto">
+<button onclick="tab('pos');toggleSidebar()" id="nav-pos" class="w-full btn-pro sidebar-active"><i data-lucide="scan-line"></i> POS + Camera</button>
+<button onclick="tab('stock');toggleSidebar()" id="nav-stock" class="w-full btn-pro bg-gray-100 text-gray-700"><i data-lucide="boxes"></i> Stock</button>
+<button onclick="tab('debt');toggleSidebar()" id="nav-debt" class="w-full btn-pro bg-gray-100 text-gray-700"><i data-lucide="wallet"></i> Debts</button>
+<button onclick="tab('delivery');toggleSidebar()" id="nav-delivery" class="w-full btn-pro bg-gray-100 text-gray-700"><i data-lucide="truck"></i> Delivery</button>
+<button onclick="tab('office');toggleSidebar()" id="nav-office" class="w-full btn-pro bg-gray-100 text-gray-700 admin-only hidden"><i data-lucide="building-2"></i> Office Expenses</button>
+<button onclick="tab('reports');toggleSidebar()" id="nav-reports" class="w-full btn-pro bg-gray-100 text-gray-700 admin-only hidden"><i data-lucide="bar-chart-3"></i> Reports</button>
+<button onclick="tab('paysheet');toggleSidebar()" id="nav-paysheet" class="w-full btn-pro bg-gray-100 text-gray-700 admin-only hidden"><i data-lucide="badge-dollar-sign"></i> Paysheet</button>
+<button onclick="tab('admin');toggleSidebar()" id="nav-admin" class="w-full btn-pro bg-gray-100 text-gray-700 admin-only hidden"><i data-lucide="settings-2"></i> Admin</button>
+</nav>
+<div class="p-4 border-t text-[11px]">Rate 1$=<b id="rateDisplay">4200</b> SSP | Firebase Live<button onclick="location.reload()" class="w-full mt-3 h-10 rounded-xl bg-black text-white text-xs">Logout (<span id="userBadge"></span>)</button></div>
+</aside>
+
 <main class="flex-1 p-3 md:p-6 overflow-x-hidden">
-<div id="posTab"><div class="grid grid-cols-12 gap-4 md:gap-6 grid-pos"><div class="col-span-12 lg:col-span-8 card p-4 md:p-5"><div class="flex flex-col md:flex-row gap-3"><input id="barcode" class="flex-1 h-12 border-2 rounded-xl px-4" style="border-color:var(--g)" placeholder="Scan barcode + Enter"><button onclick="startCameraScanner()" class="btn-pro bg-black text-white"><i data-lucide="camera"></i> Camera</button></div><div id="reader" class="hidden mt-4 border-2 rounded-xl overflow-hidden" style="border-color:var(--g)"><div id="qr-reader"></div><button onclick="stopCameraScanner()" class="w-full h-10 bg-red-600 text-white">Stop</button></div><div class="overflow-x-auto mt-5"><table class="w-full min-w-[500px] text-[13px]"><thead class="bg-[#22B573]/10"><tr><th class="p-3 text-left">MEDICINE</th><th>SSP</th><th>QTY</th><th>TOTAL</th><th></th></tr></thead><tbody id="cart"></tbody></table></div></div><div class="col-span-12 lg:col-span-4 card p-4 md:p-5"><h2 class="font-black">Total <span id="totalSSP">0</span> SSP</h2><p>USD $<span id="totalUSD">0</span></p><input id="paidSSP" type="number" placeholder="Paid SSP" class="w-full h-12 border rounded-xl px-4 mt-4"><p class="text-xs mt-2">Change <b id="change">0</b></p><select id="paymentType" class="w-full h-12 border rounded-xl px-4 mt-3"><option value="Cash">Cash</option><option value="Debt">Debt</option><option value="Delivery">Delivery</option></select><input id="debtCustomer" placeholder="Customer" class="w-full h-11 border rounded-xl px-4 mt-2 hidden"><input id="deliveryAddress" placeholder="Address Juba" class="w-full h-11 border rounded-xl px-4 mt-2 hidden"><button onclick="sell()" class="w-full btn-pro justify-center text-white mt-4" style="background:var(--g)"><i data-lucide="cloud-upload"></i> SELL - Save to Firebase</button><div id="receipt" class="hidden p-3 text-[11px] mt-4 border-2 border-dashed"><center><img src="logo.png" class="w-14 h-14"><br><b>THE GRACE PHARMACY PRO</b></center><div id="rItems"></div><hr>SSP <span id="rTotalSSP"></span> | USD $<span id="rTotalUSD"></span><br>Rate <span id="rRate"></span><br>Date <span id="rDate"></span><br>Cashier <span id="rCashier"></span><div id="rQR" class="flex justify-center mt-2"></div></div></div></div></div>
-<div id="stockTab" class="hidden"><div class="card p-4 md:p-5"><div class="flex justify-between"><h2 class="font-bold">Stock - Firebase Live</h2><button onclick="addMed()" class="btn-pro text-white" style="background:var(--g)">+ Add to Firebase</button></div><div class="overflow-x-auto mt-4"><table class="w-full min-w-[400px] text-sm"><thead class="bg-gray-50"><tr><th class="p-2 text-left">Barcode</th><th>Name</th><th>Qty</th><th>SSP</th><th>USD</th></tr></thead><tbody id="stockList"></tbody></table></div></div></div>
+<!-- POS -->
+<div id="posTab"><div class="grid grid-cols-12 gap-4 md:gap-6 grid-pos"><div class="col-span-12 lg:col-span-8 card p-4 md:p-5"><div class="flex flex-col md:flex-row gap-3"><input id="barcode" class="flex-1 h-12 border-2 rounded-xl px-4" style="border-color:var(--g)" placeholder="Scan barcode + Enter"><button onclick="startCameraScanner()" class="btn-pro bg-black text-white"><i data-lucide="camera"></i> Camera</button></div><div id="reader" class="hidden mt-4 border-2 rounded-xl overflow-hidden" style="border-color:var(--g)"><div id="qr-reader"></div><button onclick="stopCameraScanner()" class="w-full h-10 bg-red-600 text-white">Stop</button></div><div class="overflow-x-auto mt-5"><table class="w-full min-w-[500px] text-[13px]"><thead class="bg-[#22B573]/10"><tr><th class="p-3 text-left">MEDICINE</th><th>SSP</th><th>QTY</th><th>TOTAL</th><th></th></tr></thead><tbody id="cart"></tbody></table></div></div><div class="col-span-12 lg:col-span-4 card p-4 md:p-5"><h2 class="font-black">Total <span id="totalSSP">0</span> SSP</h2><p class="text-sm">USD $<span id="totalUSD">0</span></p><input id="paidSSP" type="number" placeholder="Paid SSP" class="w-full h-12 border rounded-xl px-4 mt-4"><p class="text-xs mt-2">Change <b id="change">0</b></p><select id="paymentType" class="w-full h-12 border rounded-xl px-4 mt-3"><option value="Cash">Cash</option><option value="Debt">Debt</option><option value="Delivery">Delivery</option></select><input id="debtCustomer" placeholder="Customer" class="w-full h-11 border rounded-xl px-4 mt-2 hidden"><input id="deliveryAddress" placeholder="Address Juba" class="w-full h-11 border rounded-xl px-4 mt-2 hidden"><button onclick="sell()" class="w-full btn-pro justify-center text-white mt-4" style="background:var(--g)">SELL - Firebase</button><div id="receipt" class="hidden p-3 text-[11px] mt-4 border-2 border-dashed"><center><img src="logo.png" class="w-14 h-14"><br><b>THE GRACE PHARMACY PRO</b></center><div id="rItems"></div><hr>SSP <span id="rTotalSSP"></span> | USD $<span id="rTotalUSD"></span><br>Rate <span id="rRate"></span><br>Date <span id="rDate"></span><br>Cashier <span id="rCashier"></span><div id="rQR" class="flex justify-center mt-2"></div></div></div></div></div>
+
+<!-- STOCK / DEBT / DELIVERY -->
+<div id="stockTab" class="hidden"><div class="card p-4 md:p-5"><div class="flex justify-between"><h2 class="font-bold">Stock - Firebase Live</h2><button onclick="addMed()" class="btn-pro text-white" style="background:var(--g)">+ Add</button></div><div class="overflow-x-auto mt-4"><table class="w-full min-w-[400px] text-sm"><thead class="bg-gray-50"><tr><th class="p-2 text-left">Barcode</th><th>Name</th><th>Qty</th><th>SSP</th><th>USD</th></tr></thead><tbody id="stockList"></tbody></table></div></div></div>
 <div id="debtTab" class="hidden"><div class="card p-4 md:p-5"><h2 class="font-bold">Debts - Firebase Live</h2><div class="overflow-x-auto"><table class="w-full min-w-[400px] text-sm mt-4"><thead class="bg-gray-50"><tr><th>Customer</th><th>SSP</th><th>Status</th><th>Action</th></tr></thead><tbody id="debtList"></tbody></table></div></div></div>
 <div id="deliveryTab" class="hidden"><div class="card p-4 md:p-5"><h2 class="font-bold">Delivery - Firebase Live</h2><div class="overflow-x-auto"><table class="w-full min-w-[400px] text-sm mt-4"><thead><tr><th>ID</th><th>Customer</th><th>SSP</th><th>Status</th><th>Done</th></tr></thead><tbody id="deliveryList"></tbody></table></div></div></div>
-<div id="expensesTab" class="hidden"><div class="card p-4 md:p-5"><div class="flex justify-between"><h2 class="font-bold">Expenses - Firebase Live</h2><button onclick="addExpense()" class="btn-pro bg-black text-white">+ Add Expense to Firebase</button></div><div class="overflow-x-auto mt-4"><table class="w-full min-w-[400px] text-sm"><thead><tr><th>Date</th><th>Category</th><th>SSP</th><th>By</th></tr></thead><tbody id="expList"></tbody></table></div></div></div>
-<div id="paysheetTab" class="hidden"><div class="card p-4 md:p-5"><div class="flex justify-between"><h2 class="font-bold">Paysheet - Firebase Live</h2><button onclick="addPaysheet()" class="btn-pro text-white" style="background:var(--g)">+ Salary to Firebase</button></div><div class="overflow-x-auto mt-4"><table class="w-full min-w-[500px] text-sm"><thead><tr><th>Employee</th><th>Month</th><th>Net SSP</th><th>Status</th><th>Pay</th></tr></thead><tbody id="payList"></tbody></table></div></div></div>
-<div id="adminTab" class="hidden"><div class="card p-4 md:p-5"><h2 class="font-bold">Admin - Rate Saved in Firebase</h2><div class="flex gap-3 mt-3 items-center">1$ = <input id="exRate" type="number" value="4200" class="border rounded-lg p-2 w-28"> SSP <button onclick="saveRate()" class="btn-pro text-white" style="background:var(--g)">Save to Firebase</button><span id="rateSaved" class="text-xs text-green-600 hidden">✓ Saved to Firebase</span></div><p class="text-xs text-gray-500 mt-2">Rate will sync instantly to all phones & computers</p></div></div>
+
+<!-- OFFICE EXPENSES - زي الصورة بالضبط + ألوان اللوغو -->
+<div id="officeTab" class="hidden">
+<div class="flex gap-2 flex-wrap mb-4"><span class="pill">Cargo</span><span class="pill">Ticket</span><span class="pill pill-active">Office</span><span class="pill">Flight</span><span class="pill">Reports</span><span class="pill">Search</span><span class="pill">Admin</span></div>
+<div class="card p-5 md:p-6">
+<h2 class="text-[20px] font-black">Office Expenses - Admin can Delete</h2>
+<div class="mt-5 space-y-3">
+<input id="offDate" type="date" class="input-office">
+<select id="offCategory" class="input-office bg-gray-100 font-bold"><option>Breakfast</option><option>Rent</option><option>Electricity</option><option>Water</option><option>Internet</option><option>Transport</option><option>Cleaning</option><option>Stationery</option><option>Other</option></select>
+<input id="offAmount" type="number" placeholder="Amount" class="input-amount">
+<input id="offPaidTo" type="text" placeholder="Paid To" class="input-office">
+<input id="offNote" type="text" placeholder="Note" class="input-office">
+<button onclick="addOfficeExpense()" class="w-full h-[52px] rounded-2xl bg-[#0F172A] text-white font-bold text-[16px] mt-2">Save</button>
+</div>
+</div>
+<div class="card p-5 mt-4">
+<div class="flex justify-between items-center"><b>Office</b><b>$<span id="offTotalUSD">0.00</span> / <span id="offTotalSSP">0</span> SSP</b></div>
+<div id="offList" class="mt-3 text-sm"><p class="text-gray-500">No data</p></div>
+</div>
+</div>
+
+<!-- REPORTS - زي الصورة الأولى -->
+<div id="reportsTab" class="hidden">
+<div class="flex gap-2 flex-wrap mb-4"><span class="pill">Cargo</span><span class="pill">Ticket</span><span class="pill">Office</span><span class="pill">Flight</span><span class="pill pill-active">Reports</span><span class="pill">Search</span><span class="pill">Admin</span></div>
+<div class="card p-5 md:p-6">
+<h2 class="text-[22px] font-black leading-6">Financial Reports - 5 Cards + Total Stock</h2>
+<div class="grid grid-cols-2 gap-3 mt-6">
+<div class="p-4 rounded-2xl bg-[#22B573]/10 border-l-[6px]" style="border-color:#22B573"><p class="text-[13px]">Income</p><p class="font-black text-[18px]">$<span id="repIncome">0</span><br><span class="text-[11px] font-normal"><span id="repIncomeSSP">0</span> SSP</span></p></div>
+<div class="p-4 rounded-2xl bg-red-50 border-l-[6px] border-red-500"><p class="text-[13px]">Expenses</p><p class="font-black text-[18px]">$<span id="repExp">0</span></p></div>
+<div class="p-4 rounded-2xl bg-[#2D9ED9]/10 border-l-[6px]" style="border-color:#2D9ED9"><p class="text-[13px]">Profit</p><p class="font-black text-[18px]">$<span id="repProfit">0</span></p></div>
+<div class="p-4 rounded-2xl bg-yellow-50 border-l-[6px] border-yellow-500"><p class="text-[13px]">Outstanding</p><p class="font-black text-[18px]" style="color:#E11D48">$<span id="repDebt">0</span></p></div>
+<div class="p-4 rounded-2xl bg-sky-50 border-l-[6px] border-sky-400 col-span-2 md:col-span-1"><p class="text-[13px]">Total Stock Value</p><p class="font-black text-[18px]"><span id="repStock">0</span> SSP</p></div>
+</div>
+<div class="grid grid-cols-2 gap-3 mt-6"><input id="repFrom" type="date" value="2026-09-22" class="h-12 border rounded-xl px-4"><input id="repTo" type="date" value="2026-10-22" class="h-12 border rounded-xl px-4"></div>
+<div class="flex gap-2 mt-3"><button onclick="generateReports()" class="h-11 px-6 rounded-xl text-white font-bold" style="background:#22B573">Generate</button><button onclick="showAllReports()" class="h-11 px-6 rounded-xl bg-black text-white font-bold">All</button><button onclick="window.print()" class="h-11 px-6 rounded-xl bg-white border-2 font-bold" style="color:#22B573;border-color:#22B57330">Print</button></div>
+<div class="flex gap-2 mt-4 text-[10px] font-bold flex-wrap"><span class="px-3 py-1 rounded-full bg-[#22B573]/15" style="color:#22B573">GREEN = Paid</span><span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-800">YELLOW = Partial</span><span class="px-3 py-1 rounded-full bg-red-100 text-red-800">RED = Unpaid</span></div>
+<div class="overflow-x-auto mt-6"><table class="w-full min-w-[600px] text-sm"><thead class="bg-gray-50"><tr><th class="p-2 text-left">Date</th><th>Type</th><th>SSP</th><th>Status</th></tr></thead><tbody id="reportTable"></tbody></table></div>
+</div>
+</div>
+
+<div id="paysheetTab" class="hidden"><div class="card p-4 md:p-5"><div class="flex justify-between"><h2 class="font-bold">Paysheet - Firebase Live</h2><button onclick="addPaysheet()" class="btn-pro text-white" style="background:var(--g)">+ Salary</button></div><div class="overflow-x-auto mt-4"><table class="w-full min-w-[500px] text-sm"><thead><tr><th>Employee</th><th>Month</th><th>Net SSP</th><th>Status</th><th>Action</th></tr></thead><tbody id="payList"></tbody></table></div></div></div>
+<div id="adminTab" class="hidden"><div class="card p-4 md:p-5"><h2 class="font-bold">Admin - The Grace Pharmacy Pro</h2><div class="flex gap-3 mt-3 items-center">1$ = <input id="exRate" type="number" value="4200" class="border rounded-lg p-2 w-28"> SSP <button onclick="saveRate()" class="btn-pro text-white" style="background:var(--g)">Save to Firebase</button><span id="rateSaved" class="text-xs text-green-600 hidden">✓ Saved</span></div><button onclick="exportReport()" class="btn-pro bg-black text-white mt-4 text-xs">Export CSV</button></div></div>
 </main>
 </div>
 </div>
 
-<!-- Firebase V10 - Full Sync -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, enableIndexedDbPersistence, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, doc, setDoc, getDoc, deleteDoc, onSnapshot, enableIndexedDbPersistence, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+if(location.protocol==='file:'){document.getElementById('fileWarn').classList.remove('hidden');}
 const firebaseConfig = {
   apiKey: "AIzaSyBqhd4QJ5X7K1VrL7YfoJcFcHDbZO8iwhQ",
   authDomain: "the-grace-pharmacy.firebaseapp.com",
@@ -51,68 +121,92 @@ const firebaseConfig = {
   messagingSenderId: "270639582399",
   appId: "1:270639582399:web:64b06a431264e6cb800a0a"
 };
-  const app = initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 enableIndexedDbPersistence(db).catch(()=>{});
-window.db=db;window.collection=collection;window.doc=doc;window.setDoc=setDoc;window.getDoc=getDoc;window.onSnapshot=onSnapshot;window.serverTimestamp=serverTimestamp;
-document.getElementById('online').innerText='Firebase Connected ✓';
-document.getElementById('online').className='text-green-600 font-bold';
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}
+window.db=db;window.collection=collection;window.doc=doc;window.setDoc=setDoc;window.getDoc=getDoc;window.deleteDoc=deleteDoc;window.onSnapshot=onSnapshot;window.serverTimestamp=serverTimestamp;
+document.getElementById('online').innerText='Firebase Live ✓';
+if('serviceWorker' in navigator && location.protocol!=='file:'){navigator.serviceWorker.register('sw.js')}
 </script>
 <script>
 lucide.createIcons();
-function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('overlay').style.display=document.getElementById('sidebar').classList.contains('open')?'block':'none'}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('overlay').classList.toggle('show')}
 function sanitize(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 async function sha256(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')}
-let stock=[],cart=[],debts=[],deliveries=[],sales=[],expenses=[],paysheets=[],exRate=4200,currentUser=null;
-
-// Load rate from Firebase
-async function loadRate(){try{const snap=await window.getDoc(window.doc(window.db,'settings','rate'));if(snap.exists()){exRate=snap.data().value;document.getElementById('rateDisplay').innerText=exRate;document.getElementById('exRate').value=exRate}}catch(e){exRate=parseFloat(localStorage.getItem('grace_rate')||'4200')}}
-
+let stock=[],cart=[],debts=[],deliveries=[],sales=[],expenses=[],officeExpenses=[],paysheets=[],exRate=4200,currentUser=null;
+async function loadRate(){try{const snap=await window.getDoc(window.doc(window.db,'settings','rate'));if(snap.exists()){exRate=snap.data().value;document.getElementById('rateDisplay').innerText=exRate;document.getElementById('exRate').value=exRate}}catch(e){}}
 async function doLogin(){let u=sanitize(document.getElementById('u').value.trim()),p=document.getElementById('p').value;let h=await sha256(p);let hashes=JSON.parse(localStorage.getItem('user_hashes')||'{}');if(!Object.keys(hashes).length){let d={};d['admin']=await sha256('GraceAdmin@2026!');d['cashier.morning']=await sha256('GraceMorning2026');d['cashier.evening']=await sha256('GraceEvening2026');localStorage.setItem('user_hashes',JSON.stringify(d));hashes=d}if(hashes[u]===h){currentUser={name:u,role:u==='admin'?'admin':'cashier'};document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');document.getElementById('userBadge').innerText=u;document.getElementById('rCashier').innerText=u;if(currentUser.role==='admin'){document.querySelectorAll('.admin-only').forEach(e=>e.classList.remove('hidden'))}await loadRate();initAllListeners();}else{document.getElementById('loginError').innerText='Wrong password';document.getElementById('loginError').classList.remove('hidden')}}
-
 function initAllListeners(){
-// Stock
-window.onSnapshot(window.collection(window.db,'stock'),snap=>{stock=[];snap.forEach(d=>stock.push(d.data()));renderStock()});
-// Debts
-window.onSnapshot(window.collection(window.db,'debts'),snap=>{debts=[];snap.forEach(d=>debts.push(d.data()));renderDebts()});
-// Deliveries
-window.onSnapshot(window.collection(window.db,'deliveries'),snap=>{deliveries=[];snap.forEach(d=>deliveries.push(d.data()));renderDelivery()});
-// Expenses
-window.onSnapshot(window.collection(window.db,'expenses'),snap=>{expenses=[];snap.forEach(d=>expenses.push(d.data()));renderExpenses()});
-// Paysheet
-window.onSnapshot(window.collection(window.db,'paysheet'),snap=>{paysheets=[];snap.forEach(d=>paysheets.push(d.data()));renderPaysheet()});
-// Rate
-window.onSnapshot(window.doc(window.db,'settings','rate'),snap=>{if(snap.exists()){exRate=snap.data().value;document.getElementById('rateDisplay').innerText=exRate;document.getElementById('exRate').value=exRate;renderAll()}});
+window.onSnapshot(window.collection(window.db,'stock'),s=>{stock=[];s.forEach(d=>stock.push(d.data()));renderStock();});
+window.onSnapshot(window.collection(window.db,'debts'),s=>{debts=[];s.forEach(d=>debts.push(d.data()));renderDebts();});
+window.onSnapshot(window.collection(window.db,'deliveries'),s=>{deliveries=[];s.forEach(d=>deliveries.push(d.data()));renderDelivery();});
+window.onSnapshot(window.collection(window.db,'expenses'),s=>{expenses=[];s.forEach(d=>expenses.push(d.data()));});
+window.onSnapshot(window.collection(window.db,'office_expenses'),s=>{officeExpenses=[];s.forEach(d=>officeExpenses.push(d.data()));renderOfficeExpenses();});
+window.onSnapshot(window.collection(window.db,'paysheet'),s=>{paysheets=[];s.forEach(d=>paysheets.push(d.data()));renderPaysheet();});
+window.onSnapshot(window.collection(window.db,'sales'),s=>{sales=[];s.forEach(d=>sales.push(d.data()));});
+window.onSnapshot(window.doc(window.db,'settings','rate'),s=>{if(s.exists()){exRate=s.data().value;document.getElementById('rateDisplay').innerText=exRate;document.getElementById('exRate').value=exRate;}});
 }
-
-function tab(t){['pos','stock','debt','delivery','expenses','paysheet','admin'].forEach(x=>{document.getElementById(x+'Tab').classList.add('hidden');let n=document.getElementById('nav-'+x);if(n){n.classList.remove('sidebar-active');n.classList.add('bg-gray-100','text-gray-700')}});document.getElementById(t+'Tab').classList.remove('hidden');let act=document.getElementById('nav-'+t);if(act){act.classList.add('sidebar-active');act.classList.remove('bg-gray-100','text-gray-700')}}
-async function saveRate(){exRate=parseFloat(document.getElementById('exRate').value);await window.setDoc(window.doc(window.db,'settings','rate'),{value:exRate,updatedBy:currentUser.name,updatedAt:window.serverTimestamp()});document.getElementById('rateDisplay').innerText=exRate;document.getElementById('rateSaved').classList.remove('hidden');setTimeout(()=>document.getElementById('rateSaved').classList.add('hidden'),2000)}
+function tab(t){['pos','stock','debt','delivery','office','reports','paysheet','admin'].forEach(x=>{let el=document.getElementById(x+'Tab');if(el)el.classList.add('hidden');let n=document.getElementById('nav-'+x);if(n){n.classList.remove('sidebar-active');n.classList.add('bg-gray-100','text-gray-700')}});document.getElementById(t+'Tab').classList.remove('hidden');let act=document.getElementById('nav-'+t);if(act){act.classList.add('sidebar-active');act.classList.remove('bg-gray-100','text-gray-700')}if(t==='reports')generateReports()}
+async function saveRate(){exRate=parseFloat(document.getElementById('exRate').value);await window.setDoc(window.doc(window.db,'settings','rate'),{value:exRate,updatedBy:currentUser.name,updatedAt:window.serverTimestamp()});document.getElementById('rateSaved').classList.remove('hidden');setTimeout(()=>document.getElementById('rateSaved').classList.add('hidden'),2000)}
 function sspToUsd(s){return (s/exRate).toFixed(2)}
-function renderAll(){renderStock();renderDebts();renderDelivery();renderExpenses();renderPaysheet();updateCart()}
 function renderStock(){let tb=document.getElementById('stockList');tb.innerHTML='';stock.forEach(m=>{tb.innerHTML+=`<tr class='border-b'><td class='p-3'>${sanitize(m.barcode)}</td><td>${sanitize(m.name)}</td><td>${m.qty}</td><td>${m.sell}</td><td>$${sspToUsd(m.sell)}</td></tr>`})}
 document.getElementById('barcode').addEventListener('keydown',e=>{if(e.key==='Enter'){let c=sanitize(e.target.value.trim());let f=stock.find(s=>s.barcode===c||s.name.toLowerCase().includes(c.toLowerCase()));if(f){let ex=cart.find(x=>x.barcode===f.barcode);if(ex)ex.qty++;else cart.push({...f,qty:1});updateCart()}e.target.value=''}})
 function updateCart(){let tb=document.getElementById('cart');tb.innerHTML='';let tot=0;cart.forEach((c,i)=>{let l=c.sell*c.qty;tot+=l;tb.innerHTML+=`<tr class='border-b'><td class='p-3'>${sanitize(c.name)}</td><td>${c.sell}</td><td>${c.qty}</td><td>${l}</td><td><button onclick='cart.splice(${i},1);updateCart()' class='text-red-500'>✕</button></td></tr>`});document.getElementById('totalSSP').innerText=tot;document.getElementById('totalUSD').innerText=sspToUsd(tot);document.getElementById('rTotalSSP').innerText=tot;document.getElementById('rTotalUSD').innerText=sspToUsd(tot);document.getElementById('rRate').innerText=`1$=${exRate}SSP`;let paid=parseFloat(document.getElementById('paidSSP').value)||tot;document.getElementById('change').innerText=paid-tot}
 document.getElementById('paymentType').addEventListener('change',e=>{document.getElementById('debtCustomer').classList.toggle('hidden',e.target.value==='Cash');document.getElementById('deliveryAddress').classList.toggle('hidden',e.target.value!=='Delivery')})
-async function sell(){if(!cart.length)return;let tot=cart.reduce((a,b)=>a+b.sell*b.qty,0);let type=document.getElementById('paymentType').value;let cust=sanitize(document.getElementById('debtCustomer').value||'');let addr=sanitize(document.getElementById('deliveryAddress').value||'');if((type==='Debt'||type==='Delivery')&&!cust){alert('Customer name required');return}
-let id=Date.now().toString();
-if(type==='Debt'){let d={id:id,customer:cust,amountSSP:tot,amountUSD:sspToUsd(tot),date:new Date().toISOString(),status:'Pending',by:currentUser.name};await window.setDoc(window.doc(window.db,'debts',id),d)}
-if(type==='Delivery'){let del={id:id,customer:cust,address:addr,totalSSP:tot,status:'Pending',date:new Date().toISOString(),by:currentUser.name};await window.setDoc(window.doc(window.db,'deliveries',id),del)}
-// Update stock qty in Firebase
-for(let c of cart){let s=stock.find(x=>x.barcode===c.barcode);if(s){let newQty=s.qty-c.qty;await window.setDoc(window.doc(window.db,'stock',s.barcode),{...s,qty:newQty},{merge:true})}}
-let sale={id:id,items:cart,totalSSP:tot,totalUSD:sspToUsd(tot),cashier:currentUser.name,paymentType:type,date:new Date().toISOString(),rate:exRate};await window.setDoc(window.doc(window.db,'sales',id),sale);
-document.getElementById('rDate').innerText=new Date().toLocaleString();document.getElementById('rItems').innerHTML=cart.map(c=>`${sanitize(c.name)} x${c.qty} = ${c.sell*c.qty}<br>`).join('');document.getElementById('rQR').innerHTML='';new QRCode(document.getElementById('rQR'),{text:`Grace Pro SSP:${tot}`,width:90,height:90});window.print();cart=[];updateCart()}
+async function sell(){if(!cart.length)return;let tot=cart.reduce((a,b)=>a+b.sell*b.qty,0);let type=document.getElementById('paymentType').value;let cust=sanitize(document.getElementById('debtCustomer').value||'');let addr=sanitize(document.getElementById('deliveryAddress').value||'');if((type==='Debt'||type==='Delivery')&&!cust){alert('Customer name required');return}let id=Date.now().toString();if(type==='Debt'){await window.setDoc(window.doc(window.db,'debts',id),{id:id,customer:cust,amountSSP:tot,amountUSD:sspToUsd(tot),date:new Date().toISOString(),status:'Pending',by:currentUser.name})}if(type==='Delivery'){await window.setDoc(window.doc(window.db,'deliveries',id),{id:id,customer:cust,address:addr,totalSSP:tot,status:'Pending',date:new Date().toISOString(),by:currentUser.name})}for(let c of cart){let s=stock.find(x=>x.barcode===c.barcode);if(s){await window.setDoc(window.doc(window.db,'stock',s.barcode),{...s,qty:s.qty-c.qty},{merge:true})}}await window.setDoc(window.doc(window.db,'sales',id),{id:id,items:cart,totalSSP:tot,totalUSD:sspToUsd(tot),cashier:currentUser.name,paymentType:type,date:new Date().toISOString(),rate:exRate});document.getElementById('rDate').innerText=new Date().toLocaleString();document.getElementById('rItems').innerHTML=cart.map(c=>`${sanitize(c.name)} x${c.qty} = ${c.sell*c.qty}<br>`).join('');document.getElementById('rQR').innerHTML='';new QRCode(document.getElementById('rQR'),{text:`Grace Pro SSP:${tot}`,width:90,height:90});window.print();cart=[];updateCart()}
 function renderDebts(){let tb=document.getElementById('debtList');tb.innerHTML='';debts.forEach(d=>{tb.innerHTML+=`<tr class='border-b'><td class='p-3'>${sanitize(d.customer)}</td><td>${d.amountSSP}</td><td>${d.status}</td><td><button onclick='payDebt("${d.id}")' class='btn-pro h-8 bg-green-600 text-white text-xs'>Pay</button></td></tr>`})}
 async function payDebt(id){await window.setDoc(window.doc(window.db,'debts',id),{status:'Paid'},{merge:true})}
 function renderDelivery(){let tb=document.getElementById('deliveryList');tb.innerHTML='';deliveries.forEach(d=>{tb.innerHTML+=`<tr class='border-b'><td class='p-3'>${d.id.slice(-4)}</td><td>${sanitize(d.customer)}</td><td>${d.totalSSP}</td><td>${d.status}</td><td><button onclick='doneDelivery("${d.id}")' class='btn-pro h-8 bg-black text-white text-xs'>Done</button></td></tr>`})}
 async function doneDelivery(id){await window.setDoc(window.doc(window.db,'deliveries',id),{status:'Delivered'},{merge:true})}
-function renderExpenses(){let tb=document.getElementById('expList');tb.innerHTML='';expenses.forEach(e=>{tb.innerHTML+=`<tr class='border-b'><td class='p-2'>${new Date(e.date).toLocaleDateString()}</td><td>${sanitize(e.category)}</td><td>${e.amountSSP}</td><td>${sanitize(e.by)}</td></tr>`})}
-async function addExpense(){let cat=prompt('Category: Rent, Electricity, etc'),amt=parseFloat(prompt('Amount SSP:'));if(cat&&amt){let id=Date.now().toString();let ex={id:id,category:cat,amountSSP:amt,date:new Date().toISOString(),by:currentUser.name};await window.setDoc(window.doc(window.db,'expenses',id),ex)}}
+
+// Office Expenses - Grace Colors
+function renderOfficeExpenses(){
+let list=document.getElementById('offList');let totalSSP=0;
+if(officeExpenses.length===0){list.innerHTML='<p class="text-gray-500">No data</p>';document.getElementById('offTotalSSP').innerText='0';document.getElementById('offTotalUSD').innerText='0.00';return}
+list.innerHTML='';officeExpenses.forEach(o=>{totalSSP+=o.amountSSP;list.innerHTML+=`<div class='flex justify-between items-center border-b py-3'><div><b>${sanitize(o.category)}</b> - ${sanitize(o.paidTo)}<br><span class='text-xs text-gray-500'>${new Date(o.date).toLocaleDateString()} ${sanitize(o.note)}</span></div><div class='text-right'><b>${o.amountSSP} SSP</b><br><span class='text-xs'>$${sspToUsd(o.amountSSP)}</span><br><button onclick='deleteOffice("${o.id}")' class='text-[10px] text-red-600 mt-1 ${currentUser&&currentUser.role==='admin'?'':'hidden'}'>Delete</button></div></div>`});
+document.getElementById('offTotalSSP').innerText=totalSSP;document.getElementById('offTotalUSD').innerText=sspToUsd(totalSSP);
+}
+async function addOfficeExpense(){
+let date=document.getElementById('offDate').value||new Date().toISOString().split('T')[0];
+let cat=document.getElementById('offCategory').value;
+let amt=parseFloat(document.getElementById('offAmount').value);
+let paidTo=sanitize(document.getElementById('offPaidTo').value);
+let note=sanitize(document.getElementById('offNote').value);
+if(!amt||!paidTo){alert('Amount & Paid To required');return}
+let id=Date.now().toString();
+let data={id:id,date:new Date(date).toISOString(),category:cat,amountSSP:amt,paidTo:paidTo,note:note,by:currentUser.name};
+await window.setDoc(window.doc(window.db,'office_expenses',id),data);
+document.getElementById('offAmount').value='';document.getElementById('offPaidTo').value='';document.getElementById('offNote').value='';
+}
+async function deleteOffice(id){if(currentUser.role!=='admin'){alert('Admin only can delete');return}if(confirm('Delete?')){await window.deleteDoc(window.doc(window.db,'office_expenses',id))}}
+
+// Reports
+function generateReports(){
+let from=new Date(document.getElementById('repFrom').value);let to=new Date(document.getElementById('repTo').value);to.setHours(23,59,59);
+let fSales=sales.filter(s=>{let d=new Date(s.date);return d>=from&&d<=to});
+let fOffice=officeExpenses.filter(e=>{let d=new Date(e.date);return d>=from&&d<=to});
+let fDebts=debts.filter(d=>{let dte=new Date(d.date);return dte>=from&&dte<=to});
+let incomeSSP=fSales.reduce((a,b)=>a+b.totalSSP,0);
+let expSSP=fOffice.reduce((a,b)=>a+b.amountSSP,0);
+let debtSSP=fDebts.filter(d=>d.status!=='Paid').reduce((a,b)=>a+b.amountSSP,0);
+let stockVal=stock.reduce((a,b)=>a+(b.qty*b.sell),0);
+document.getElementById('repIncome').innerText=sspToUsd(incomeSSP);document.getElementById('repIncomeSSP').innerText=incomeSSP;
+document.getElementById('repExp').innerText=sspToUsd(expSSP);
+document.getElementById('repProfit').innerText=sspToUsd(incomeSSP-expSSP);
+document.getElementById('repDebt').innerText=sspToUsd(debtSSP);
+document.getElementById('repStock').innerText=stockVal;
+let tb=document.getElementById('reportTable');tb.innerHTML='';
+fSales.forEach(s=>{tb.innerHTML+=`<tr class='border-b'><td class='p-2'>${new Date(s.date).toLocaleDateString()}</td><td>Sale</td><td>${s.totalSSP}</td><td><span class='px-2 py-1 rounded-full bg-green-100 text-green-700 text-[10px]'>Paid</span></td></tr>`});
+fOffice.forEach(o=>{tb.innerHTML+=`<tr class='border-b'><td class='p-2'>${new Date(o.date).toLocaleDateString()}</td><td>${o.category}</td><td>${o.amountSSP}</td><td><span class='px-2 py-1 rounded-full bg-red-100 text-red-700 text-[10px]'>Expense</span></td></tr>`});
+}
+function showAllReports(){document.getElementById('repFrom').value='2024-01-01';document.getElementById('repTo').valueAsDate=new Date();generateReports()}
+
 function renderPaysheet(){let tb=document.getElementById('payList');tb.innerHTML='';paysheets.forEach(p=>{tb.innerHTML+=`<tr class='border-b'><td class='p-2'>${sanitize(p.employee)}</td><td>${p.month}</td><td>${p.netSSP}</td><td>${p.status}</td><td><button onclick='paySalary("${p.id}")' class='btn-pro h-7 bg-green-600 text-white text-[10px]'>Pay</button></td></tr>`})}
-async function addPaysheet(){let emp=prompt('Employee:'),month=prompt('Month: e.g. Oct 2026'),basic=parseFloat(prompt('Basic SSP:')),bonus=parseFloat(prompt('Bonus:')||0),ded=parseFloat(prompt('Deduction:')||0);if(emp&&basic){let net=basic+bonus-ded;let id=Date.now().toString();let ps={id:id,employee:emp,month:month,basicSSP:basic,bonus:bonus,deduction:ded,netSSP:net,date:new Date().toISOString(),status:'Pending',by:currentUser.name};await window.setDoc(window.doc(window.db,'paysheet',id),ps)}}
+async function addPaysheet(){let emp=prompt('Employee:'),month=prompt('Month:'),basic=parseFloat(prompt('Basic SSP:')),bonus=parseFloat(prompt('Bonus:')||0),ded=parseFloat(prompt('Deduction:')||0);if(emp&&basic){let net=basic+bonus-ded;let id=Date.now().toString();await window.setDoc(window.doc(window.db,'paysheet',id),{id:id,employee:emp,month:month,basicSSP:basic,bonus:bonus,deduction:ded,netSSP:net,date:new Date().toISOString(),status:'Pending',by:currentUser.name})}}
 async function paySalary(id){await window.setDoc(window.doc(window.db,'paysheet',id),{status:'Paid'},{merge:true})}
+function exportReport(){let csv='Date,Type,SSP,USD\n'+sales.map(s=>`${s.date},Sale,${s.totalSSP},${s.totalUSD}`).join('\n');let b=new Blob([csv],{type:'text/csv'});let a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='GracePro_Report.csv';a.click()}
 let html5Qr;function startCameraScanner(){document.getElementById('reader').classList.remove('hidden');html5Qr=new Html5Qrcode('qr-reader');html5Qr.start({facingMode:'environment'},{fps:10,qrbox:250},d=>{document.getElementById('barcode').value=d;document.getElementById('barcode').dispatchEvent(new KeyboardEvent('keydown',{key:'Enter'}));html5Qr.stop().then(()=>document.getElementById('reader').classList.add('hidden'))}).catch(()=>alert('Allow camera'))}
 function stopCameraScanner(){if(html5Qr)html5Qr.stop().then(()=>document.getElementById('reader').classList.add('hidden'))}
 </script>
 </body>
-                                                                                                                                                                         </html>
+</html>
