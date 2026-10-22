@@ -1,24 +1,10 @@
 {
-  "name": "The Grace Pharmacy - Sidigi Edition",
-  "short_name": "GracePharma",
-  "description": "Give your health a new lift - Offline + Firebase",
+  "name": "The Grace Pharmacy Pro",
+  "short_name": "GracePro",
+  "description": "Give your health a new lift - Firebase Live",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#22B573",
   "theme_color": "#22B573",
-  "orientation": "portrait-primary",
-  "icons": [
-    {
-      "src": "./logo.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "./logo.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
-  ]
+  "icons": [{"src": "./logo.png","sizes": "512x512","type": "image/png","purpose":"any maskable"}]
 }
