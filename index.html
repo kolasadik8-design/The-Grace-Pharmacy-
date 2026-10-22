@@ -1,222 +1,59 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://cdn.tailwindcss.com https://www.gstatic.com https://unpkg.com https://cdn.jsdelivr.net https://cdn-icons-png.flaticon.com; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;">
-<title>The Grace Pharmacy PRO v4 - Secure</title>
+<title>The Grace Pharmacy PRO</title>
 <link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./logo.png">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, doc, setDoc, onSnapshot, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-const firebaseConfig = {
-  apiKey: "YOUR_KEY",
-  authDomain: "the-grace-pharmacy.firebaseapp.com",
-  projectId: "the-grace-pharmacy",
-  storageBucket: "the-grace-pharmacy.appspot.com",
-  messagingSenderId: "123",
-  appId: "1:123:web:abc"
-};
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-enableIndexedDbPersistence(db).catch(()=>{});
-window.db=db; window.collection=collection; window.doc=doc; window.setDoc=setDoc; window.onSnapshot=onSnapshot;
-if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
-</script>
 <style>
-.watermark{position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) rotate(-30deg); opacity:0.04; pointer-events:none; z-index:0; width:400px;}
-@media print{body *{visibility:hidden} #receipt, #receipt *{visibility:visible} #receipt{position:absolute; left:0; top:0; width:80mm}}
+:root{--g:#22B573;--b:#2D9ED9}
+.watermark{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-25deg);opacity:0.04;pointer-events:none;z-index:0;width:380px}
+@media print{body *{visibility:hidden}#receipt,#receipt *{visibility:visible}#receipt{position:absolute;left:0;top:0;width:80mm;background:white}}
 </style>
 </head><body class="bg-gray-50">
-<img id="watermarkLogo" class="watermark hidden" src="">
+<img src="./logo.png" class="watermark" id="wmLogo">
 
-<!-- LOGIN -->
-<div id="login" class="min-h-screen flex items-center justify-center bg-emerald-50 relative">
-<div class="bg-white p-8 rounded-2xl shadow-xl w-[420px] border-t-8 border-emerald-700 relative z-10">
-<center><img id="loginLogo" class="w-20 h-20 object-contain mb-2 hidden" src=""><h1 class="text-2xl font-bold text-emerald-700">The Grace Pharmacy</h1><p class="text-xs mb-2">PRO v4 - Secure</p><p id="syncStatus" class="text-xs">Offline Ready</p></center>
-<input id="u" class="w-full p-3 border rounded mb-3 mt-4" placeholder="Username" autocomplete="username">
-<input id="p" type="password" class="w-full p-3 border rounded mb-4" placeholder="Password" autocomplete="current-password">
-<button onclick="doLogin()" class="w-full bg-emerald-700 text-white p-3 rounded font-bold">LOGIN</button>
+<div id="login" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#22B573]/20 to-[#2D9ED9]/20">
+<div class="bg-white p-8 rounded-2xl shadow-2xl w-[430px] border-t-8" style="border-color:var(--g)">
+<center><img src="./logo.png" class="w-28 h-28 object-contain mb-3"><h1 class="text-xl font-bold" style="color:var(--g)">THE GRACE PHARMACY</h1><p class="text-xs italic text-gray-500">Give your health a new lift</p><p class="text-[10px] mt-2">Secure v5 - Offline Ready</p></center>
+<input id="u" class="w-full p-3 border rounded mt-4" placeholder="Username"><input id="p" type="password" class="w-full p-3 border rounded my-3" placeholder="Password">
+<button onclick="doLogin()" class="w-full text-white p-3 rounded font-bold" style="background:var(--g)">LOGIN</button>
 <p id="loginError" class="text-xs text-red-600 mt-2 hidden"></p>
-<p class="text-[10px] mt-4 text-gray-400 text-center">5 failed attempts = 15 min block<br>Auto logout after 30 min inactive</p>
 </div></div>
 
-<!-- APP -->
-<div id="app" class="hidden relative">
-<header class="bg-emerald-700 text-white p-3 flex justify-between text-sm relative z-10"><div><img id="headerLogo" class="w-6 h-6 inline-block mr-2 hidden"><b>The Grace Pharmacy</b> | <span id="roleBadge"></span> | <span id="shiftBadge"></span> | <span id="online">Offline</span> | Rate 1$=<span id="rateDisplay">4200</span>SSP</div><div><span id="userBadge"></span> <button onclick="logout()" class="ml-3 bg-white text-emerald-700 px-2 py-1 rounded">Logout</button></div></header>
-<nav class="bg-white shadow p-2 flex gap-2 overflow-x-auto relative z-10"><button onclick="tab('pos')" class="bg-emerald-700 text-white px-3 py-2 rounded text-sm">POS & Camera</button><button onclick="tab('stock')" class="bg-gray-200 px-3 py-2 rounded text-sm">Stock</button><button onclick="tab('debt')" class="bg-gray-200 px-3 py-2 rounded text-sm">Debts</button><button onclick="tab('delivery')" class="bg-gray-200 px-3 py-2 rounded text-sm">🚚 Delivery</button><button onclick="tab('admin')" id="adminBtn" class="bg-gray-200 px-3 py-2 rounded text-sm">Admin & Reports</button></nav>
+<div id="app" class="hidden">
+<header class="text-white p-3 flex justify-between text-sm" style="background:var(--g)"><div class="flex items-center"><img src="./logo.png" class="w-8 h-8 bg-white rounded-full p-1 mr-2"><b>THE GRACE PHARMACY</b> | <span id="roleBadge" class="ml-2"></span> | Rate 1$=<span id="rateDisplay">4200</span>SSP</div><div><span id="userBadge"></span> <button onclick="location.reload()" class="ml-3 bg-white px-2 py-1 rounded" style="color:var(--g)">Logout</button></div></header>
+<nav class="bg-white shadow p-2 flex gap-2 overflow-x-auto"><button onclick="tab('pos')" class="text-white px-3 py-2 rounded text-sm" style="background:var(--g)">POS + Camera</button><button onclick="tab('stock')" class="bg-gray-200 px-3 py-2 rounded text-sm">Stock</button><button onclick="tab('debt')" class="bg-gray-200 px-3 py-2 rounded text-sm">Debts</button><button onclick="tab('delivery')" class="bg-gray-200 px-3 py-2 rounded text-sm">🚚 Delivery</button><button onclick="tab('admin')" id="adminBtn" class="bg-gray-200 px-3 py-2 rounded text-sm">Admin</button></nav>
 
-<!-- POS -->
-<div id="posTab" class="p-4 grid grid-cols-12 gap-4 relative z-10">
-<div class="col-span-8 bg-white p-4 rounded shadow">
-<div class="flex gap-2 mb-2"><input id="barcode" class="flex-1 p-3 border-2 border-emerald-600 rounded" placeholder="Scan barcode or search medicine + Enter" autofocus><button onclick="startCameraScanner()" class="bg-black text-white px-3 rounded text-sm">📷 Camera as Scanner</button></div>
-<div id="reader" class="hidden border-2 border-emerald-600 rounded mb-2"><div id="qr-reader" style="width:100%"></div><button onclick="stopCameraScanner()" class="w-full bg-red-600 text-white p-1 text-xs">Stop Camera</button></div>
-<table class="w-full text-sm"><thead class="bg-emerald-50"><tr><th>Medicine</th><th>SSP</th><th>Qty</th><th>Total SSP</th></tr></thead><tbody id="cart"></tbody></table>
-<div class="mt-3"><b>Medicine QR:</b><div id="medQR" class="mt-1"></div></div>
-</div>
-<div class="col-span-4 bg-white p-4 rounded shadow">
-<h2 class="font-bold">Total SSP: <span id="totalSSP">0</span></h2><p class="text-sm">USD: $<span id="totalUSD">0.00</span></p>
-<input id="paidSSP" type="number" placeholder="Paid SSP" class="w-full border p-2 rounded mt-2">
-<p class="text-sm">Change: SSP <span id="change">0</span> / $<span id="changeUSD">0</span></p>
-<select id="paymentType" class="w-full border p-2 rounded mt-2"><option value="Cash">Cash Only</option><option value="Debt">Debt</option><option value="Delivery">Delivery - Cash on Delivery</option></select>
-<input id="debtCustomer" placeholder="Customer name if debt/delivery" class="w-full border p-2 rounded mt-2 hidden">
-<input id="deliveryAddress" placeholder="Delivery address" class="w-full border p-2 rounded mt-2 hidden">
-<button onclick="sell()" class="w-full bg-emerald-700 text-white p-3 mt-3 rounded font-bold">SELL & PRINT</button>
-<div id="receipt" class="hidden p-2 text-xs mt-4 border bg-white"><center><img id="receiptLogo" class="w-12 h-12 hidden" src=""><br><b>THE GRACE PHARMACY<br>JUBA, South Sudan<br>-----------------</b></center><div id="rItems"></div><hr>SSP: <span id="rTotalSSP"></span><br>USD: $<span id="rTotalUSD"></span><br>Rate: 1$=<span id="rRate"></span> SSP<br>Date: <span id="rDate"></span><br>Cashier: <span id="rCashier"></span> (<span id="rShift"></span>)<br><div id="rQR" class="flex justify-center mt-2"></div><center>Thank You - Get Well Soon!</center></div>
-</div></div>
+<div id="posTab" class="p-4 grid grid-cols-12 gap-4"><div class="col-span-8 bg-white p-4 rounded shadow"><div class="flex gap-2 mb-2"><input id="barcode" class="flex-1 p-3 border-2 rounded" style="border-color:var(--g)" placeholder="Scan barcode + Enter" autofocus><button onclick="startCameraScanner()" class="bg-black text-white px-3 rounded text-xs">📷 Use Phone Camera as Scanner</button></div><div id="reader" class="hidden border-2 rounded mb-2" style="border-color:var(--g)"><div id="qr-reader" style="width:100%"></div><button onclick="stopCameraScanner()" class="w-full bg-red-600 text-white p-1 text-xs">Stop</button></div><table class="w-full text-sm"><thead style="background:#22B57320"><tr><th>Medicine</th><th>SSP</th><th>Qty</th><th>Total</th></tr></thead><tbody id="cart"></tbody></table></div><div class="col-span-4 bg-white p-4 rounded shadow"><h2 class="font-bold">Total SSP: <span id="totalSSP">0</span></h2><p class="text-sm">USD: $<span id="totalUSD">0.00</span></p><input id="paidSSP" type="number" placeholder="Paid SSP" class="w-full border p-2 rounded mt-2"><p class="text-sm">Change SSP: <span id="change">0</span></p><select id="paymentType" class="w-full border p-2 rounded mt-2"><option value="Cash">Cash Only - كاش فقط</option><option value="Debt">Debt</option><option value="Delivery">Delivery - COD</option></select><input id="debtCustomer" placeholder="Customer name" class="w-full border p-2 rounded mt-2 hidden"><input id="deliveryAddress" placeholder="Delivery address in Juba" class="w-full border p-2 rounded mt-2 hidden"><button onclick="sell()" class="w-full text-white p-3 mt-3 rounded font-bold" style="background:var(--g)">SELL & PRINT</button><div id="receipt" class="hidden p-2 text-xs mt-4 border bg-white"><center><img src="./logo.png" class="w-14 h-14"><br><b>THE GRACE PHARMACY<br>JUBA<br>Give your health a new lift<br>-----------------</b></center><div id="rItems"></div><hr>SSP: <span id="rTotalSSP"></span> | USD: $<span id="rTotalUSD"></span><br>Rate: <span id="rRate"></span><br>Date: <span id="rDate"></span><br>Cashier: <span id="rCashier"></span><div id="rQR" class="flex justify-center mt-2"></div><center>Thank You!</center></div></div></div>
 
-<!-- STOCK -->
-<div id="stockTab" class="hidden p-4 relative z-10"><div class="bg-white p-4 rounded shadow"><button onclick="addMed()" class="bg-emerald-700 text-white px-3 py-2 rounded float-right">+ Add</button><h2 class="font-bold">Stock - Price in SSP (USD auto)</h2><input id="searchStock" placeholder="Search..." class="w-full border p-2 rounded my-3" onkeyup="renderStock()"><table class="w-full text-sm"><thead class="bg-emerald-50"><tr><th>Barcode</th><th>Name</th><th>Qty</th><th>SSP</th><th>USD</th><th>Expiry</th><th>QR</th></tr></thead><tbody id="stockList"></tbody></table></div></div>
-
-<!-- DEBT -->
-<div id="debtTab" class="hidden p-4 relative z-10"><div class="bg-white p-4 rounded shadow"><h2 class="font-bold">Customer Debts</h2><table class="w-full text-sm mt-4"><thead class="bg-emerald-50"><tr><th>Customer</th><th>Phone</th><th>SSP</th><th>USD</th><th>Date</th><th>Status</th><th>Action</th></tr></thead><tbody id="debtList"></tbody></table><p class="font-bold mt-4">Total Debt: SSP <span id="totalDebtSSP">0</span> = $<span id="totalDebtUSD">0</span></p></div></div>
-
-<!-- DELIVERY -->
-<div id="deliveryTab" class="hidden p-4 relative z-10"><div class="bg-white p-4 rounded shadow"><h2 class="font-bold">🚚 Delivery Service - Juba</h2><table class="w-full text-sm mt-4"><thead class="bg-emerald-50"><tr><th>Order ID</th><th>Customer</th><th>Address</th><th>SSP</th><th>Fee</th><th>Rider</th><th>Status</th><th>Action</th></tr></thead><tbody id="deliveryList"></tbody></table></div></div>
-
-<!-- ADMIN -->
-<div id="adminTab" class="hidden p-4 relative z-10"><div class="bg-white p-4 rounded shadow">
-<h2 class="font-bold">Admin - Secure Panel</h2>
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-<div class="border p-3 rounded"><b>Logo Upload</b><br><input type="file" id="logoUpload" accept="image/*" class="text-xs"><br><p class="text-xs mt-1">Logo will appear on login, header, receipt & watermark. Colors will auto-extract.</p><div class="mt-2"><label>Theme Color: </label><input type="color" id="themeColor" value="#0E7C5B" onchange="applyTheme(this.value)"></div></div>
-<div class="border p-3 rounded"><b>Exchange Rate</b><br>1 USD = <input id="exRate" type="number" value="4200" class="border p-1 w-24 rounded"> SSP<br><button onclick="saveRate()" class="bg-emerald-700 text-white px-3 py-1 rounded mt-2">Save Rate</button></div>
-<div class="border p-3 rounded"><b>Morning Shift</b><br>Start <input id="mStart" type="time" value="08:00" class="border p-1 rounded"> End <input id="mEnd" type="time" value="14:00" class="border p-1 rounded"></div>
-<div class="border p-3 rounded"><b>Evening Shift</b><br>Start <input id="eStart" type="time" value="14:00" class="border p-1 rounded"> End <input id="eEnd" type="time" value="21:00" class="border p-1 rounded"></div>
-</div>
-<div class="mt-4 border p-3 rounded"><b>Change Passwords (Hashed)</b><br>Admin New Pass: <input id="newAdminPass" type="password" class="border p-1 rounded"> <button onclick="changePass('admin')" class="bg-gray-800 text-white px-2 py-1 rounded">Update</button><br>Morning Cashier: <input id="newMorningPass" type="password" class="border p-1 rounded mt-1"> <button onclick="changePass('cashier.morning')" class="bg-gray-800 text-white px-2 py-1 rounded">Update</button><br>Evening Cashier: <input id="newEveningPass" type="password" class="border p-1 rounded mt-1"> <button onclick="changePass('cashier.evening')" class="bg-gray-800 text-white px-2 py-1 rounded">Update</button></div>
-<hr class="my-4"><h3 class="font-bold">Reports - SSP & USD</h3><p>Today SSP: <span id="reportSSP">0</span> | USD: $<span id="reportUSD">0</span></p><p>Morning: SSP <span id="reportMorning">0</span> | Evening: SSP <span id="reportEvening">0</span> | Delivery: SSP <span id="reportDelivery">0</span></p><button onclick="exportReport()" class="bg-gray-800 text-white px-3 py-1 rounded mt-2">Export CSV</button>
-</div></div>
+<div id="stockTab" class="hidden p-4"><div class="bg-white p-4 rounded shadow"><h2 class="font-bold">Stock - Pricing in SSP</h2><table class="w-full text-sm mt-3"><thead style="background:#22B57320"><tr><th>Barcode</th><th>Name</th><th>Qty</th><th>SSP</th><th>USD</th><th>QR</th></tr></thead><tbody id="stockList"></tbody></table></div></div>
+<div id="debtTab" class="hidden p-4"><div class="bg-white p-4 rounded shadow"><h2 class="font-bold">Debts</h2><table class="w-full text-sm mt-3"><thead style="background:#22B57320"><tr><th>Customer</th><th>SSP</th><th>USD</th><th>Status</th><th>Action</th></tr></thead><tbody id="debtList"></tbody></table><p class="font-bold mt-3">Total Debt SSP: <span id="totalDebtSSP">0</span> = $<span id="totalDebtUSD">0</span></p></div></div>
+<div id="deliveryTab" class="hidden p-4"><div class="bg-white p-4 rounded shadow"><h2 class="font-bold">🚚 Delivery - Juba</h2><table class="w-full text-sm mt-3"><thead style="background:#22B57320"><tr><th>ID</th><th>Customer</th><th>Address</th><th>SSP</th><th>Status</th><th>Action</th></tr></thead><tbody id="deliveryList"></tbody></table></div></div>
+<div id="adminTab" class="hidden p-4"><div class="bg-white p-4 rounded shadow"><h2 class="font-bold">Admin - Logo & Rate</h2><div class="grid grid-cols-2 gap-4 mt-3"><div class="border p-3 rounded"><b>Exchange Rate</b><br>1 USD = <input id="exRate" type="number" value="4200" class="border p-1 w-24"> SSP <button onclick="saveRate()" class="text-white px-2 py-1 rounded ml-2" style="background:var(--g)">Save</button></div><div class="border p-3 rounded"><b>Logo Status</b><br><img src="./logo.png" class="w-12 h-12 mt-1"><p class="text-xs">Theme Green #22B573 + Blue #2D9ED9 extracted from logo</p></div></div><hr class="my-3"><p>Today SSP: <span id="reportSSP">0</span> | USD: $<span id="reportUSD">0</span></p><button onclick="exportReport()" class="bg-black text-white px-3 py-1 rounded mt-2">Export CSV</button></div></div>
 </div>
 
 <script>
-// --- SECURITY CORE ---
-function sanitize(str){return String(str).replace(/[&<>"'`=\/]/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','/':'&#x2F;','`':'&#x60;','=':'&#x3D;'}[s]));}
-async function sha256(str){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str)); return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');}
-let loginAttempts=parseInt(localStorage.getItem('login_attempts')||'0'); let blockUntil=parseInt(localStorage.getItem('block_until')||'0');
-const defaultHashes={};
-(async()=>{ defaultHashes['admin']=await sha256('GraceAdmin@2026!'); defaultHashes['cashier.morning']=await sha256('GraceMorning2026'); defaultHashes['cashier.evening']=await sha256('GraceEvening2026'); if(!localStorage.getItem('user_hashes')) localStorage.setItem('user_hashes',JSON.stringify(defaultHashes));})();
-
-// Users with hashed passwords
-function getUserHashes(){return JSON.parse(localStorage.getItem('user_hashes')||'{}');}
-let stock=JSON.parse(localStorage.getItem('grace_stock')||'[]'), cart=[], debts=JSON.parse(localStorage.getItem('grace_debts')||'[]'), deliveries=JSON.parse(localStorage.getItem('grace_deliveries')||'[]'), sales=JSON.parse(localStorage.getItem('grace_sales')||'[]'), exRate=parseFloat(localStorage.getItem('grace_rate')||'4200'), currentUser=null, lastActivity=Date.now();
-document.getElementById('rateDisplay').innerText=exRate; document.getElementById('exRate').value=exRate;
-
-// Logo handling
-let logoData=localStorage.getItem('grace_logo')||'';
-if(logoData){ document.getElementById('loginLogo').src=logoData; document.getElementById('loginLogo').classList.remove('hidden'); document.getElementById('headerLogo').src=logoData; document.getElementById('headerLogo').classList.remove('hidden'); document.getElementById('receiptLogo').src=logoData; document.getElementById('receiptLogo').classList.remove('hidden'); document.getElementById('watermarkLogo').src=logoData; document.getElementById('watermarkLogo').classList.remove('hidden');}
-document.getElementById('logoUpload').addEventListener('change',e=>{
-  const file=e.target.files[0]; if(!file) return;
-  const reader=new FileReader(); reader.onload=ev=>{
-    logoData=ev.target.result; localStorage.setItem('grace_logo',logoData);
-    document.getElementById('loginLogo').src=logoData; document.getElementById('loginLogo').classList.remove('hidden');
-    document.getElementById('headerLogo').src=logoData; document.getElementById('headerLogo').classList.remove('hidden');
-    document.getElementById('receiptLogo').src=logoData; document.getElementById('receiptLogo').classList.remove('hidden');
-    document.getElementById('watermarkLogo').src=logoData; document.getElementById('watermarkLogo').classList.remove('hidden');
-    if(window.db&&navigator.onLine) window.setDoc(window.doc(window.db,'settings','logo'),{data:logoData, theme:document.getElementById('themeColor').value});
-    alert('Logo saved - will appear on receipt, login, header & watermark. Theme color auto-applied.');
-  }; reader.readAsDataURL(file);
-});
-function applyTheme(color){document.documentElement.style.setProperty('--tw-color',color); localStorage.setItem('grace_theme',color); document.querySelectorAll('.bg-emerald-700').forEach(el=>el.style.backgroundColor=color);}
-
-async function doLogin(){
-  if(Date.now()<blockUntil){ document.getElementById('loginError').innerText=`Blocked - try after ${new Date(blockUntil).toLocaleTimeString()}`; document.getElementById('loginError').classList.remove('hidden'); return; }
-  let u=sanitize(document.getElementById('u').value.trim()), p=document.getElementById('p').value;
-  let hashes=getUserHashes(); let hash=await sha256(p);
-  if(hashes[u] && hashes[u]===hash){
-    // shift check
-    let now=new Date(); let hm=now.getHours()*60+now.getMinutes();
-    let role=u==='admin'?'admin':'cashier'; let shift=u.includes('morning')?'Morning':u.includes('evening')?'Evening':'All Day';
-    if(role!=='admin'){
-      let mStart=document.getElementById('mStart').value, mEnd=document.getElementById('mEnd').value, eStart=document.getElementById('eStart').value, eEnd=document.getElementById('eEnd').value;
-      let toMin=t=>{let [h,m]=t.split(':').map(Number); return h*60+m;};
-      if(shift==='Morning' && (hm<toMin(mStart)||hm>toMin(mEnd))){ if(!confirm('Outside Morning shift. Continue with admin approval?')) return; }
-      if(shift==='Evening' && (hm<toMin(eStart)||hm>toMin(eEnd))){ if(!confirm('Outside Evening shift. Continue with admin approval?')) return; }
-    }
-    currentUser={name:u, role:role, shift:shift}; localStorage.setItem('login_attempts','0');
-    document.getElementById('login').classList.add('hidden'); document.getElementById('app').classList.remove('hidden');
-    document.getElementById('userBadge').innerText=u; document.getElementById('roleBadge').innerText=role; document.getElementById('shiftBadge').innerText=shift; document.getElementById('rCashier').innerText=u; document.getElementById('rShift').innerText=shift;
-    if(role!=='admin') document.getElementById('adminBtn').classList.add('hidden');
-    initSync(); renderStock(); renderDebts(); renderDelivery(); lastActivity=Date.now();
-    setInterval(()=>{if(Date.now()-lastActivity>30*60*1000) logout();},60000);
-  } else {
-    loginAttempts++; localStorage.setItem('login_attempts',loginAttempts);
-    if(loginAttempts>=5){ blockUntil=Date.now()+15*60*1000; localStorage.setItem('block_until',blockUntil); document.getElementById('loginError').innerText='5 failed - blocked 15 min';}
-    else document.getElementById('loginError').innerText=`Wrong credentials - attempt ${loginAttempts}/5`;
-    document.getElementById('loginError').classList.remove('hidden');
-  }
-}
-function logout(){ localStorage.removeItem('current_user'); location.reload();}
-function tab(t){['pos','stock','debt','delivery','admin'].forEach(x=>document.getElementById(x+'Tab').classList.add('hidden')); document.getElementById(t+'Tab').classList.remove('hidden'); lastActivity=Date.now();}
-
-function saveRate(){ exRate=parseFloat(sanitize(document.getElementById('exRate').value)); localStorage.setItem('grace_rate',exRate); document.getElementById('rateDisplay').innerText=exRate; renderStock(); updateCart(); alert('Rate saved');}
-function sspToUsd(ssp){ return (ssp/exRate).toFixed(2); }
-
-function renderStock(){ let q=(document.getElementById('searchStock')?.value||'').toLowerCase(); let tbody=document.getElementById('stockList'); tbody.innerHTML=''; stock.filter(s=>s.name.toLowerCase().includes(q)||s.barcode.includes(q)).forEach(m=>{ tbody.innerHTML+=`<tr class='border-b'><td>${sanitize(m.barcode)}</td><td>${sanitize(m.name)}</td><td>${m.qty}</td><td>${m.sell}</td><td>$${sspToUsd(m.sell)}</td><td>${sanitize(m.exp)}</td><td><button onclick='showMedQR("${sanitize(m.barcode)}")' class='text-emerald-700'>QR</button></td></tr>`;});}
-function showMedQR(barcode){ let m=stock.find(s=>s.barcode===barcode); document.getElementById('medQR').innerHTML=''; new QRCode(document.getElementById('medQR'),{text:`${m.name}|${m.barcode}|SSP:${m.sell}|USD:$${sspToUsd(m.sell)}`,width:100,height:100});}
-
-document.getElementById('barcode').addEventListener('keydown',e=>{if(e.key==='Enter'){let code=sanitize(e.target.value.trim()); let f=stock.find(s=>s.barcode===code||s.name.toLowerCase().includes(code.toLowerCase())); if(f){let ex=cart.find(c=>c.barcode===f.barcode); if(ex)ex.qty++; else cart.push({...f,qty:1}); updateCart(); showMedQR(f.barcode);} e.target.value=''; lastActivity=Date.now();}});
-
-function updateCart(){ let tb=document.getElementById('cart'); tb.innerHTML=''; let tot=0; cart.forEach(c=>{let line=c.sell*c.qty; tot+=line; tb.innerHTML+=`<tr class='border-b'><td>${sanitize(c.name)}</td><td>${c.sell}</td><td>${c.qty}</td><td>${line}</td></tr>`;}); document.getElementById('totalSSP').innerText=tot; document.getElementById('totalUSD').innerText=sspToUsd(tot); document.getElementById('rTotalSSP').innerText=tot; document.getElementById('rTotalUSD').innerText=sspToUsd(tot); document.getElementById('rRate').innerText=`1$=${exRate}SSP`; let paid=parseFloat(document.getElementById('paidSSP').value)||tot; document.getElementById('change').innerText=paid-tot; document.getElementById('changeUSD').innerText=sspToUsd(paid-tot); document.getElementById('rQR').innerHTML=''; new QRCode(document.getElementById('rQR'),{text:`GracePharma Receipt SSP:${tot} USD:$${sspToUsd(tot)} ${new Date().toISOString()}`,width:80,height:80});}
-
-document.getElementById('paidSSP').addEventListener('input',updateCart);
-document.getElementById('paymentType').addEventListener('change',e=>{
-  let v=e.target.value;
-  document.getElementById('debtCustomer').classList.toggle('hidden',v==='Cash');
-  document.getElementById('deliveryAddress').classList.toggle('hidden',v!=='Delivery');
-});
-
-async function sell(){
-  if(!cart.length) return;
-  let tot=cart.reduce((a,b)=>a+b.sell*b.qty,0);
-  let type=sanitize(document.getElementById('paymentType').value);
-  let cust=sanitize(document.getElementById('debtCustomer').value||'');
-  let addr=sanitize(document.getElementById('deliveryAddress').value||'');
-  if((type==='Debt'||type==='Delivery') && !cust){ alert('Customer name required for Debt/Delivery'); return; }
-  if(type==='Debt'){
-    debts.push({customer:cust, phone:'', amountSSP:tot, amountUSD:sspToUsd(tot), date:new Date().toISOString(), status:'Pending', cashier:currentUser.name});
-    localStorage.setItem('grace_debts',JSON.stringify(debts));
-    if(window.db&&navigator.onLine) try{await window.setDoc(window.doc(window.db,'debts',Date.now().toString()), debts[debts.length-1]);}catch(e){}
-  }
-  if(type==='Delivery'){
-    let fee=parseFloat(prompt('Delivery fee SSP (e.g., 2000):')||'0');
-    deliveries.push({id:Date.now().toString(), customer:cust, address:addr, items:cart, totalSSP:tot, feeSSP:fee, grandSSP:tot+fee, totalUSD:sspToUsd(tot+fee), rider:'Not Assigned', status:'Pending', date:new Date().toISOString(), cashier:currentUser.name});
-    localStorage.setItem('grace_deliveries',JSON.stringify(deliveries));
-    if(window.db&&navigator.onLine) try{await window.setDoc(window.doc(window.db,'deliveries',deliveries[deliveries.length-1].id), deliveries[deliveries.length-1]);}catch(e){}
-  }
-  cart.forEach(c=>{let s=stock.find(x=>x.barcode===c.barcode); if(s){s.qty-=c.qty; if(window.db&&navigator.onLine) window.setDoc(window.doc(window.db,'stock',s.barcode), s).catch(()=>{});} });
-  localStorage.setItem('grace_stock',JSON.stringify(stock));
-  let sale={id:Date.now().toString(), items:cart, totalSSP:tot, totalUSD:sspToUsd(tot), cashier:currentUser.name, shift:currentUser.shift, paymentType:type, customer:cust, address:addr, rate:exRate, date:new Date().toISOString()};
-  sales.push(sale); localStorage.setItem('grace_sales',JSON.stringify(sales));
-  if(window.db&&navigator.onLine) try{await window.setDoc(window.doc(window.db,'sales',sale.id), sale);}catch(e){}
-  document.getElementById('rDate').innerText=new Date().toLocaleString(); document.getElementById('rItems').innerHTML=cart.map(c=>`${sanitize(c.name)} x${c.qty} = SSP ${c.sell*c.qty}<br>`).join('');
-  window.print(); cart=[]; updateCart(); renderStock(); renderDebts(); renderDelivery(); renderReport();
-}
-
-function addMed(){ let b=sanitize(prompt('Barcode:')), n=sanitize(prompt('Name:')), q=parseInt(prompt('Qty:')), s=parseFloat(prompt('Price SSP:')), e=sanitize(prompt('Expiry YYYY-MM-DD:')); if(b&&n){let med={barcode:b,name:n,qty:q,sell:s,exp:e}; stock.push(med); localStorage.setItem('grace_stock',JSON.stringify(stock)); if(window.db&&navigator.onLine) window.setDoc(window.doc(window.db,'stock',b), med).catch(()=>{}); renderStock();}}
-
-function initSync(){ if(!window.db) return setTimeout(initSync,500); window.onSnapshot(window.collection(window.db,'stock'), snap=>{snap.docChanges().forEach(ch=>{let d=ch.doc.data(); let i=stock.findIndex(s=>s.barcode===d.barcode); if(i>-1) stock[i]=d; else stock.push(d);}); localStorage.setItem('grace_stock',JSON.stringify(stock)); renderStock();}); window.addEventListener('online',()=>document.getElementById('online').innerText='Online'); window.addEventListener('offline',()=>document.getElementById('online').innerText='Offline');}
-
-function renderDebts(){ let tb=document.getElementById('debtList'); if(!tb) return; tb.innerHTML=''; let tot=0; debts.forEach((d,i)=>{tot+=d.amountSSP; tb.innerHTML+=`<tr class='border-b'><td>${sanitize(d.customer)}</td><td>${sanitize(d.phone||'')}</td><td>${d.amountSSP}</td><td>$${d.amountUSD}</td><td>${new Date(d.date).toLocaleDateString()}</td><td>${sanitize(d.status)}</td><td><button onclick='debts[${i}].status="Paid"; localStorage.setItem("grace_debts",JSON.stringify(debts)); renderDebts();' class='bg-emerald-700 text-white px-2 py-1 rounded'>Pay</button></td></tr>`;}); document.getElementById('totalDebtSSP').innerText=tot; document.getElementById('totalDebtUSD').innerText=sspToUsd(tot);}
-function renderDelivery(){ let tb=document.getElementById('deliveryList'); if(!tb) return; tb.innerHTML=''; deliveries.forEach((d,i)=>{tb.innerHTML+=`<tr class='border-b'><td>${d.id.slice(-5)}</td><td>${sanitize(d.customer)}</td><td>${sanitize(d.address)}</td><td>${d.totalSSP}</td><td>${d.feeSSP}</td><td>${sanitize(d.rider)}</td><td>${sanitize(d.status)}</td><td><button onclick='deliveries[${i}].status="Delivered"; localStorage.setItem("grace_deliveries",JSON.stringify(deliveries)); renderDelivery();' class='bg-emerald-700 text-white px-2 py-1 rounded'>Delivered</button></td></tr>`;});}
-function renderReport(){ let today=new Date().toDateString(); let todaySales=sales.filter(s=>new Date(s.date).toDateString()===today); let sum=todaySales.reduce((a,b)=>a+b.totalSSP,0); document.getElementById('reportSSP').innerText=sum; document.getElementById('reportUSD').innerText=sspToUsd(sum); document.getElementById('reportMorning').innerText=todaySales.filter(s=>s.shift==='Morning').reduce((a,b)=>a+b.totalSSP,0); document.getElementById('reportEvening').innerText=todaySales.filter(s=>s.shift==='Evening').reduce((a,b)=>a+b.totalSSP,0); document.getElementById('reportDelivery').innerText=todaySales.filter(s=>s.paymentType==='Delivery').reduce((a,b)=>a+b.totalSSP,0);}
-function exportReport(){ let csv='Date,Cashier,Shift,Total SSP,Total USD,Payment,Customer\n'+sales.map(s=>`${s.date},${s.cashier},${s.shift},${s.totalSSP},${s.totalUSD},${s.paymentType},${s.customer||''}`).join('\n'); let blob=new Blob([csv],{type:'text/csv'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='Grace_Report.csv'; a.click();}
-
-let html5Qr;
-function startCameraScanner(){
-  document.getElementById('reader').classList.remove('hidden');
-  html5Qr=new Html5Qrcode('qr-reader');
-  html5Qr.start({facingMode:'environment'},{fps:10,qrbox:250},(decoded)=>{
-    document.getElementById('barcode').value=decoded;
-    document.getElementById('barcode').dispatchEvent(new KeyboardEvent('keydown',{key:'Enter'}));
-    html5Qr.stop().then(()=>document.getElementById('reader').classList.add('hidden'));
-    if(navigator.vibrate) navigator.vibrate(100);
-  }).catch(()=>alert('Allow camera'));
-}
-function stopCameraScanner(){ if(html5Qr) html5Qr.stop().then(()=>document.getElementById('reader').classList.add('hidden'));}
-
-async function changePass(user){ let np=document.getElementById(user==='admin'?'newAdminPass':user==='cashier.morning'?'newMorningPass':'newEveningPass').value; if(!np) return alert('Enter new password'); let h=await sha256(np); let hashes=getUserHashes(); hashes[user]=h; localStorage.setItem('user_hashes',JSON.stringify(hashes)); alert('Password updated securely (hashed)');}
-
-if(stock.length===0){ stock=[{barcode:'123456',name:'Panadol Extra',qty:50,sell:2500,exp:'2026-12-31'}]; localStorage.setItem('grace_stock',JSON.stringify(stock));}
-document.addEventListener('mousemove',()=>lastActivity=Date.now()); document.addEventListener('keydown',()=>lastActivity=Date.now());
+function sanitize(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+async function sha256(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')}
+let stock=JSON.parse(localStorage.getItem('grace_stock')||'[]'),cart=[],debts=JSON.parse(localStorage.getItem('grace_debts')||'[]'),deliveries=JSON.parse(localStorage.getItem('grace_deliveries')||'[]'),sales=JSON.parse(localStorage.getItem('grace_sales')||'[]'),exRate=parseFloat(localStorage.getItem('grace_rate')||'4200'),currentUser=null;
+document.getElementById('rateDisplay').innerText=exRate;document.getElementById('exRate').value=exRate;
+async function doLogin(){let u=sanitize(document.getElementById('u').value.trim()),p=document.getElementById('p').value;let h=await sha256(p);let hashes=JSON.parse(localStorage.getItem('user_hashes')||'{}');if(!Object.keys(hashes).length){let d={};d['admin']=await sha256('GraceAdmin@2026!');d['cashier.morning']=await sha256('GraceMorning2026');d['cashier.evening']=await sha256('GraceEvening2026');localStorage.setItem('user_hashes',JSON.stringify(d));hashes=d}if(hashes[u]===h){currentUser={name:u,role:u==='admin'?'admin':'cashier',shift:u.includes('morning')?'Morning':u.includes('evening')?'Evening':'All Day'};document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');document.getElementById('userBadge').innerText=u;document.getElementById('roleBadge').innerText=currentUser.role;document.getElementById('rCashier').innerText=u;if(currentUser.role!=='admin')document.getElementById('adminBtn').classList.add('hidden');renderStock();renderDebts();renderDelivery();}else{document.getElementById('loginError').innerText='Wrong password';document.getElementById('loginError').classList.remove('hidden')}}
+function tab(t){['pos','stock','debt','delivery','admin'].forEach(x=>document.getElementById(x+'Tab').classList.add('hidden'));document.getElementById(t+'Tab').classList.remove('hidden')}
+function saveRate(){exRate=parseFloat(document.getElementById('exRate').value);localStorage.setItem('grace_rate',exRate);document.getElementById('rateDisplay').innerText=exRate;renderStock();updateCart()}
+function sspToUsd(s){return (s/exRate).toFixed(2)}
+function renderStock(){let tb=document.getElementById('stockList');tb.innerHTML='';stock.forEach(m=>{tb.innerHTML+=`<tr class='border-b'><td>${sanitize(m.barcode)}</td><td>${sanitize(m.name)}</td><td>${m.qty}</td><td>${m.sell}</td><td>$${sspToUsd(m.sell)}</td><td><button onclick='showQR("${m.barcode}")' style='color:var(--g)'>QR</button></td></tr>`})}
+function showQR(b){let m=stock.find(s=>s.barcode===b);document.getElementById('rQR').innerHTML='';new QRCode(document.getElementById('rQR'),{text:`${m.name}|SSP:${m.sell}`,width:80,height:80})}
+document.getElementById('barcode').addEventListener('keydown',e=>{if(e.key==='Enter'){let c=sanitize(e.target.value.trim());let f=stock.find(s=>s.barcode===c||s.name.toLowerCase().includes(c.toLowerCase()));if(f){let ex=cart.find(x=>x.barcode===f.barcode);if(ex)ex.qty++;else cart.push({...f,qty:1});updateCart()}e.target.value=''}})
+function updateCart(){let tb=document.getElementById('cart');tb.innerHTML='';let tot=0;cart.forEach(c=>{let l=c.sell*c.qty;tot+=l;tb.innerHTML+=`<tr class='border-b'><td>${sanitize(c.name)}</td><td>${c.sell}</td><td>${c.qty}</td><td>${l}</td></tr>`});document.getElementById('totalSSP').innerText=tot;document.getElementById('totalUSD').innerText=sspToUsd(tot);document.getElementById('rTotalSSP').innerText=tot;document.getElementById('rTotalUSD').innerText=sspToUsd(tot);document.getElementById('rRate').innerText=`1$=${exRate}SSP`;let paid=parseFloat(document.getElementById('paidSSP').value)||tot;document.getElementById('change').innerText=paid-tot}
+document.getElementById('paymentType').addEventListener('change',e=>{document.getElementById('debtCustomer').classList.toggle('hidden',e.target.value==='Cash');document.getElementById('deliveryAddress').classList.toggle('hidden',e.target.value!=='Delivery')})
+function sell(){if(!cart.length)return;let tot=cart.reduce((a,b)=>a+b.sell*b.qty,0);let type=document.getElementById('paymentType').value;let cust=sanitize(document.getElementById('debtCustomer').value||'');let addr=sanitize(document.getElementById('deliveryAddress').value||'');if((type==='Debt'||type==='Delivery')&&!cust){alert('Customer name required');return}if(type==='Debt'){debts.push({customer:cust,amountSSP:tot,amountUSD:sspToUsd(tot),date:new Date().toISOString(),status:'Pending'});localStorage.setItem('grace_debts',JSON.stringify(debts))}if(type==='Delivery'){deliveries.push({id:Date.now().toString(),customer:cust,address:addr,totalSSP:tot,status:'Pending',date:new Date().toISOString()});localStorage.setItem('grace_deliveries',JSON.stringify(deliveries))}cart.forEach(c=>{let s=stock.find(x=>x.barcode===c.barcode);if(s)s.qty-=c.qty});localStorage.setItem('grace_stock',JSON.stringify(stock));let sale={id:Date.now().toString(),items:cart,totalSSP:tot,totalUSD:sspToUsd(tot),cashier:currentUser.name,paymentType:type,date:new Date().toISOString()};sales.push(sale);localStorage.setItem('grace_sales',JSON.stringify(sales));document.getElementById('rDate').innerText=new Date().toLocaleString();document.getElementById('rItems').innerHTML=cart.map(c=>`${sanitize(c.name)} x${c.qty} = ${c.sell*c.qty}<br>`).join('');document.getElementById('rQR').innerHTML='';new QRCode(document.getElementById('rQR'),{text:`Grace SSP:${tot} USD:$${sspToUsd(tot)}`,width:80,height:80});window.print();cart=[];updateCart();renderStock();renderDebts();renderDelivery()}
+function renderDebts(){let tb=document.getElementById('debtList');tb.innerHTML='';let tot=0;debts.forEach((d,i)=>{tot+=d.amountSSP;tb.innerHTML+=`<tr class='border-b'><td>${sanitize(d.customer)}</td><td>${d.amountSSP}</td><td>$${d.amountUSD}</td><td>${d.status}</td><td><button onclick='debts[${i}].status="Paid";localStorage.setItem("grace_debts",JSON.stringify(debts));renderDebts()' class='text-white px-2 py-1 rounded' style='background:var(--g)'>Pay</button></td></tr>`});document.getElementById('totalDebtSSP').innerText=tot;document.getElementById('totalDebtUSD').innerText=sspToUsd(tot)}
+function renderDelivery(){let tb=document.getElementById('deliveryList');tb.innerHTML='';deliveries.forEach((d,i)=>{tb.innerHTML+=`<tr class='border-b'><td>${d.id.slice(-4)}</td><td>${sanitize(d.customer)}</td><td>${sanitize(d.address)}</td><td>${d.totalSSP}</td><td>${d.status}</td><td><button onclick='deliveries[${i}].status="Delivered";localStorage.setItem("grace_deliveries",JSON.stringify(deliveries));renderDelivery()' class='text-white px-2 py-1 rounded' style='background:var(--g)'>Done</button></td></tr>`})}
+function exportReport(){let csv='Date,Cashier,SSP,USD,Payment\n'+sales.map(s=>`${s.date},${s.cashier},${s.totalSSP},${s.totalUSD},${s.paymentType}`).join('\n');let b=new Blob([csv],{type:'text/csv'});let a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='Grace_Report.csv';a.click()}
+let html5Qr;function startCameraScanner(){document.getElementById('reader').classList.remove('hidden');html5Qr=new Html5Qrcode('qr-reader');html5Qr.start({facingMode:'environment'},{fps:10,qrbox:250},(d)=>{document.getElementById('barcode').value=d;document.getElementById('barcode').dispatchEvent(new KeyboardEvent('keydown',{key:'Enter'}));html5Qr.stop().then(()=>document.getElementById('reader').classList.add('hidden'))}).catch(()=>alert('Allow camera'))}
+function stopCameraScanner(){if(html5Qr)html5Qr.stop().then(()=>document.getElementById('reader').classList.add('hidden'))}
+if(stock.length===0){stock=[{barcode:'123456',name:'Panadol Extra',qty:50,sell:2500}];localStorage.setItem('grace_stock',JSON.stringify(stock))}
 </script>
 </body></html>
