@@ -1,665 +1,222 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Grace Pharmacy V11.2 Pro Fixed - All Modules</title>
-<meta name="theme-color" content="#0A8C4A">
-<link rel="manifest" href="manifest.json">
-<link rel="icon" href="logo.jpg">
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://cdn.tailwindcss.com https://www.gstatic.com https://unpkg.com https://cdn.jsdelivr.net https://cdn-icons-png.flaticon.com; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;">
+<title>The Grace Pharmacy PRO v4 - Secure</title>
+<link rel="manifest" href="./manifest.json">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, onSnapshot, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+const firebaseConfig = {
+  apiKey: "YOUR_KEY",
+  authDomain: "the-grace-pharmacy.firebaseapp.com",
+  projectId: "the-grace-pharmacy",
+  storageBucket: "the-grace-pharmacy.appspot.com",
+  messagingSenderId: "123",
+  appId: "1:123:web:abc"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+enableIndexedDbPersistence(db).catch(()=>{});
+window.db=db; window.collection=collection; window.doc=doc; window.setDoc=setDoc; window.onSnapshot=onSnapshot;
+if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
+</script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif}
-body{background:#f0fdf4;color:#1e293b;min-height:100vh;position:relative}
-body::after{content:"";position:fixed;top:50%;left:50%;width:700px;height:700px;transform:translate(-50%,-50%);background:url('logo.jpg');background-size:contain;background-repeat:no-repeat;background-position:center;opacity:0.06;pointer-events:none;z-index:0}
-header{background:linear-gradient(90deg,#0A8C4A,#1DBA6A);color:white;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:30;box-shadow:0 2px 12px rgba(0,0,0,.15)}
-header img{width:48px;height:48px;border-radius:50%;border:2.5px solid white;background:white;object-fit:cover}
-.card{background:rgba(255,255,255,0.985);border-radius:14px;padding:14px;margin:10px;box-shadow:0 4px 14px rgba(0,0,0,.07);border:1px solid #bbf7d0;position:relative;z-index:1}
-.card.hidden{display:none}
-button{background:#0A8C4A;color:white;border:none;padding:10px;border-radius:10px;font-weight:800;cursor:pointer;width:100%;margin:4px 0;transition:0.2s}
-button:hover{opacity:0.9}button.small{padding:6px 10px;width:auto;font-size:11px}button.green{background:#1DBA6A}button.blue{background:#2B8ED6}button.orange{background:#f59e0b;color:#000}button.dark{background:#1e293b}button.red{background:#dc2626}button.purple{background:#7c3aed}
-input,select{padding:11px;border:1.8px solid #bbf7d0;border-radius:10px;width:100%;margin:4px 0;font-size:13px;background:white}
-.tabs{display:flex;gap:6px;padding:10px;background:#064e3b;overflow:auto;position:sticky;top:60px;z-index:20}
-.tab{padding:10px 16px;background:#065f46;color:#d1fae5;border-radius:22px;cursor:pointer;white-space:nowrap;font-size:11px;font-weight:700;border:none;flex-shrink:0}
-.tab.active{background:#1DBA6A;color:#000}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
-.medicine-card{border:1.5px solid #bbf7d0;border-radius:12px;padding:12px;text-align:center;background:#ecfdf5;cursor:pointer;transition:0.2s}
-.medicine-card:hover{transform:translateY(-2px)} .medicine-card.expired{border:2px solid #dc2626;background:#fee2e2} .medicine-card.soon{border:2px solid #f59e0b;background:#fef3c7}
-.badge{font-size:9px;padding:3px 7px;border-radius:12px;font-weight:900;color:white;display:inline-block;margin-top:4px}
-.badge.expired{background:#dc2626}.badge.soon{background:#f59e0b;color:#000}.badge.ok{background:#059669}
-.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
-.stat{background:linear-gradient(135deg,#064e3b,#0A8C4A);color:white;padding:12px;border-radius:12px;text-align:center;font-size:11px}
-#loginScreen{position:fixed;inset:0;background:linear-gradient(rgba(255,255,255,0.88),rgba(255,255,255,0.93)),url('logo.jpg');background-size:400px auto;background-position:center 18%;background-repeat:no-repeat;display:flex;justify-content:center;align-items:center;z-index:9999;padding:20px}
-#loginScreen.hidden{display:none !important}
-.login-box{background:rgba(255,255,255,0.99);border:3px solid #1DBA6A;border-radius:22px;padding:22px;width:100%;max-width:430px;box-shadow:0 12px 32px rgba(0,0,0,.22);text-align:center}
-.login-box img{width:120px;height:120px;border-radius:50%;border:4px solid #1DBA6A;background:white;object-fit:cover;margin-bottom:8px}
-.alert{padding:9px;border-radius:10px;font-size:11px;margin:8px 10px;display:none}
-.alert.warn{background:#fef3c7;border:2px solid #f59e0b;color:#92400e}.alert.ok{background:#dcfce7;border:2px solid #22c55e;color:#166534}
-.audit-item{font-size:11px;padding:7px;border-bottom:1px dashed #bbf7d0;background:#f8fafc;border-radius:6px;margin:3px 0}
-table{width:100%;font-size:11px;border-collapse:collapse}th{background:#064e3b;color:white;padding:7px;text-align:left}td{padding:7px;border-bottom:1px solid #e5e7eb}
-.debt-tab{padding:8px 14px;background:#e5e7eb;border-radius:18px;border:none;cursor:pointer;font-size:11px;font-weight:700;margin-right:6px}
-.debt-tab.active{background:#0A8C4A;color:white}
-.shift-badge{padding:4px 10px;border-radius:14px;font-size:10px;font-weight:800;display:inline-block}
-.shift-morning{background:#dbeafe;color:#1e40af;border:1px solid #93c5fd}.shift-evening{background:#fef3c7;color:#92400e;border:1px solid #fcd34d}
+.watermark{position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) rotate(-30deg); opacity:0.04; pointer-events:none; z-index:0; width:400px;}
+@media print{body *{visibility:hidden} #receipt, #receipt *{visibility:visible} #receipt{position:absolute; left:0; top:0; width:80mm}}
 </style>
-</head>
-<body>
-<div id="loginScreen">
-<div class="login-box">
-<img src="logo.jpg" alt="The Grace Pharmacy" onerror="this.src='https://via.placeholder.com/120/0A8C4A/FFFFFF?text=TGP'">
-<h2 style="color:#0A8C4A">The Grace Pharmacy</h2>
-<p style="color:#0A8C4A;font-style:italic;font-family:cursive;margin-bottom:4px;font-size:13px">Give your health a new lift</p>
-<div id="currentShiftLogin" style="margin:6px 0"></div>
-<h4 style="color:#1DBA6A;margin-bottom:10px">V11.2 Pro Fixed - All Modules + Login Guaranteed</h4>
-<input id="loginUser" placeholder="Username: admin / pharmacy / grace" maxlength="20" autocomplete="username">
-<input id="loginPass" type="password" placeholder="Password: admin123 / pharmacy2024 / grace123" maxlength="30" autocomplete="current-password">
-<button class="green" onclick="doLoginV112()" style="margin-top:10px;padding:12px;background:linear-gradient(90deg,#0A8C4A,#1DBA6A)">🔐 SECURE LOGIN V11.2</button>
-<button class="small dark" onclick="forceLoginV112()" style="width:100%;margin-top:6px">⚡ FORCE LOGIN - Emergency - No Password</button>
-<p id="loginError" style="color:#dc2626;font-size:11px;margin-top:8px;display:none;background:#fee2e2;padding:8px;border-radius:8px"></p>
-<div style="margin-top:10px;font-size:10px;text-align:left;background:#ecfdf5;padding:10px;border-radius:10px;border:1px solid #bbf7d0">
-<b>✅ V11.2 Fixed:</b><br>
-- Fixed: Login bug from V11.0 - Now 100% works<br>
-- POS + Auto Shift + Profit<br>
-- Stock 10 meds 2028-2029 + Shelves<br>
-- Expenses + Category + Shift<br>
-- Debts: Creditors + Debtors + Pay/Collect<br>
-- Reports + Shifts + Debts + Firebase Safe<br>
-- Firebase Optional - Works 100% Offline<br>
-- Logo Background 6%
+</head><body class="bg-gray-50">
+<img id="watermarkLogo" class="watermark hidden" src="">
+
+<!-- LOGIN -->
+<div id="login" class="min-h-screen flex items-center justify-center bg-emerald-50 relative">
+<div class="bg-white p-8 rounded-2xl shadow-xl w-[420px] border-t-8 border-emerald-700 relative z-10">
+<center><img id="loginLogo" class="w-20 h-20 object-contain mb-2 hidden" src=""><h1 class="text-2xl font-bold text-emerald-700">The Grace Pharmacy</h1><p class="text-xs mb-2">PRO v4 - Secure</p><p id="syncStatus" class="text-xs">Offline Ready</p></center>
+<input id="u" class="w-full p-3 border rounded mb-3 mt-4" placeholder="Username" autocomplete="username">
+<input id="p" type="password" class="w-full p-3 border rounded mb-4" placeholder="Password" autocomplete="current-password">
+<button onclick="doLogin()" class="w-full bg-emerald-700 text-white p-3 rounded font-bold">LOGIN</button>
+<p id="loginError" class="text-xs text-red-600 mt-2 hidden"></p>
+<p class="text-[10px] mt-4 text-gray-400 text-center">5 failed attempts = 15 min block<br>Auto logout after 30 min inactive</p>
+</div></div>
+
+<!-- APP -->
+<div id="app" class="hidden relative">
+<header class="bg-emerald-700 text-white p-3 flex justify-between text-sm relative z-10"><div><img id="headerLogo" class="w-6 h-6 inline-block mr-2 hidden"><b>The Grace Pharmacy</b> | <span id="roleBadge"></span> | <span id="shiftBadge"></span> | <span id="online">Offline</span> | Rate 1$=<span id="rateDisplay">4200</span>SSP</div><div><span id="userBadge"></span> <button onclick="logout()" class="ml-3 bg-white text-emerald-700 px-2 py-1 rounded">Logout</button></div></header>
+<nav class="bg-white shadow p-2 flex gap-2 overflow-x-auto relative z-10"><button onclick="tab('pos')" class="bg-emerald-700 text-white px-3 py-2 rounded text-sm">POS & Camera</button><button onclick="tab('stock')" class="bg-gray-200 px-3 py-2 rounded text-sm">Stock</button><button onclick="tab('debt')" class="bg-gray-200 px-3 py-2 rounded text-sm">Debts</button><button onclick="tab('delivery')" class="bg-gray-200 px-3 py-2 rounded text-sm">🚚 Delivery</button><button onclick="tab('admin')" id="adminBtn" class="bg-gray-200 px-3 py-2 rounded text-sm">Admin & Reports</button></nav>
+
+<!-- POS -->
+<div id="posTab" class="p-4 grid grid-cols-12 gap-4 relative z-10">
+<div class="col-span-8 bg-white p-4 rounded shadow">
+<div class="flex gap-2 mb-2"><input id="barcode" class="flex-1 p-3 border-2 border-emerald-600 rounded" placeholder="Scan barcode or search medicine + Enter" autofocus><button onclick="startCameraScanner()" class="bg-black text-white px-3 rounded text-sm">📷 Camera as Scanner</button></div>
+<div id="reader" class="hidden border-2 border-emerald-600 rounded mb-2"><div id="qr-reader" style="width:100%"></div><button onclick="stopCameraScanner()" class="w-full bg-red-600 text-white p-1 text-xs">Stop Camera</button></div>
+<table class="w-full text-sm"><thead class="bg-emerald-50"><tr><th>Medicine</th><th>SSP</th><th>Qty</th><th>Total SSP</th></tr></thead><tbody id="cart"></tbody></table>
+<div class="mt-3"><b>Medicine QR:</b><div id="medQR" class="mt-1"></div></div>
 </div>
-<div style="margin-top:10px;padding-top:8px;border-top:2.5px solid #1DBA6A">
-<a href="tel:+211928813308" style="display:inline-block;background:linear-gradient(90deg,#0A8C4A,#1DBA6A);color:white;padding:7px 14px;border-radius:20px;text-decoration:none;font-weight:800;font-size:12px">📞 +211 928 813 308</a>
-<div style="margin-top:6px;font-size:11px;font-weight:800;background:linear-gradient(90deg,#0A8C4A,#2B8ED6);-webkit-background-clip:text;-webkit-text-fill-color:transparent">DEVELOPED BY E-Mutwokil Sadik</div>
+<div class="col-span-4 bg-white p-4 rounded shadow">
+<h2 class="font-bold">Total SSP: <span id="totalSSP">0</span></h2><p class="text-sm">USD: $<span id="totalUSD">0.00</span></p>
+<input id="paidSSP" type="number" placeholder="Paid SSP" class="w-full border p-2 rounded mt-2">
+<p class="text-sm">Change: SSP <span id="change">0</span> / $<span id="changeUSD">0</span></p>
+<select id="paymentType" class="w-full border p-2 rounded mt-2"><option value="Cash">Cash Only</option><option value="Debt">Debt</option><option value="Delivery">Delivery - Cash on Delivery</option></select>
+<input id="debtCustomer" placeholder="Customer name if debt/delivery" class="w-full border p-2 rounded mt-2 hidden">
+<input id="deliveryAddress" placeholder="Delivery address" class="w-full border p-2 rounded mt-2 hidden">
+<button onclick="sell()" class="w-full bg-emerald-700 text-white p-3 mt-3 rounded font-bold">SELL & PRINT</button>
+<div id="receipt" class="hidden p-2 text-xs mt-4 border bg-white"><center><img id="receiptLogo" class="w-12 h-12 hidden" src=""><br><b>THE GRACE PHARMACY<br>JUBA, South Sudan<br>-----------------</b></center><div id="rItems"></div><hr>SSP: <span id="rTotalSSP"></span><br>USD: $<span id="rTotalUSD"></span><br>Rate: 1$=<span id="rRate"></span> SSP<br>Date: <span id="rDate"></span><br>Cashier: <span id="rCashier"></span> (<span id="rShift"></span>)<br><div id="rQR" class="flex justify-center mt-2"></div><center>Thank You - Get Well Soon!</center></div>
+</div></div>
+
+<!-- STOCK -->
+<div id="stockTab" class="hidden p-4 relative z-10"><div class="bg-white p-4 rounded shadow"><button onclick="addMed()" class="bg-emerald-700 text-white px-3 py-2 rounded float-right">+ Add</button><h2 class="font-bold">Stock - Price in SSP (USD auto)</h2><input id="searchStock" placeholder="Search..." class="w-full border p-2 rounded my-3" onkeyup="renderStock()"><table class="w-full text-sm"><thead class="bg-emerald-50"><tr><th>Barcode</th><th>Name</th><th>Qty</th><th>SSP</th><th>USD</th><th>Expiry</th><th>QR</th></tr></thead><tbody id="stockList"></tbody></table></div></div>
+
+<!-- DEBT -->
+<div id="debtTab" class="hidden p-4 relative z-10"><div class="bg-white p-4 rounded shadow"><h2 class="font-bold">Customer Debts</h2><table class="w-full text-sm mt-4"><thead class="bg-emerald-50"><tr><th>Customer</th><th>Phone</th><th>SSP</th><th>USD</th><th>Date</th><th>Status</th><th>Action</th></tr></thead><tbody id="debtList"></tbody></table><p class="font-bold mt-4">Total Debt: SSP <span id="totalDebtSSP">0</span> = $<span id="totalDebtUSD">0</span></p></div></div>
+
+<!-- DELIVERY -->
+<div id="deliveryTab" class="hidden p-4 relative z-10"><div class="bg-white p-4 rounded shadow"><h2 class="font-bold">🚚 Delivery Service - Juba</h2><table class="w-full text-sm mt-4"><thead class="bg-emerald-50"><tr><th>Order ID</th><th>Customer</th><th>Address</th><th>SSP</th><th>Fee</th><th>Rider</th><th>Status</th><th>Action</th></tr></thead><tbody id="deliveryList"></tbody></table></div></div>
+
+<!-- ADMIN -->
+<div id="adminTab" class="hidden p-4 relative z-10"><div class="bg-white p-4 rounded shadow">
+<h2 class="font-bold">Admin - Secure Panel</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+<div class="border p-3 rounded"><b>Logo Upload</b><br><input type="file" id="logoUpload" accept="image/*" class="text-xs"><br><p class="text-xs mt-1">Logo will appear on login, header, receipt & watermark. Colors will auto-extract.</p><div class="mt-2"><label>Theme Color: </label><input type="color" id="themeColor" value="#0E7C5B" onchange="applyTheme(this.value)"></div></div>
+<div class="border p-3 rounded"><b>Exchange Rate</b><br>1 USD = <input id="exRate" type="number" value="4200" class="border p-1 w-24 rounded"> SSP<br><button onclick="saveRate()" class="bg-emerald-700 text-white px-3 py-1 rounded mt-2">Save Rate</button></div>
+<div class="border p-3 rounded"><b>Morning Shift</b><br>Start <input id="mStart" type="time" value="08:00" class="border p-1 rounded"> End <input id="mEnd" type="time" value="14:00" class="border p-1 rounded"></div>
+<div class="border p-3 rounded"><b>Evening Shift</b><br>Start <input id="eStart" type="time" value="14:00" class="border p-1 rounded"> End <input id="eEnd" type="time" value="21:00" class="border p-1 rounded"></div>
 </div>
-</div>
+<div class="mt-4 border p-3 rounded"><b>Change Passwords (Hashed)</b><br>Admin New Pass: <input id="newAdminPass" type="password" class="border p-1 rounded"> <button onclick="changePass('admin')" class="bg-gray-800 text-white px-2 py-1 rounded">Update</button><br>Morning Cashier: <input id="newMorningPass" type="password" class="border p-1 rounded mt-1"> <button onclick="changePass('cashier.morning')" class="bg-gray-800 text-white px-2 py-1 rounded">Update</button><br>Evening Cashier: <input id="newEveningPass" type="password" class="border p-1 rounded mt-1"> <button onclick="changePass('cashier.evening')" class="bg-gray-800 text-white px-2 py-1 rounded">Update</button></div>
+<hr class="my-4"><h3 class="font-bold">Reports - SSP & USD</h3><p>Today SSP: <span id="reportSSP">0</span> | USD: $<span id="reportUSD">0</span></p><p>Morning: SSP <span id="reportMorning">0</span> | Evening: SSP <span id="reportEvening">0</span> | Delivery: SSP <span id="reportDelivery">0</span></p><button onclick="exportReport()" class="bg-gray-800 text-white px-3 py-1 rounded mt-2">Export CSV</button>
+</div></div>
 </div>
 
-<header>
-<div style="display:flex;align-items:center;gap:10px">
-<img src="logo.jpg" alt="logo" onerror="this.style.display='none'">
-<div><b>💊 Grace Pharmacy V11.2 Pro Fixed</b><br><span style="font-size:10px"><span id="shiftBadge"></span> • <span id="fbStatus">Offline Ready</span> • <span id="userRole">-</span></span></div>
-</div>
-<div style="display:flex;gap:6px;align-items:center">
-<span id="loggedUser" style="font-size:11px;background:rgba(0,0,0,.2);padding:5px 10px;border-radius:14px">-</span>
-<button class="small" onclick="doLogoutV112()" style="width:auto;background:rgba(0,0,0,.25)">Logout</button>
-</div>
-</header>
-
-<div id="topBadge" style="margin:10px;padding:9px;border-radius:10px;text-align:center;font-size:11px;font-weight:700"></div>
-<div id="securityAlert" class="alert warn"></div>
-
-<div class="tabs">
-<button class="tab active" id="b-pos" onclick="openTabV112('pos')">💊 New Sale</button>
-<button class="tab" id="b-live" onclick="openTabV112('live')">📊 Live Sales</button>
-<button class="tab" id="b-stock" onclick="openTabV112('stock')">📦 Stock</button>
-<button class="tab" id="b-expenses" onclick="openTabV112('expenses')">💸 Expenses</button>
-<button class="tab" id="b-debts" onclick="openTabV112('debts')">💳 Debts</button>
-<button class="tab" id="b-reports" onclick="openTabV112('reports')">📈 Reports</button>
-</div>
-
-<div id="view-pos" class="card">
-<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><h3>💊 New Sale - V11.2 Fixed</h3><div id="posShiftInfo"></div></div>
-<input id="searchMed" placeholder="🔍 Search medicine..." oninput="renderMedSelectV112()" maxlength="50" style="margin-top:8px">
-<div id="medSelect" class="grid" style="margin-top:10px;max-height:350px;overflow:auto"></div>
-<div style="margin-top:12px;background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:2px solid #86efac;padding:12px;border-radius:12px">
-<h4>🛒 Cart - <span id="cartCount">0</span> - <span id="cartShift"></span></h4>
-<div id="cartList">Cart empty - Add medicines</div>
-<div style="display:flex;justify-content:space-between;font-weight:900;margin-top:8px"><span>Total:</span><span id="cartTotal">0 SSP</span></div>
-<button class="green" onclick="placeSaleV112()" style="margin-top:8px;padding:12px">✅ Sell - Shift + Profit Auto - Fixed</button>
-</div>
-</div>
-
-<div id="view-live" class="card hidden">
-<h3>📊 Live Sales - Shift Filter - V11.2</h3>
-<div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap">
-<input id="searchSales" placeholder="Search sales..." oninput="renderLiveV112()" style="flex:1;min-width:150px">
-<select id="filterShiftSales" onchange="renderLiveV112()" style="width:auto"><option value="">All Shifts</option><option value="Morning">Morning 9AM-2PM</option><option value="Evening">Evening 3PM-8PM</option></select>
-</div>
-<div id="liveList"></div>
-</div>
-
-<div id="view-stock" class="card hidden">
-<h3>📦 Stock - 10 Meds 2028-2029 - Shelves - Fixed</h3>
-<div style="display:flex;gap:6px;margin:8px 0"><input id="searchStock" placeholder="Search stock or shelf..." oninput="renderStockV112()" style="flex:1"><button class="small orange" onclick="fixAllExpiredV112()" style="width:auto">🔧 Fix Expired</button></div>
-<div id="stockList"></div>
-<div style="margin-top:14px;background:#eff6ff;padding:12px;border-radius:12px;border:2px solid #3b82f6">
-<h4>➕ Add Medicine - Professional English</h4>
-<input id="newMedName" placeholder="Medicine name min 3 chars" maxlength="100">
-<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:6px">
-<input id="newMedShelf" placeholder="Shelf A1" maxlength="10" style="background:#fef3c7">
-<input id="newMedPrice" type="number" placeholder="Sell SSP" min="0" max="1000000" step="1">
-<input id="newMedCost" type="number" placeholder="Cost SSP" min="0" max="1000000" step="1">
-<input id="newMedQty" type="number" placeholder="Qty Integer" min="0" max="100000" step="1">
-<input id="newMedExpiry" type="date" style="background:#fee2e2">
-</div>
-<button class="orange" onclick="addMedicineV112()" style="margin-top:6px">+ Add Medicine - Fixed Validation</button>
-</div>
-</div>
-<div id="view-expenses" class="card hidden">
-<h3>💸 Expenses - Category + Shift - V11.2</h3>
-<div id="expenseForm">
-<input id="expName" placeholder="Expense name" maxlength="100">
-<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px">
-<select id="expCategory">
-<option value="Transport">Transport</option>
-<option value="Rent">Rent</option>
-<option value="Electricity">Electricity</option>
-<option value="Water">Water</option>
-<option value="Staff Salary">Staff Salary</option>
-<option value="Supplier Payment">Supplier Payment</option>
-<option value="Maintenance">Maintenance</option>
-<option value="Marketing">Marketing</option>
-<option value="Other">Other</option>
-</select>
-<select id="expShift">
-<option value="Morning">Morning 9AM-2PM</option>
-<option value="Evening">Evening 3PM-8PM</option>
-<option value="Full Day">Full Day</option>
-</select>
-<input id="expAmount" type="number" placeholder="Amount SSP Integer" min="0" max="10000000" step="1">
-<input id="expDate" type="date">
-</div>
-<button class="orange" onclick="addExpenseV112()" style="margin-top:6px">+ Add Expense - Fixed</button>
-</div>
-<div style="margin-top:10px;display:flex;gap:6px">
-<input id="searchExpenses" placeholder="Search expenses..." oninput="renderExpensesV112()" style="flex:1">
-<select id="filterExpShift" onchange="renderExpensesV112()" style="width:auto"><option value="">All Shifts</option><option value="Morning">Morning</option><option value="Evening">Evening</option><option value="Full Day">Full Day</option></select>
-</div>
-<div id="expenseList" style="margin-top:8px"></div>
-<div id="expenseTotal" style="text-align:center;font-weight:900;margin-top:10px;font-size:13px"></div>
-</div>
-
-<div id="view-debts" class="card hidden">
-<h3>💳 Debts Management - V11.2 Fixed - Creditors & Debtors</h3>
-<div style="display:flex;gap:6px;margin:8px 0">
-<button id="tabCreditors" class="debt-tab active" onclick="openDebtTabV112('creditors')">🔴 Creditors (We Owe) <span id="credCountBadge">0</span></button>
-<button id="tabDebtors" class="debt-tab" onclick="openDebtTabV112('debtors')">🟢 Debtors (Owe Us) <span id="debtCountBadge">0</span></button>
-</div>
-<div id="debtCreditorsView">
-<div style="background:#fef2f2;border:2px solid #f87171;border-radius:12px;padding:10px">
-<h4>🔴 Add Creditor - Supplier We Owe - Integer Only</h4>
-<input id="credName" placeholder="Supplier name min 3" maxlength="100">
-<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
-<input id="credPhone" placeholder="Phone 10 digits" maxlength="10">
-<input id="credAmount" type="number" placeholder="Total Amount SSP" min="0" max="10000000" step="1">
-<input id="credPaid" type="number" placeholder="Paid SSP" min="0" max="10000000" step="1">
-</div>
-<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:6px">
-<input id="credDueDate" type="date"><input id="credReason" placeholder="Reason - Medicines" maxlength="200">
-<select id="credShift"><option value="Morning">Morning 9AM-2PM</option><option value="Evening">Evening 3PM-8PM</option></select>
-</div>
-<button class="red" onclick="addCreditorV112()" style="margin-top:6px">+ Add Creditor - Fixed</button>
-</div>
-<div style="margin-top:10px;display:flex;gap:6px"><input id="searchCred" placeholder="Search creditors..." oninput="renderCreditorsV112()" style="flex:1"><select id="filterCredStatus" onchange="renderCreditorsV112()" style="width:auto"><option value="">All</option><option value="Unpaid">Unpaid</option><option value="Partial">Partial</option><option value="Paid">Paid</option></select></div>
-<div id="credList" style="margin-top:8px"></div>
-<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px;text-align:center;font-weight:900;font-size:11px"><div style="background:#fee2e2;padding:8px;border-radius:8px">Total Owe: <span id="credTotalOwe">0</span></div><div style="background:#dcfce7;padding:8px;border-radius:8px">Total Paid: <span id="credTotalPaid">0</span></div><div style="background:#fef3c7;padding:8px;border-radius:8px">Remaining: <span id="credTotalRemaining">0</span></div></div>
-</div>
-<div id="debtDebtorsView" style="display:none">
-<div style="background:#f0fdf4;border:2px solid #22c55e;border-radius:12px;padding:10px">
-<h4>🟢 Add Debtor - Customer Owes Us - Integer Only</h4>
-<input id="debtName" placeholder="Customer name min 3" maxlength="100">
-<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
-<input id="debtPhone" placeholder="Phone 10 digits" maxlength="10">
-<input id="debtAmount" type="number" placeholder="Total Amount SSP" min="0" max="10000000" step="1">
-<input id="debtPaid" type="number" placeholder="Paid SSP" min="0" max="10000000" step="1">
-</div>
-<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:6px">
-<input id="debtDueDate" type="date"><input id="debtReason" placeholder="Reason" maxlength="200">
-<select id="debtShift"><option value="Morning">Morning 9AM-2PM</option><option value="Evening">Evening 3PM-8PM</option></select>
-</div>
-<button class="green" onclick="addDebtorV112()" style="margin-top:6px">+ Add Debtor - Fixed</button>
-</div>
-<div style="margin-top:10px;display:flex;gap:6px"><input id="searchDebt" placeholder="Search debtors..." oninput="renderDebtorsV112()" style="flex:1"><select id="filterDebtStatus" onchange="renderDebtorsV112()" style="width:auto"><option value="">All</option><option value="Unpaid">Unpaid</option><option value="Partial">Partial</option><option value="Paid">Paid</option></select></div>
-<div id="debtList" style="margin-top:8px"></div>
-<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px;text-align:center;font-weight:900;font-size:11px"><div style="background:#fee2e2;padding:8px;border-radius:8px">Total Owe: <span id="debtTotalOwe">0</span></div><div style="background:#dcfce7;padding:8px;border-radius:8px">Total Paid: <span id="debtTotalPaid">0</span></div><div style="background:#fef3c7;padding:8px;border-radius:8px">Remaining: <span id="debtTotalRemaining">0</span></div></div>
-</div>
-<div style="margin-top:12px;display:flex;gap:6px"><button class="small blue" onclick="exportDebtsCSVV112()">📄 Export Debts CSV</button><button class="small dark" onclick="clearDebtsV112()">🗑️ Clear Debts (Admin)</button></div>
-</div>
-
-<div id="view-reports" class="card hidden">
-<h3>📈 Reports V11.2 - Profit + Shifts + Debts + Shelves</h3>
-<div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap">
-<select id="filterReportShift" onchange="renderReportsV112()" style="width:auto"><option value="">All Shifts</option><option value="Morning">Morning</option><option value="Evening">Evening</option></select>
-<select id="filterReportDate" onchange="renderReportsV112()" style="width:auto"><option value="">All Time</option><option value="today">Today</option><option value="week">This Week</option><option value="month">This Month</option></select>
-<button class="small dark" onclick="window.print()" style="width:auto">🖨️ Print</button>
-</div>
-<div class="stat-grid" style="margin-top:8px">
-<div class="stat"><b id="rSales">0</b><br>Sales SSP</div>
-<div class="stat"><b id="rExpenses">0</b><br>Expenses</div>
-<div class="stat"><b id="rProfit">0</b><br>Net Profit</div>
-<div class="stat"><b id="rOrders">0</b><br>Orders</div>
-<div class="stat"><b id="rStockValue">0</b><br>Stock Value</div>
-<div class="stat"><b id="rLowStock">0</b><br>Low Stock</div>
-<div class="stat"><b id="rExpired">0</b><br>Expired</div>
-<div class="stat"><b id="rShelves">0</b><br>Shelves</div>
-<div class="stat" style="background:linear-gradient(135deg,#7f1d1d,#dc2626)"><b id="rCreditors">0</b><br>We Owe (Rem)</div>
-<div class="stat" style="background:linear-gradient(135deg,#065f46,#059669)"><b id="rDebtors">0</b><br>Owe Us (Rem)</div>
-<div class="stat" style="background:linear-gradient(135deg,#064e3b,#10b981)"><b id="rNetDebt">0</b><br>Net Debt</div>
-<div class="stat"><b id="rShiftSales">0</b><br>Shift Sales</div>
-</div>
-<div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
-<div style="background:#ecfdf5;border:1.5px solid #86efac;border-radius:10px;padding:10px"><b>🏆 Top Selling</b><div id="rankedMeds" style="margin-top:6px;font-size:11px"></div></div>
-<div style="background:#eff6ff;border:1.5px solid #93c5fd;border-radius:10px;padding:10px"><b>💸 Expenses by Category</b><div id="expenseReport" style="margin-top:6px;font-size:11px"></div></div>
-<div style="background:#fef3c7;border:1.5px solid #fcd34d;border-radius:10px;padding:10px"><b>📦 Shelves Value</b><div id="shelfReport" style="margin-top:6px;font-size:11px"></div></div>
-<div style="background:#dbeafe;border:1.5px solid #93c5fd;border-radius:10px;padding:10px"><b>🕘 Shift Performance</b><div id="shiftReport" style="margin-top:6px;font-size:11px"></div></div>
-<div style="background:#fee2e2;border:1.5px solid #fca5a5;border-radius:10px;padding:10px"><b>⏰ Expiry Alerts</b><div id="expiryReport" style="margin-top:6px;font-size:11px"></div></div>
-<div style="background:#dcfce7;border:1.5px solid #86efac;border-radius:10px;padding:10px"><b>💳 Debts Summary</b><div id="debtReport" style="margin-top:6px;font-size:11px"></div></div>
-<div style="background:#f3e8ff;border:1.5px solid #c4b5fd;border-radius:10px;padding:10px"><b>📅 Daily Sales</b><div id="dailyReport" style="margin-top:6px;font-size:11px"></div></div>
-<div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:10px;padding:10px"><b>📋 Audit Logs</b><div id="auditLogs" style="margin-top:6px;max-height:150px;overflow:auto"></div></div>
-</div>
-<div id="reportBox" style="background:#f8fafc;border:1.5px solid #bbf7d0;border-radius:10px;padding:10px;margin-top:12px;font-size:11px"></div>
-<div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
-<button class="small blue" onclick="exportDataV112()">💾 Backup JSON</button>
-<button class="small green" onclick="exportDebtsCSVV112()">📄 Debts CSV</button>
-<button class="small orange" onclick="fixAllExpiredV112()">🔧 Fix Expired 2028-12-31</button>
-<button class="small red" onclick="clearAllDataV112()">🗑️ Clear All (Admin DELETE)</button>
-</div>
-</div>
-
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js" onerror="console.log('firebase-config missing - offline mode - OK')"></script>
 <script>
-// V11.2 FIXED CORE - LOGIN GUARANTEED - NO FIREBASE BLOCKING
-var db=null;try{if(typeof firebase!=='undefined'&&typeof firebaseConfig!=='undefined'){firebase.initializeApp(firebaseConfig);db=firebase.firestore();try{db.enablePersistence().catch(function(){});}catch(e){} console.log("Firebase V11.2 Ready");}else{console.log("Offline Mode V11.2 - No Firebase - OK");}}catch(e){db=null;console.log("Offline Mode V11.2",e.message);}
-var USERS=[{user:"admin",pass:"admin123",name:"Admin Grace",role:"admin"},{user:"pharmacy",pass:"pharmacy2024",name:"Pharmacist",role:"pharmacist"},{user:"grace",pass:"grace123",name:"Grace Staff",role:"pharmacist"}];
-var currentUser=null;
-var DEFAULT_MEDS=[{id:1,id_str:"1",name:"Panadol Extra",price:2000,cost:1200,qty:100,expiry:"2028-12-31",shelf:"A1",date:"2025-01-01"},{id:2,id_str:"2",name:"Amoxicillin 500mg",price:3500,cost:2000,qty:80,expiry:"2028-11-15",shelf:"A2",date:"2025-01-01"},{id:3,id_str:"3",name:"ORS Sachets",price:500,cost:200,qty:200,expiry:"2028-10-25",shelf:"B1",date:"2025-01-01"},{id:4,id_str:"4",name:"Paracetamol Syrup 120mg",price:2500,cost:1500,qty:60,expiry:"2029-06-01",shelf:"Fridge",date:"2025-01-01"},{id:5,id_str:"5",name:"Ibuprofen 400mg",price:1800,cost:1000,qty:120,expiry:"2029-01-20",shelf:"A3",date:"2025-01-01"},{id:6,id_str:"6",name:"Ciprofloxacin 500mg",price:4000,cost:2500,qty:50,expiry:"2028-08-30",shelf:"B2",date:"2025-01-01"},{id:7,id_str:"7",name:"Metformin 500mg",price:3000,cost:1800,qty:90,expiry:"2029-03-15",shelf:"C1",date:"2025-01-01"},{id:8,id_str:"8",name:"Omeprazole 20mg",price:2800,cost:1600,qty:70,expiry:"2028-09-10",shelf:"C2",date:"2025-01-01"},{id:9,id_str:"9",name:"Vitamin C 500mg",price:1500,cost:800,qty:110,expiry:"2029-02-28",shelf:"A4",date:"2025-01-01"},{id:10,id_str:"10",name:"Azithromycin 250mg",price:4500,cost:2800,qty:45,expiry:"2028-12-15",shelf:"B3",date:"2025-01-01"}];
-var medicines=[];var sales=[];var expenses=[];var creditors=[];var debtors=[];var auditLogs=[];var cart=[];
-function esc(s){try{var d=document.createElement("div");d.appendChild(document.createTextNode(s||""));return d.innerHTML;}catch(e){return String(s||"");}}
-function sanitize(t){if(!t)return"";return String(t).replace(/</g,"").replace(/>/g,"").substring(0,200).trim();}
-function sanitizeName(t){if(!t)return"";return String(t).replace(/[^a-zA-Z0-9 \-\(\)\/\.]/g,"").substring(0,100).trim();}
-function sanitizePhone(t){if(!t)return"";return String(t).replace(/\D/g,"").substring(0,10);}
-function isAmount(v){var n=Number(v);return !isNaN(n)&&Number.isInteger(n)&&n>=0&&n<=10000000;}
-function getShiftTimeLabel(shift){if(shift==="Morning")return"Morning 9AM-2PM";if(shift==="Evening")return"Evening 3PM-8PM";if(shift==="Full Day")return"Full Day";return shift||"Morning";}
-function getActiveShift(){var h=new Date().getHours();if(h>=9&&h<14)return"Morning";if(h>=15&&h<20)return"Evening";if(h<9)return"Closed - Opens 9AM";return"Closed - Opens Tomorrow 9AM";}
-function showAlert(msg,type){try{var el=document.getElementById("securityAlert");if(!el)return;el.textContent=msg;el.className="alert "+(type||"warn");el.style.display="block";setTimeout(function(){el.style.display="none";},4000);}catch(e){console.log(msg);}}
-function saveV112(){
-  try{
-    localStorage.setItem("tGP_v11_meds",JSON.stringify(medicines));
-    localStorage.setItem("tGP_v11_sales",JSON.stringify(sales));
-    localStorage.setItem("tGP_v11_expenses",JSON.stringify(expenses));
-    localStorage.setItem("tGP_v11_creditors",JSON.stringify(creditors));
-    localStorage.setItem("tGP_v11_debtors",JSON.stringify(debtors));
-    localStorage.setItem("tGP_v11_logs",JSON.stringify(auditLogs.slice(0,100)));
-  }catch(e){console.log("local save error",e);}
-  try{
-    if(db&&navigator.onLine){
-      var batchId=Date.now().toString();
-      localStorage.setItem("tGP_v11_lastSync",batchId);
-      var now=new Date().toISOString();
-      db.collection("grace_backup").doc(batchId).set({medicines:medicines,sales:sales.slice(-50),expenses:expenses.slice(-50),creditors:creditors,debtors:debtors,logs:auditLogs.slice(0,20),synced:now,version:"V11.2 Fixed"}, {merge:true}).catch(function(){});
-      if(document.getElementById("fbStatus"))document.getElementById("fbStatus").textContent="Synced";
-    }else{
-      if(document.getElementById("fbStatus"))document.getElementById("fbStatus").textContent="Offline Ready";
-    }
-  }catch(e){if(document.getElementById("fbStatus"))document.getElementById("fbStatus").textContent="Offline Ready";}
-}
-function addLogV112(action,detail){
-  try{auditLogs.unshift({action:action,detail:detail,user:currentUser?currentUser.name:"System",time:new Date().toLocaleString(),date:new Date().toISOString().split("T")[0]});if(auditLogs.length>100)auditLogs.pop();renderAuditV112();}catch(e){}
-}
-function renderAuditV112(){try{var el=document.getElementById("auditLogs");if(!el)return;var html="";for(var i=0;i<Math.min(auditLogs.length,20);i++){html+='<div class="audit-item"><b>'+esc(auditLogs[i].action)+'</b> - '+esc(auditLogs[i].detail)+'<br><span style="font-size:9px">'+esc(auditLogs[i].time)+' - '+esc(auditLogs[i].user)+'</span></div>';}el.innerHTML=html||"No logs";}catch(e){}}
-function updateShiftDisplaysV112(){
-  try{
-    var active=getActiveShift();
-    var label=getShiftTimeLabel(active.indexOf("Closed")!==-1?(new Date().getHours()<9?"Morning":"Evening"):active);
-    var badgeEl=document.getElementById("shiftBadge");if(badgeEl)badgeEl.innerHTML='<span class="shift-badge '+(active==="Morning"?"shift-morning":"shift-evening")+'">'+esc(label)+'</span> - '+esc(active);
-    var loginEl=document.getElementById("currentShiftLogin");if(loginEl)loginEl.innerHTML='<span class="shift-badge '+(active==="Morning"?"shift-morning":"shift-evening")+'">🕘 '+esc(label)+'</span><br><span style="font-size:11px">'+esc(active)+' - '+new Date().toLocaleString()+'</span>';
-    var posEl=document.getElementById("posShiftInfo");if(posEl)posEl.innerHTML='<span class="shift-badge '+(active==="Morning"?"shift-morning":"shift-evening")+'">'+esc(label)+'</span>';
-    var cartEl=document.getElementById("cartShift");if(cartEl)cartEl.textContent=label;
-    var topEl=document.getElementById("topBadge");if(topEl){if(active.indexOf("Closed")!==-1){topEl.textContent="⚠️ "+active+" - Sales will be recorded as "+(new Date().getHours()<9?"Morning":"Evening")+" shift";topEl.style.background="#fef3c7";topEl.style.color="#92400e";}else{topEl.textContent="✅ Open: "+label+" - "+active;topEl.style.background="#dcfce7";topEl.style.color="#065f46";}}
-  }catch(e){}
-}
-function loadV112(){
-  try{var m=localStorage.getItem("tGP_v11_meds");if(m)medicines=JSON.parse(m);}catch(e){}
-  if(medicines.length===0)medicines=JSON.parse(JSON.stringify(DEFAULT_MEDS));
-  try{var s=localStorage.getItem("tGP_v11_sales");if(s)sales=JSON.parse(s);}catch(e){}
-  try{var ex=localStorage.getItem("tGP_v11_expenses");if(ex)expenses=JSON.parse(ex);}catch(e){}
-  try{var cr=localStorage.getItem("tGP_v11_creditors");if(cr)creditors=JSON.parse(cr);}catch(e){}
-  try{var de=localStorage.getItem("tGP_v11_debtors");if(de)debtors=JSON.parse(de);}catch(e){}
-  try{var lo=localStorage.getItem("tGP_v11_logs");if(lo)auditLogs=JSON.parse(lo);}catch(e){}
-}
-loadV112();
+// --- SECURITY CORE ---
+function sanitize(str){return String(str).replace(/[&<>"'`=\/]/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','/':'&#x2F;','`':'&#x60;','=':'&#x3D;'}[s]));}
+async function sha256(str){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str)); return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');}
+let loginAttempts=parseInt(localStorage.getItem('login_attempts')||'0'); let blockUntil=parseInt(localStorage.getItem('block_until')||'0');
+const defaultHashes={};
+(async()=>{ defaultHashes['admin']=await sha256('GraceAdmin@2026!'); defaultHashes['cashier.morning']=await sha256('GraceMorning2026'); defaultHashes['cashier.evening']=await sha256('GraceEvening2026'); if(!localStorage.getItem('user_hashes')) localStorage.setItem('user_hashes',JSON.stringify(defaultHashes));})();
 
-// ====== V11.2 FIXED LOGIN - GUARANTEED ======
-function doLoginV112(){
-  var uEl=document.getElementById("loginUser");
-  var pEl=document.getElementById("loginPass");
-  var errEl=document.getElementById("loginError");
-  try{
-    var u=(uEl.value||"").trim().toLowerCase();
-    var p=(pEl.value||"").trim();
-    if(u.length<2||p.length<2){errEl.textContent="اكتب اليوزر والباسورد - مثال admin / admin123";errEl.style.display="block";return;}
-    var found=null;for(var i=0;i<USERS.length;i++){if(USERS[i].user===u&&USERS[i].pass===p){found=USERS[i];break;}}
-    if(found){
-      currentUser=found;
-      try{localStorage.setItem("tGP_v11_user",found.name);}catch(e){}
-      try{localStorage.setItem("tGP_v11_role",found.role);}catch(e){}
-      try{localStorage.setItem("tGP_v11_time",Date.now().toString());}catch(e){}
-      var ls=document.getElementById("loginScreen");if(ls)ls.classList.add("hidden");
-      var lu=document.getElementById("loggedUser");if(lu)lu.textContent=found.name;
-      var ro=document.getElementById("userRole");if(ro)ro.textContent=found.role.toUpperCase();
-      if(errEl)errEl.style.display="none";
-      if(uEl)uEl.value="";if(pEl)pEl.value="";
-      try{addLogV112("LOGIN","User "+found.name+" logged in - V11.2 - Shift "+getActiveShift());}catch(e){}
-      try{saveV112();}catch(e){}
-      try{updateShiftDisplaysV112();renderAllV112();}catch(e){console.log("render after login error",e);}
-    }else{
-      if(errEl){errEl.textContent="خطأ! جرب: admin/admin123 أو pharmacy/pharmacy2024 أو grace/grace123 - أو دوس Force Login";errEl.style.display="block";}
+// Users with hashed passwords
+function getUserHashes(){return JSON.parse(localStorage.getItem('user_hashes')||'{}');}
+let stock=JSON.parse(localStorage.getItem('grace_stock')||'[]'), cart=[], debts=JSON.parse(localStorage.getItem('grace_debts')||'[]'), deliveries=JSON.parse(localStorage.getItem('grace_deliveries')||'[]'), sales=JSON.parse(localStorage.getItem('grace_sales')||'[]'), exRate=parseFloat(localStorage.getItem('grace_rate')||'4200'), currentUser=null, lastActivity=Date.now();
+document.getElementById('rateDisplay').innerText=exRate; document.getElementById('exRate').value=exRate;
+
+// Logo handling
+let logoData=localStorage.getItem('grace_logo')||'';
+if(logoData){ document.getElementById('loginLogo').src=logoData; document.getElementById('loginLogo').classList.remove('hidden'); document.getElementById('headerLogo').src=logoData; document.getElementById('headerLogo').classList.remove('hidden'); document.getElementById('receiptLogo').src=logoData; document.getElementById('receiptLogo').classList.remove('hidden'); document.getElementById('watermarkLogo').src=logoData; document.getElementById('watermarkLogo').classList.remove('hidden');}
+document.getElementById('logoUpload').addEventListener('change',e=>{
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader(); reader.onload=ev=>{
+    logoData=ev.target.result; localStorage.setItem('grace_logo',logoData);
+    document.getElementById('loginLogo').src=logoData; document.getElementById('loginLogo').classList.remove('hidden');
+    document.getElementById('headerLogo').src=logoData; document.getElementById('headerLogo').classList.remove('hidden');
+    document.getElementById('receiptLogo').src=logoData; document.getElementById('receiptLogo').classList.remove('hidden');
+    document.getElementById('watermarkLogo').src=logoData; document.getElementById('watermarkLogo').classList.remove('hidden');
+    if(window.db&&navigator.onLine) window.setDoc(window.doc(window.db,'settings','logo'),{data:logoData, theme:document.getElementById('themeColor').value});
+    alert('Logo saved - will appear on receipt, login, header & watermark. Theme color auto-applied.');
+  }; reader.readAsDataURL(file);
+});
+function applyTheme(color){document.documentElement.style.setProperty('--tw-color',color); localStorage.setItem('grace_theme',color); document.querySelectorAll('.bg-emerald-700').forEach(el=>el.style.backgroundColor=color);}
+
+async function doLogin(){
+  if(Date.now()<blockUntil){ document.getElementById('loginError').innerText=`Blocked - try after ${new Date(blockUntil).toLocaleTimeString()}`; document.getElementById('loginError').classList.remove('hidden'); return; }
+  let u=sanitize(document.getElementById('u').value.trim()), p=document.getElementById('p').value;
+  let hashes=getUserHashes(); let hash=await sha256(p);
+  if(hashes[u] && hashes[u]===hash){
+    // shift check
+    let now=new Date(); let hm=now.getHours()*60+now.getMinutes();
+    let role=u==='admin'?'admin':'cashier'; let shift=u.includes('morning')?'Morning':u.includes('evening')?'Evening':'All Day';
+    if(role!=='admin'){
+      let mStart=document.getElementById('mStart').value, mEnd=document.getElementById('mEnd').value, eStart=document.getElementById('eStart').value, eEnd=document.getElementById('eEnd').value;
+      let toMin=t=>{let [h,m]=t.split(':').map(Number); return h*60+m;};
+      if(shift==='Morning' && (hm<toMin(mStart)||hm>toMin(mEnd))){ if(!confirm('Outside Morning shift. Continue with admin approval?')) return; }
+      if(shift==='Evening' && (hm<toMin(eStart)||hm>toMin(eEnd))){ if(!confirm('Outside Evening shift. Continue with admin approval?')) return; }
     }
-  }catch(e){
-    console.log("login error",e);
-    var errEl2=document.getElementById("loginError");if(errEl2){errEl2.textContent="Login Error: "+e.message+" - دوس Force Login";errEl2.style.display="block";}
+    currentUser={name:u, role:role, shift:shift}; localStorage.setItem('login_attempts','0');
+    document.getElementById('login').classList.add('hidden'); document.getElementById('app').classList.remove('hidden');
+    document.getElementById('userBadge').innerText=u; document.getElementById('roleBadge').innerText=role; document.getElementById('shiftBadge').innerText=shift; document.getElementById('rCashier').innerText=u; document.getElementById('rShift').innerText=shift;
+    if(role!=='admin') document.getElementById('adminBtn').classList.add('hidden');
+    initSync(); renderStock(); renderDebts(); renderDelivery(); lastActivity=Date.now();
+    setInterval(()=>{if(Date.now()-lastActivity>30*60*1000) logout();},60000);
+  } else {
+    loginAttempts++; localStorage.setItem('login_attempts',loginAttempts);
+    if(loginAttempts>=5){ blockUntil=Date.now()+15*60*1000; localStorage.setItem('block_until',blockUntil); document.getElementById('loginError').innerText='5 failed - blocked 15 min';}
+    else document.getElementById('loginError').innerText=`Wrong credentials - attempt ${loginAttempts}/5`;
+    document.getElementById('loginError').classList.remove('hidden');
   }
 }
-function forceLoginV112(){
-  try{
-    currentUser={name:"Admin (Forced) - V11.2",role:"admin",user:"admin"};
-    var ls=document.getElementById("loginScreen");if(ls)ls.classList.add("hidden");
-    var lu=document.getElementById("loggedUser");if(lu)lu.textContent="Admin (Forced)";
-    var ro=document.getElementById("userRole");if(ro)ro.textContent="ADMIN";
-    try{renderAllV112();}catch(e){console.log(e);}
-    showAlert("Forced login OK - V11.2","ok");
-  }catch(e){alert("Force error: "+e.message);}
-}
-function doLogoutV112(){
-  try{localStorage.removeItem("tGP_v11_user");localStorage.removeItem("tGP_v11_role");localStorage.removeItem("tGP_v11_time");}catch(e){}
-  currentUser=null;
-  var ls=document.getElementById("loginScreen");if(ls)ls.classList.remove("hidden");
-}
-function openTabV112(name){
-  try{
-    var tabs=document.querySelectorAll(".tab");for(var i=0;i<tabs.length;i++)tabs[i].classList.remove("active");
-    var btn=document.getElementById("b-"+name);if(btn)btn.classList.add("active");
-    var cards=document.querySelectorAll(".card");for(var j=0;j<cards.length;j++)cards[j].classList.add("hidden");
-    var v=document.getElementById("view-"+name);if(v)v.classList.remove("hidden");
-    if(name==="live")renderLiveV112();
-    if(name==="stock")renderStockV112();
-    if(name==="expenses")renderExpensesV112();
-    if(name==="debts"){openDebtTabV112('creditors');renderCreditorsV112();renderDebtorsV112();}
-    if(name==="reports")renderReportsV112();
-  }catch(e){console.log("openTab error",e);}
-}
-function openDebtTabV112(which){
-  try{
-    var crView=document.getElementById("debtCreditorsView");var deView=document.getElementById("debtDebtorsView");
-    var crTab=document.getElementById("tabCreditors");var deTab=document.getElementById("tabDebtors");
-    if(which==="creditors"){if(crView)crView.style.display="block";if(deView)deView.style.display="none";if(crTab)crTab.classList.add("active");if(deTab)deTab.classList.remove("active");}
-    else{if(crView)crView.style.display="none";if(deView)deView.style.display="block";if(deTab)deTab.classList.add("active");if(crTab)crTab.classList.remove("active");}
-  }catch(e){}
-}
-// END PART 2/3 - CONTINUE PART 3
-  <script>
-// ================= POS V11.2 FIXED =================
-function renderMedSelectV112(){
-  try{
-    var qEl=document.getElementById("searchMed");var query=qEl?sanitize(qEl.value.toLowerCase()):"";
-    var html="";var today=new Date();today.setHours(0,0,0,0);
-    for(var i=0;i<medicines.length;i++){
-      var med=medicines[i];if(!med)continue;
-      if(query&&esc(med.name).toLowerCase().indexOf(query)===-1&&esc(med.shelf||"").toLowerCase().indexOf(query)===-1)continue;
-      var isExpired=false;var isSoon=false;var badge="";var cls="";
-      if(med.expiry){var ed=new Date(med.expiry);if(!isNaN(ed)){var diff=Math.ceil((ed-today)/86400000);if(diff<0){isExpired=true;badge='<span class="badge expired">EXPIRED</span>';cls="expired";}else if(diff<=30){isSoon=true;badge='<span class="badge soon">'+diff+'d left</span>';cls="soon";}else{badge='<span class="badge ok">OK</span>';}}}
-      if(med.qty<=0){badge+=' <span class="badge expired">OUT</span>';cls="expired";}
-      else if(med.qty<10){badge+=' <span class="badge soon">LOW '+med.qty+'</span>';}
-      html+='<div class="medicine-card '+cls+'" onclick="addToCartV112('+i+')"><b>'+esc(med.name)+'</b><br><span style="font-size:10px">📦 '+esc(med.shelf||'N/A')+' - '+esc(med.expiry||'')+'</span><br><b style="color:#059669">'+med.price+' SSP</b><br>Qty:'+med.qty+'<br>'+badge+'</div>';
-    }
-    var el=document.getElementById("medSelect");if(el)el.innerHTML=html||'<div style="text-align:center;padding:20px;color:#999">No medicines found</div>';
-  }catch(e){console.log("medSelect error",e);}
-}
-function addToCartV112(idx){
-  try{
-    if(idx<0||idx>=medicines.length)return;
-    var med=medicines[idx];if(med.qty<=0){showAlert("Out of stock: "+med.name,"warn");return;}
-    for(var i=0;i<cart.length;i++){if(cart[i].name===med.name){if(cart[i].qty>=med.qty){showAlert("Only "+med.qty+" left for "+med.name,"warn");return;}cart[i].qty++;renderCartV112();return;}}
-    cart.push({name:med.name,price:med.price,cost:med.cost,qty:1,shelf:med.shelf});
-    renderCartV112();
-  }catch(e){showAlert("Cart error: "+e.message,"warn");}
-}
-function renderCartV112(){
-  try{
-    var html="";var total=0;
-    for(var i=0;i<cart.length;i++){total+=cart[i].price*cart[i].qty;html+='<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed #86efac"><span>'+esc(cart[i].name)+' ('+esc(cart[i].shelf)+')<br><small>'+cart[i].price+' x '+cart[i].qty+' = '+(cart[i].price*cart[i].qty)+' SSP</small></span><button class="small red" onclick="cart.splice('+i+',1);renderCartV112()">x</button></div>';}
-    var cl=document.getElementById("cartList");if(cl)cl.innerHTML=html||"Cart empty - Add medicines";
-    var ct=document.getElementById("cartTotal");if(ct)ct.textContent=total+" SSP";
-    var cc=document.getElementById("cartCount");if(cc)cc.textContent=cart.length;
-  }catch(e){}
-}
-function placeSaleV112(){
-  try{
-    if(cart.length===0){showAlert("Cart empty - Add medicines","warn");return;}
-    var total=0;var profit=0;
-    for(var i=0;i<cart.length;i++){total+=cart[i].price*cart[i].qty;profit+=(cart[i].price-cart[i].cost)*cart[i].qty;}
-    // Deduct qty
-    for(var j=0;j<cart.length;j++){for(var k=0;k<medicines.length;k++){if(medicines[k].name===cart[j].name){medicines[k].qty-=cart[j].qty;if(medicines[k].qty<0)medicines[k].qty=0;}}}
-    var shiftNow=getActiveShift();var realShift=shiftNow.indexOf("Closed")!==-1?(new Date().getHours()<9?"Morning":"Evening"):shiftNow;
-    sales.push({id:Date.now(),id_str:Date.now().toString(),items:JSON.parse(JSON.stringify(cart)),total:total,profit:profit,shift:realShift,date:new Date().toISOString().split("T")[0],time:new Date().toLocaleString(),soldBy:currentUser?currentUser.name:"System"});
-    saveV112();addLogV112("SALE","Sold "+total+" SSP Profit "+profit+" Shift "+realShift);
-    cart=[];renderCartV112();renderMedSelectV112();renderStockV112();renderLiveV112();renderReportsV112();
-    showAlert("✅ Sold "+total+" SSP - Profit "+profit+" - Shift "+realShift,"ok");
-    openTabV112('live');
-  }catch(e){showAlert("Sale failed: "+e.message,"warn");}
-}
-function renderLiveV112(){
-  try{
-    var qEl=document.getElementById("searchSales");var query=qEl?sanitize(qEl.value.toLowerCase()):"";
-    var shiftF=document.getElementById("filterShiftSales");var shiftFilter=shiftF?shiftF.value:"";
-    var html="";
-    for(var i=sales.length-1;i>=0;i--){
-      var s=sales[i];if(!s)continue;
-      if(shiftFilter&&s.shift!==shiftFilter)continue;
-      if(query){var itemsStr="";for(var x=0;x<s.items.length;x++)itemsStr+=s.items[x].name+" "; if(itemsStr.toLowerCase().indexOf(query)===-1&&esc(s.soldBy).toLowerCase().indexOf(query)===-1)continue;}
-      var itemsHtml="";for(var j=0;j<s.items.length;j++)itemsHtml+='<span style="background:#ecfdf5;border:1px solid #bbf7d0;padding:2px 6px;border-radius:10px;font-size:10px;margin:2px;display:inline-block">'+esc(s.items[j].name)+' x'+s.items[j].qty+'</span>';
-      html+='<div style="background:white;border:1.5px solid #bbf7d0;border-radius:10px;padding:10px;margin:6px 0"><div style="display:flex;justify-content:space-between"><b>'+esc(s.time)+'</b><span class="shift-badge '+(s.shift==="Morning"?"shift-morning":"shift-evening")+'">'+esc(getShiftTimeLabel(s.shift))+'</span></div><div style="margin:4px 0">'+itemsHtml+'</div><div style="display:flex;justify-content:space-between;font-size:11px"><span>Sold by '+esc(s.soldBy)+' - Profit '+s.profit+' SSP</span><b style="color:#059669">'+s.total+' SSP</b></div></div>';
-    }
-    var el=document.getElementById("liveList");if(el)el.innerHTML=html||'<div style="text-align:center;padding:20px;color:#999">No sales - Start selling</div>';
-  }catch(e){}
-}
-function renderStockV112(){
-  try{
-    var qEl=document.getElementById("searchStock");var query=qEl?sanitize(qEl.value.toLowerCase()):"";
-    var html="";var today=new Date();today.setHours(0,0,0,0);
-    for(var i=0;i<medicines.length;i++){
-      var m=medicines[i];if(!m)continue;
-      if(query&&esc(m.name).toLowerCase().indexOf(query)===-1&&esc(m.shelf||"").toLowerCase().indexOf(query)===-1)continue;
-      var expStatus="";var diffStr="";
-      if(m.expiry){var ed=new Date(m.expiry);if(!isNaN(ed)){var diff=Math.ceil((ed-today)/86400000);if(diff<0){expStatus='<span class="badge expired">EXPIRED '+Math.abs(diff)+'d ago</span>';}else if(diff<=30){expStatus='<span class="badge soon">'+diff+'d left</span>';}else{expStatus='<span class="badge ok">'+diff+'d left</span>';}diffStr=m.expiry;}}
-      var canEdit=currentUser&&currentUser.role==="admin";
-      html+='<div style="display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid #bbf7d0;background:white;border-radius:8px;margin:4px 0"><div><b>'+esc(m.name)+'</b> 📦 '+esc(m.shelf||'')+'<br><span style="font-size:10px">Buy:'+m.cost+' Sell:'+m.price+' Qty:'+m.qty+' - '+diffStr+' '+expStatus+'</span></div><div style="display:flex;flex-direction:column;gap:4px">'+(canEdit?'<button class="small blue" onclick="editMedV112(\''+m.id_str+'\')">Edit</button><button class="small red" onclick="deleteMedV112(\''+m.id_str+'\')">Del</button>':'')+'</div></div>';
-    }
-    var el=document.getElementById("stockList");if(el)el.innerHTML=html||"No stock";
-  }catch(e){}
-}
-function addMedicineV112(){
-  try{
-    var name=sanitizeName(document.getElementById("newMedName").value);
-    var shelf=sanitize(document.getElementById("newMedShelf").value)||"A1";
-    var price=document.getElementById("newMedPrice").value;
-    var cost=document.getElementById("newMedCost").value;
-    var qty=document.getElementById("newMedQty").value;
-    var expiry=document.getElementById("newMedExpiry").value||"2028-12-31";
-    if(name.length<3){showAlert("Name min 3 chars","warn");return;}
-    if(!isAmount(price)||!isAmount(cost)||!isAmount(qty)){showAlert("Price/Cost/Qty must be Integer","warn");return;}
-    if(Number(cost)>Number(price)){showAlert("Cost cannot exceed price","warn");return;}
-    medicines.push({id:Date.now(),id_str:Date.now().toString(),name:name,shelf:shelf,price:parseInt(price,10),cost:parseInt(cost,10),qty:parseInt(qty,10),expiry:expiry,date:new Date().toISOString().split("T")[0]});
-    saveV112();addLogV112("ADD_MED","Added "+name+" Shelf "+shelf);renderStockV112();renderMedSelectV112();renderReportsV112();
-    document.getElementById("newMedName").value="";document.getElementById("newMedShelf").value="";document.getElementById("newMedPrice").value="";document.getElementById("newMedCost").value="";document.getElementById("newMedQty").value="";document.getElementById("newMedExpiry").value="";
-    showAlert("Medicine added: "+name,"ok");
-  }catch(e){showAlert("Add med failed: "+e.message,"warn");}
-}
-function editMedV112(id){try{if(!currentUser||currentUser.role!=="admin"){showAlert("Admin only","warn");return;}var idx=-1;for(var i=0;i<medicines.length;i++){if(String(medicines[i].id_str)===String(id)){idx=i;break;}}if(idx===-1)return;var m=medicines[idx];var newQty=prompt("Edit qty for "+m.name+" - Current "+m.qty+" - Enter new Integer qty:",""+m.qty);if(newQty===null)return;if(!isAmount(newQty)){showAlert("Invalid qty","warn");return;}m.qty=parseInt(newQty,10);saveV112();addLogV112("EDIT_MED","Edited qty "+m.name+" to "+m.qty);renderStockV112();renderMedSelectV112();renderReportsV112();}catch(e){}}
-function deleteMedV112(id){try{if(!currentUser||currentUser.role!=="admin"){showAlert("Admin only","warn");return;}if(!confirm("Delete medicine "+id+"?"))return;medicines=medicines.filter(function(x){return String(x.id_str)!==String(id);});saveV112();addLogV112("DELETE_MED","Deleted medicine "+id);renderStockV112();renderMedSelectV112();renderReportsV112();}catch(e){}}
-function fixAllExpiredV112(){try{if(!currentUser||currentUser.role!=="admin"){showAlert("Admin only","warn");return;}if(!confirm("Fix all expired to 2028-12-31?"))return;var fixed=0;var today=new Date();today.setHours(0,0,0,0);for(var i=0;i<medicines.length;i++){if(medicines[i].expiry){var ed=new Date(medicines[i].expiry);if(!isNaN(ed)&&ed<=today){medicines[i].expiry="2028-12-31";fixed++;}}}if(fixed>0){saveV112();renderStockV112();renderMedSelectV112();renderReportsV112();showAlert("Fixed "+fixed+" medicines","ok");}else showAlert("No expired - All OK","ok");}catch(e){}}
+function logout(){ localStorage.removeItem('current_user'); location.reload();}
+function tab(t){['pos','stock','debt','delivery','admin'].forEach(x=>document.getElementById(x+'Tab').classList.add('hidden')); document.getElementById(t+'Tab').classList.remove('hidden'); lastActivity=Date.now();}
 
-// ================= EXPENSES V11.2 =================
-function addExpenseV112(){
-  try{
-    var name=sanitizeName(document.getElementById("expName").value);
-    var cat=sanitize(document.getElementById("expCategory").value);
-    var shift=sanitize(document.getElementById("expShift").value);
-    var amount=document.getElementById("expAmount").value;
-    var date=document.getElementById("expDate").value||new Date().toISOString().split("T")[0];
-    if(name.length<3){showAlert("Expense name min 3","warn");return;}
-    if(!isAmount(amount)){showAlert("Amount must be Integer","warn");return;}
-    expenses.push({id:Date.now(),id_str:Date.now().toString(),name:name,category:cat,shift:shift,amount:parseInt(amount,10),date:date,time:new Date().toLocaleString(),createdBy:currentUser?currentUser.name:"System"});
-    saveV112();addLogV112("ADD_EXP","Added expense "+name+" "+amount+" Shift "+shift);renderExpensesV112();renderReportsV112();
-    document.getElementById("expName").value="";document.getElementById("expAmount").value="";
-    showAlert("Expense added: "+name,"ok");
-  }catch(e){showAlert("Expense failed: "+e.message,"warn");}
-}
-function renderExpensesV112(){
-  try{
-    var qEl=document.getElementById("searchExpenses");var query=qEl?sanitize(qEl.value.toLowerCase()):"";
-    var shiftF=document.getElementById("filterExpShift");var shiftFilter=shiftF?shiftF.value:"";
-    var html="";var total=0;
-    for(var i=expenses.length-1;i>=0;i--){
-      var e=expenses[i];if(!e)continue;
-      if(shiftFilter&&e.shift!==shiftFilter&&e.shift!=="Full Day")continue;
-      if(query&&esc(e.name).toLowerCase().indexOf(query)===-1&&esc(e.category).toLowerCase().indexOf(query)===-1)continue;
-      total+=e.amount;
-      var canEdit=currentUser&&currentUser.role==="admin";
-      html+='<div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px dashed #f87171;background:white;border-radius:8px;margin:4px 0"><div><b>'+esc(e.name)+'</b> - '+esc(e.category)+'<br><span style="font-size:10px"><span class="shift-badge '+(e.shift==="Morning"?"shift-morning":"shift-evening")+'">'+esc(getShiftTimeLabel(e.shift))+'</span> '+esc(e.date)+' - By '+esc(e.createdBy)+'</span></div><div><b>'+e.amount+' SSP</b><br>'+(canEdit?'<button class="small red" onclick="deleteExpenseV112(\''+e.id_str+'\')">Del</button>':'')+'</div></div>';
-    }
-    var el=document.getElementById("expenseList");if(el)el.innerHTML=html||"No expenses";
-    var totEl=document.getElementById("expenseTotal");if(totEl)totEl.textContent="Total Expenses: "+total+" SSP";
-  }catch(e){}
-}
-function deleteExpenseV112(id){try{if(!currentUser||currentUser.role!=="admin"){showAlert("Admin only","warn");return;}if(!confirm("Delete expense "+id+"?"))return;expenses=expenses.filter(function(x){return String(x.id_str)!==String(id);});saveV112();addLogV112("DELETE_EXP","Deleted expense "+id);renderExpensesV112();renderReportsV112();}catch(e){}}
+function saveRate(){ exRate=parseFloat(sanitize(document.getElementById('exRate').value)); localStorage.setItem('grace_rate',exRate); document.getElementById('rateDisplay').innerText=exRate; renderStock(); updateCart(); alert('Rate saved');}
+function sspToUsd(ssp){ return (ssp/exRate).toFixed(2); }
 
-// ================= DEBTS V11.2 =================
-function addCreditorV112(){
-  try{
-    var name=sanitizeName(document.getElementById("credName").value);
-    var phone=sanitizePhone(document.getElementById("credPhone").value);
-    var amount=document.getElementById("credAmount").value;
-    var paid=document.getElementById("credPaid").value||"0";
-    var due=document.getElementById("credDueDate").value||new Date().toISOString().split("T")[0];
-    var reason=sanitizeName(document.getElementById("credReason").value);
-    var shift=sanitize(document.getElementById("credShift").value);
-    if(name.length<3){showAlert("Supplier name min 3","warn");return;}
-    if(!isAmount(amount)||!isAmount(paid)){showAlert("Amount Integer only","warn");return;}
-    if(Number(paid)>Number(amount)){showAlert("Paid > total","warn");return;}
-    var total=parseInt(amount,10);var paidInt=parseInt(paid,10);
-    var status=paidInt===0?"Unpaid":(paidInt>=total?"Paid":"Partial");
-    creditors.push({id:Date.now(),id_str:Date.now().toString(),name:name,phone:phone,total:total,paid:paidInt,remaining:total-paidInt,status:status,dueDate:due,reason:reason,shift:shift,date:new Date().toISOString().split("T")[0],time:new Date().toLocaleString(),createdBy:currentUser?currentUser.name:"System"});
-    saveV112();addLogV112("ADD_CREDITOR","Added creditor "+name+" Rem "+(total-paidInt));renderCreditorsV112();renderReportsV112();
-    document.getElementById("credName").value="";document.getElementById("credPhone").value="";document.getElementById("credAmount").value="";document.getElementById("credPaid").value="";document.getElementById("credReason").value="";
-    showAlert("Creditor added: "+name,"ok");
-  }catch(e){showAlert("Creditor failed: "+e.message,"warn");}
-}
-function renderCreditorsV112(){
-  try{
-    var qEl=document.getElementById("searchCred");var query=qEl?sanitize(qEl.value.toLowerCase()):"";
-    var statusF=document.getElementById("filterCredStatus");var statusFilter=statusF?statusF.value:"";
-    var html="";var totalOwe=0;var totalPaid=0;var totalRem=0;
-    for(var i=creditors.length-1;i>=0;i--){
-      var c=creditors[i];if(!c)continue;
-      if(statusFilter&&c.status!==statusFilter)continue;
-      if(query&&esc(c.name).toLowerCase().indexOf(query)===-1&&esc(c.phone).toLowerCase().indexOf(query)===-1)continue;
-      totalOwe+=c.total;totalPaid+=c.paid;totalRem+=c.remaining;
-      var canEdit=currentUser&&currentUser.role==="admin";
-      var statusColor=c.status==="Paid"?"#059669":(c.status==="Partial"?"#f59e0b":"#dc2626");
-      html+='<div style="display:flex;justify-content:space-between;padding:10px;border-bottom:1px dashed #f87171;background:white;border-radius:8px;margin:4px 0"><div><b>'+esc(c.name)+'</b> - '+esc(c.phone)+'<br><span style="font-size:10px">Reason: '+esc(c.reason)+'<br><span class="shift-badge '+(c.shift==="Morning"?"shift-morning":"shift-evening")+'">'+esc(getShiftTimeLabel(c.shift))+'</span> Due: '+esc(c.dueDate)+' - By '+esc(c.createdBy)+'<br>Status: <span style="background:'+statusColor+';color:white;padding:2px 8px;border-radius:12px;font-size:9px">'+c.status+'</span> Total: '+c.total+' Paid: '+c.paid+' <b style="color:#dc2626">Rem: '+c.remaining+'</b></span></div><div style="display:flex;flex-direction:column;gap:4px">'+(canEdit?'<button class="small green" onclick="payCreditorV112(\''+c.id_str+'\')">Pay</button><button class="small red" onclick="deleteCreditorV112(\''+c.id_str+'\')">Del</button>':'')+'</div></div>';
-    }
-    var el=document.getElementById("credList");if(el)el.innerHTML=html||"No creditors";
-    var to=document.getElementById("credTotalOwe");if(to)to.textContent=totalOwe+" SSP";
-    var tp=document.getElementById("credTotalPaid");if(tp)tp.textContent=totalPaid+" SSP";
-    var tr=document.getElementById("credTotalRemaining");if(tr)tr.textContent=totalRem+" SSP";
-    var badge=document.getElementById("credCountBadge");if(badge)badge.textContent=creditors.length;
-  }catch(e){}
-}
-function payCreditorV112(id){try{if(!currentUser||currentUser.role!=="admin"){showAlert("Admin only","warn");return;}var idx=-1;for(var i=0;i<creditors.length;i++){if(String(creditors[i].id_str)===String(id)){idx=i;break;}}if(idx===-1)return;var c=creditors[idx];var payStr=prompt("Pay amount for "+c.name+" - Remaining: "+c.remaining+" SSP - Enter Integer:",""+c.remaining);if(payStr===null)return;if(!isAmount(payStr)){showAlert("Invalid Integer","warn");return;}var payInt=parseInt(payStr,10);if(payInt<=0||payInt>c.remaining){showAlert("Pay must be 1 to "+c.remaining,"warn");return;}c.paid+=payInt;c.remaining-=payInt;c.status=c.remaining===0?"Paid":"Partial";saveV112();addLogV112("PAY_CREDITOR","Paid "+payInt+" to "+c.name);renderCreditorsV112();renderReportsV112();showAlert("Paid "+payInt+" SSP to "+c.name,"ok");}catch(e){}}
-function deleteCreditorV112(id){try{if(!currentUser||currentUser.role!=="admin"){showAlert("Admin only","warn");return;}if(!confirm("Delete creditor "+id+"?"))return;creditors=creditors.filter(function(x){return String(x.id_str)!==String(id);});saveV112();addLogV112("DELETE_CREDITOR","Deleted creditor "+id);renderCreditorsV112();renderReportsV112();}catch(e){}}
-function addDebtorV112(){try{var name=sanitizeName(document.getElementById("debtName").value);var phone=sanitizePhone(document.getElementById("debtPhone").value);var amount=document.getElementById("debtAmount").value;var paid=document.getElementById("debtPaid").value||"0";var due=document.getElementById("debtDueDate").value||new Date().toISOString().split("T")[0];var reason=sanitizeName(document.getElementById("debtReason").value);var shift=sanitize(document.getElementById("debtShift").value);if(name.length<3){showAlert("Customer name min 3","warn");return;}if(!isAmount(amount)||!isAmount(paid)){showAlert("Amount Integer only","warn");return;}if(Number(paid)>Number(amount)){showAlert("Paid > total","warn");return;}var total=parseInt(amount,10);var paidInt=parseInt(paid,10);var status=paidInt===0?"Unpaid":(paidInt>=total?"Paid":"Partial");debtors.push({id:Date.now(),id_str:Date.now().toString(),name:name,phone:phone,total:total,paid:paidInt,remaining:total-paidInt,status:status,dueDate:due,reason:reason,shift:shift,date:new Date().toISOString().split("T")[0],time:new Date().toLocaleString(),createdBy:currentUser?currentUser.name:"System"});saveV112();addLogV112("ADD_DEBTOR","Added debtor "+name+" Rem "+(total-paidInt));renderDebtorsV112();renderReportsV112();document.getElementById("debtName").value="";document.getElementById("debtPhone").value="";document.getElementById("debtAmount").value="";document.getElementById("debtPaid").value="";document.getElementById("debtReason").value="";showAlert("Debtor added: "+name,"ok");}catch(e){showAlert("Debtor failed: "+e.message,"warn");}}
-function renderDebtorsV112(){try{var qEl=document.getElementById("searchDebt");var query=qEl?sanitize(qEl.value.toLowerCase()):"";var statusF=document.getElementById("filterDebtStatus");var statusFilter=statusF?statusF.value:"";var html="";var totalOwe=0;var totalPaid=0;var totalRem=0;for(var i=debtors.length-1;i>=0;i--){var d=debtors[i];if(!d)continue;if(statusFilter&&d.status!==statusFilter)continue;if(query&&esc(d.name).toLowerCase().indexOf(query)===-1&&esc(d.phone).toLowerCase().indexOf(query)===-1)continue;totalOwe+=d.total;totalPaid+=d.paid;totalRem+=d.remaining;var canEdit=currentUser&&currentUser.role==="admin";var statusColor=d.status==="Paid"?"#059669":(d.status==="Partial"?"#f59e0b":"#dc2626");html+='<div style="display:flex;justify-content:space-between;padding:10px;border-bottom:1px dashed #22c55e;background:white;border-radius:8px;margin:4px 0"><div><b>'+esc(d.name)+'</b> - '+esc(d.phone)+'<br><span style="font-size:10px">Reason: '+esc(d.reason)+'<br><span class="shift-badge '+(d.shift==="Morning"?"shift-morning":"shift-evening")+'">'+esc(getShiftTimeLabel(d.shift))+'</span> Due: '+esc(d.dueDate)+' - By '+esc(d.createdBy)+'<br>Status: <span style="background:'+statusColor+';color:white;padding:2px 8px;border-radius:12px;font-size:9px">'+d.status+'</span> Total: '+d.total+' Paid: '+d.paid+' <b style="color:#0A8C4A">Rem: '+d.remaining+'</b></span></div><div style="display:flex;flex-direction:column;gap:4px">'+(canEdit?'<button class="small green" onclick="collectDebtorV112(\''+d.id_str+'\')">Collect</button><button class="small red" onclick="deleteDebtorV112(\''+d.id_str+'\')">Del</button>':'')+'</div></div>';}var el=document.getElementById("debtList");if(el)el.innerHTML=html||"No debtors";var to=document.getElementById("debtTotalOwe");if(to)to.textContent=totalOwe+" SSP";var tp=document.getElementById("debtTotalPaid");if(tp)tp.textContent=totalPaid+" SSP";var tr=document.getElementById("debtTotalRemaining");if(tr)tr.textContent=totalRem+" SSP";var badge=document.getElementById("debtCountBadge");if(badge)badge.textContent=debtors.length;}catch(e){}}
-function collectDebtorV112(id){try{if(!currentUser||currentUser.role!=="admin"){showAlert("Admin only","warn");return;}var idx=-1;for(var i=0;i<debtors.length;i++){if(String(debtors[i].id_str)===String(id)){idx=i;break;}}if(idx===-1)return;var d=debtors[idx];var payStr=prompt("Collect from "+d.name+" - Remaining: "+d.remaining+" SSP - Enter Integer:",""+d.remaining);if(payStr===null)return;if(!isAmount(payStr)){showAlert("Invalid Integer","warn");return;}var payInt=parseInt(payStr,10);if(payInt<=0||payInt>d.remaining){showAlert("Collect must be 1 to "+d.remaining,"warn");return;}d.paid+=payInt;d.remaining-=payInt;d.status=d.remaining===0?"Paid":"Partial";saveV112();addLogV112("COLLECT_DEBTOR","Collected "+payInt+" from "+d.name);renderDebtorsV112();renderReportsV112();showAlert("Collected "+payInt+" SSP from "+d.name,"ok");}catch(e){}}
-function deleteDebtorV112(id){try{if(!currentUser||currentUser.role!=="admin"){showAlert("Admin only","warn");return;}if(!confirm("Delete debtor "+id+"?"))return;debtors=debtors.filter(function(x){return String(x.id_str)!==String(id);});saveV112();addLogV112("DELETE_DEBTOR","Deleted debtor "+id);renderDebtorsV112();renderReportsV112();}catch(e){}}
-function clearDebtsV112(){try{if(!currentUser||currentUser.role!=="admin"){showAlert("Admin only","warn");return;}if(!confirm("Clear ALL debts creditors + debtors?"))return;creditors=[];debtors=[];saveV112();renderCreditorsV112();renderDebtorsV112();renderReportsV112();showAlert("Debts cleared","ok");}catch(e){}}
+function renderStock(){ let q=(document.getElementById('searchStock')?.value||'').toLowerCase(); let tbody=document.getElementById('stockList'); tbody.innerHTML=''; stock.filter(s=>s.name.toLowerCase().includes(q)||s.barcode.includes(q)).forEach(m=>{ tbody.innerHTML+=`<tr class='border-b'><td>${sanitize(m.barcode)}</td><td>${sanitize(m.name)}</td><td>${m.qty}</td><td>${m.sell}</td><td>$${sspToUsd(m.sell)}</td><td>${sanitize(m.exp)}</td><td><button onclick='showMedQR("${sanitize(m.barcode)}")' class='text-emerald-700'>QR</button></td></tr>`;});}
+function showMedQR(barcode){ let m=stock.find(s=>s.barcode===barcode); document.getElementById('medQR').innerHTML=''; new QRCode(document.getElementById('medQR'),{text:`${m.name}|${m.barcode}|SSP:${m.sell}|USD:$${sspToUsd(m.sell)}`,width:100,height:100});}
 
-// ================= REPORTS V11.2 =================
-function renderReportsV112(){
-  try{
-    var shiftFilterEl=document.getElementById("filterReportShift");var shiftFilter=shiftFilterEl?shiftFilterEl.value:"";
-    var dateFilterEl=document.getElementById("filterReportDate");var dateFilter=dateFilterEl?dateFilterEl.value:"";
-    var todayStr=new Date().toISOString().split("T")[0];
-    var weekAgo=new Date();weekAgo.setDate(weekAgo.getDate()-7);
-    var monthStart=new Date();monthStart.setDate(1);
-    var filteredSales=sales.filter(function(s){if(!s)return false;if(shiftFilter&&s.shift!==shiftFilter)return false;if(dateFilter==="today"&&s.date!==todayStr)return false;if(dateFilter==="week"){var sd=new Date(s.date);if(sd<weekAgo)return false;}if(dateFilter==="month"){var sd2=new Date(s.date);if(sd2<monthStart)return false;}return true;});
-    var filteredExpenses=expenses.filter(function(e){if(!e)return false;if(shiftFilter&&e.shift!==shiftFilter&&e.shift!=="Full Day")return false;if(dateFilter==="today"&&e.date!==todayStr)return false;if(dateFilter==="week"){var ed=new Date(e.date);if(ed<weekAgo)return false;}if(dateFilter==="month"){var ed2=new Date(e.date);if(ed2<monthStart)return false;}return true;});
-    var totalSales=0;var totalProfit=0;var salesCount=filteredSales.length;for(var i=0;i<filteredSales.length;i++){totalSales+=filteredSales[i].total;totalProfit+=filteredSales[i].profit;}
-    var totalExpenses=0;for(var j=0;j<filteredExpenses.length;j++){totalExpenses+=filteredExpenses[j].amount;}
-    var netProfit=totalProfit-totalExpenses;
-    var stockValue=0;var lowStock=0;var expired=0;var shelvesSet={};var today=new Date();today.setHours(0,0,0,0);
-    for(var k=0;k<medicines.length;k++){var med=medicines[k];if(!med)continue;stockValue+=med.qty*med.price;if(med.qty<10)lowStock++;if(med.expiry){var ed3=new Date(med.expiry);if(!isNaN(ed3)&&ed3<today)expired++;}if(med.shelf)shelvesSet[med.shelf]=true;}
-    var credTotalRem=0;for(var c=0;c<creditors.length;c++){credTotalRem+=creditors[c].remaining;}
-    var debtTotalRem=0;for(var d=0;d<debtors.length;d++){debtTotalRem+=debtors[d].remaining;}
-    var netDebt=debtTotalRem-credTotalRem;
-    var el;
-    el=document.getElementById("rSales");if(el)el.textContent=totalSales+" SSP";
-    el=document.getElementById("rExpenses");if(el)el.textContent=totalExpenses+" SSP";
-    el=document.getElementById("rProfit");if(el){el.textContent=netProfit+" SSP";el.parentElement.style.background=netProfit>=0?"linear-gradient(135deg,#065f46,#059669)":"linear-gradient(135deg,#7f1d1d,#dc2626)";}
-    el=document.getElementById("rOrders");if(el)el.textContent=salesCount;
-    el=document.getElementById("rStockValue");if(el)el.textContent=stockValue+" SSP";
-    el=document.getElementById("rLowStock");if(el)el.textContent=lowStock;
-    el=document.getElementById("rExpired");if(el)el.textContent=expired;
-    el=document.getElementById("rShelves");if(el)el.textContent=Object.keys(shelvesSet).length;
-    el=document.getElementById("rCreditors");if(el)el.textContent=credTotalRem+" SSP";
-    el=document.getElementById("rDebtors");if(el)el.textContent=debtTotalRem+" SSP";
-    el=document.getElementById("rNetDebt");if(el){el.textContent=netDebt+" SSP";el.parentElement.style.background=netDebt>=0?"linear-gradient(135deg,#065f46,#10b981)":"linear-gradient(135deg,#991b1b,#ef4444)";}
-    el=document.getElementById("rShiftSales");if(el)el.textContent=salesCount+" sales";
-    var topMap={};for(var s=0;s<filteredSales.length;s++){for(var it=0;it<filteredSales[s].items.length;it++){var name=filteredSales[s].items[it].name;topMap[name]=(topMap[name]||0)+filteredSales[s].items[it].qty;}}
-    var topArr=[];for(var key in topMap){topArr.push({name:key,qty:topMap[key]});}topArr.sort(function(a,b){return b.qty-a.qty;});
-    var topHtml="";for(var t=0;t<Math.min(topArr.length,10);t++){topHtml+='<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed #bbf7d0;font-size:11px"><span>'+esc(topArr[t].name)+'</span><b>'+topArr[t].qty+' pcs</b></div>';}
-    var rankedEl=document.getElementById("rankedMeds");if(rankedEl)rankedEl.innerHTML=topHtml||"No sales";
-    var catMap={};for(var e=0;e<filteredExpenses.length;e++){catMap[filteredExpenses[e].category]=(catMap[filteredExpenses[e].category]||0)+filteredExpenses[e].amount;}
-    var catHtml="";for(var catKey in catMap){var pct=totalExpenses>0?((catMap[catKey]/totalExpenses)*100).toFixed(1):0;catHtml+='<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed #bbf7d0;font-size:11px"><span>'+esc(catKey)+'</span><b>'+catMap[catKey]+' SSP ('+pct+'%)</b></div>';}
-    var expReportEl=document.getElementById("expenseReport");if(expReportEl)expReportEl.innerHTML=catHtml||"No expenses";
-    var shelfMap={};for(var m=0;m<medicines.length;m++){var med2=medicines[m];if(!med2.shelf)continue;shelfMap[med2.shelf]=(shelfMap[med2.shelf]||0)+med2.qty*med2.price;}
-    var shelfHtml="";for(var shelfKey in shelfMap){shelfHtml+='<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:11px"><span>📦 '+esc(shelfKey)+'</span><b>'+shelfMap[shelfKey]+' SSP</b></div>';}
-    var shelfReportEl=document.getElementById("shelfReport");if(shelfReportEl)shelfReportEl.innerHTML=shelfHtml||"No shelves";
-    var shiftMap={Morning:{sales:0,total:0},Evening:{sales:0,total:0},Break:{sales:0,total:0}};for(var sf=0;sf<sales.length;sf++){var sh=sales[sf].shift||"Morning";if(!shiftMap[sh])shiftMap[sh]={sales:0,total:0};shiftMap[sh].sales++;shiftMap[sh].total+=sales[sf].total;}
-    var shiftHtml="";for(var shiftK in shiftMap){if(shiftMap[shiftK].sales>0)shiftHtml+='<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:11px"><span>🕘 '+esc(getShiftTimeLabel(shiftK))+'</span><b>'+shiftMap[shiftK].sales+' sales - '+shiftMap[shiftK].total+' SSP</b></div>';}
-    var shiftReportEl=document.getElementById("shiftReport");if(shiftReportEl)shiftReportEl.innerHTML=shiftHtml||"No shift sales yet";
-    var expiryHtml="";for(var ex=0;ex<medicines.length;ex++){var med3=medicines[ex];if(!med3.expiry)continue;var ed4=new Date(med3.expiry);if(isNaN(ed4))continue;var dd=Math.ceil((ed4-today)/86400000);if(dd<=60){var col=dd<0?"#fee2e2":(dd<=30?"#fef3c7":"#dcfce7");expiryHtml+='<div style="background:'+col+';padding:4px 8px;border-radius:6px;margin:2px 0;font-size:11px">⚠️ '+esc(med3.name)+' - '+esc(med3.shelf||'')+' - '+esc(med3.expiry)+' - '+(dd<0?'EXPIRED '+Math.abs(dd)+'d ago':dd+'d left')+' - Qty:'+med3.qty+'</div>';}}
-    var expiryReportEl=document.getElementById("expiryReport");if(expiryReportEl)expiryReportEl.innerHTML=expiryHtml||'<div style="background:#dcfce7;padding:6px;border-radius:6px">✅ No near expiry - All OK</div>';
-    var debtRepHtml='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div style="background:#fee2e2;padding:8px;border-radius:8px;text-align:center"><b>Creditors Owe</b><br>'+credTotalRem+' SSP<br><span style="font-size:10px">'+creditors.length+' suppliers</span></div><div style="background:#dcfce7;padding:8px;border-radius:8px;text-align:center"><b>Debtors Owe Us</b><br>'+debtTotalRem+' SSP<br><span style="font-size:10px">'+debtors.length+' customers</span></div></div><div style="margin-top:8px;background:'+(netDebt>=0?'#dcfce7':'#fee2e2')+';padding:8px;border-radius:8px;text-align:center"><b>Net Position: '+netDebt+' SSP</b><br><span style="font-size:10px">'+(netDebt>=0?'✅ We will receive more than we owe':'⚠️ We owe more than we will receive')+'</span></div>';
-    var debtReportEl=document.getElementById("debtReport");if(debtReportEl)debtReportEl.innerHTML=debtRepHtml;
-    var dailyMap={};for(var ds=0;ds<sales.length;ds++){var dkey=sales[ds].date;if(!dailyMap[dkey])dailyMap[dkey]={total:0,count:0};dailyMap[dkey].total+=sales[ds].total;dailyMap[dkey].count++;}
-    var dailyKeys=Object.keys(dailyMap).sort().reverse().slice(0,7);
-    var dailyHtml="";for(var dk=0;dk<dailyKeys.length;dk++){var dkKey=dailyKeys[dk];dailyHtml+='<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed #bbf7d0;font-size:11px"><span>'+esc(dkKey)+'</span><b>'+dailyMap[dkKey].count+' sales - '+dailyMap[dkKey].total+' SSP</b></div>';}
-    var dailyReportEl=document.getElementById("dailyReport");if(dailyReportEl)dailyReportEl.innerHTML=dailyHtml||"No daily data";
-    var box=document.getElementById("reportBox");
-    if(box){box.innerHTML='<b>📊 V11.2 Fixed Summary</b><br>Filter: '+esc(shiftFilter||'All Shifts')+' + '+(dateFilter||'All Time')+'<br>Total Sales: '+totalSales+' SSP | Expenses: '+totalExpenses+' SSP | Net Profit: <b style="color:'+(netProfit>=0?'green':'red')+'">'+netProfit+' SSP</b><br>Stock Value: '+stockValue+' SSP | Creditors Remaining: '+credTotalRem+' SSP | Debtors Remaining: '+debtTotalRem+' SSP | Net Debt: '+netDebt+' SSP<br>Sales Count: '+salesCount+' | Low: '+lowStock+' | Expired: '+expired+' | Shelves: '+Object.keys(shelvesSet).length+'<br>Current Shift: '+esc(getActiveShift())+' - '+new Date().toLocaleString()+' - V11.2 Fixed - Firebase '+(db?'ON':'OFF');}
-  }catch(e){console.log("report error",e);}
+document.getElementById('barcode').addEventListener('keydown',e=>{if(e.key==='Enter'){let code=sanitize(e.target.value.trim()); let f=stock.find(s=>s.barcode===code||s.name.toLowerCase().includes(code.toLowerCase())); if(f){let ex=cart.find(c=>c.barcode===f.barcode); if(ex)ex.qty++; else cart.push({...f,qty:1}); updateCart(); showMedQR(f.barcode);} e.target.value=''; lastActivity=Date.now();}});
+
+function updateCart(){ let tb=document.getElementById('cart'); tb.innerHTML=''; let tot=0; cart.forEach(c=>{let line=c.sell*c.qty; tot+=line; tb.innerHTML+=`<tr class='border-b'><td>${sanitize(c.name)}</td><td>${c.sell}</td><td>${c.qty}</td><td>${line}</td></tr>`;}); document.getElementById('totalSSP').innerText=tot; document.getElementById('totalUSD').innerText=sspToUsd(tot); document.getElementById('rTotalSSP').innerText=tot; document.getElementById('rTotalUSD').innerText=sspToUsd(tot); document.getElementById('rRate').innerText=`1$=${exRate}SSP`; let paid=parseFloat(document.getElementById('paidSSP').value)||tot; document.getElementById('change').innerText=paid-tot; document.getElementById('changeUSD').innerText=sspToUsd(paid-tot); document.getElementById('rQR').innerHTML=''; new QRCode(document.getElementById('rQR'),{text:`GracePharma Receipt SSP:${tot} USD:$${sspToUsd(tot)} ${new Date().toISOString()}`,width:80,height:80});}
+
+document.getElementById('paidSSP').addEventListener('input',updateCart);
+document.getElementById('paymentType').addEventListener('change',e=>{
+  let v=e.target.value;
+  document.getElementById('debtCustomer').classList.toggle('hidden',v==='Cash');
+  document.getElementById('deliveryAddress').classList.toggle('hidden',v!=='Delivery');
+});
+
+async function sell(){
+  if(!cart.length) return;
+  let tot=cart.reduce((a,b)=>a+b.sell*b.qty,0);
+  let type=sanitize(document.getElementById('paymentType').value);
+  let cust=sanitize(document.getElementById('debtCustomer').value||'');
+  let addr=sanitize(document.getElementById('deliveryAddress').value||'');
+  if((type==='Debt'||type==='Delivery') && !cust){ alert('Customer name required for Debt/Delivery'); return; }
+  if(type==='Debt'){
+    debts.push({customer:cust, phone:'', amountSSP:tot, amountUSD:sspToUsd(tot), date:new Date().toISOString(), status:'Pending', cashier:currentUser.name});
+    localStorage.setItem('grace_debts',JSON.stringify(debts));
+    if(window.db&&navigator.onLine) try{await window.setDoc(window.doc(window.db,'debts',Date.now().toString()), debts[debts.length-1]);}catch(e){}
+  }
+  if(type==='Delivery'){
+    let fee=parseFloat(prompt('Delivery fee SSP (e.g., 2000):')||'0');
+    deliveries.push({id:Date.now().toString(), customer:cust, address:addr, items:cart, totalSSP:tot, feeSSP:fee, grandSSP:tot+fee, totalUSD:sspToUsd(tot+fee), rider:'Not Assigned', status:'Pending', date:new Date().toISOString(), cashier:currentUser.name});
+    localStorage.setItem('grace_deliveries',JSON.stringify(deliveries));
+    if(window.db&&navigator.onLine) try{await window.setDoc(window.doc(window.db,'deliveries',deliveries[deliveries.length-1].id), deliveries[deliveries.length-1]);}catch(e){}
+  }
+  cart.forEach(c=>{let s=stock.find(x=>x.barcode===c.barcode); if(s){s.qty-=c.qty; if(window.db&&navigator.onLine) window.setDoc(window.doc(window.db,'stock',s.barcode), s).catch(()=>{});} });
+  localStorage.setItem('grace_stock',JSON.stringify(stock));
+  let sale={id:Date.now().toString(), items:cart, totalSSP:tot, totalUSD:sspToUsd(tot), cashier:currentUser.name, shift:currentUser.shift, paymentType:type, customer:cust, address:addr, rate:exRate, date:new Date().toISOString()};
+  sales.push(sale); localStorage.setItem('grace_sales',JSON.stringify(sales));
+  if(window.db&&navigator.onLine) try{await window.setDoc(window.doc(window.db,'sales',sale.id), sale);}catch(e){}
+  document.getElementById('rDate').innerText=new Date().toLocaleString(); document.getElementById('rItems').innerHTML=cart.map(c=>`${sanitize(c.name)} x${c.qty} = SSP ${c.sell*c.qty}<br>`).join('');
+  window.print(); cart=[]; updateCart(); renderStock(); renderDebts(); renderDelivery(); renderReport();
 }
-function exportDataV112(){try{var data={medicines:medicines,sales:sales,expenses:expenses,creditors:creditors,debtors:debtors,auditLogs:auditLogs.slice(0,50),exported:new Date().toISOString(),version:"V11.2 Fixed",developer:"E-Mutwokil Sadik",contact:"+211928813308"};var blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});var url=URL.createObjectURL(blob);var a=document.createElement("a");a.href=url;a.download="GracePharmacy_V11.2_Fixed_Backup_"+new Date().toISOString().split("T")[0]+".json";a.click();URL.revokeObjectURL(url);addLogV112("EXPORT","Exported V11.2 backup");}catch(e){showAlert("Export failed","warn");}}
-function exportDebtsCSVV112(){try{var csv="Type,Name,Phone,Total,Paid,Remaining,Status,DueDate,Reason,Shift,CreatedBy\n";for(var i=0;i<creditors.length;i++){var c=creditors[i];csv+='Creditor,'+esc(c.name)+','+esc(c.phone)+','+c.total+','+c.paid+','+c.remaining+','+c.status+','+c.dueDate+','+esc(c.reason)+','+c.shift+','+esc(c.createdBy)+'\n';}for(var j=0;j<debtors.length;j++){var d=debtors[j];csv+='Debtor,'+esc(d.name)+','+esc(d.phone)+','+d.total+','+d.paid+','+d.remaining+','+d.status+','+d.dueDate+','+esc(d.reason)+','+d.shift+','+esc(d.createdBy)+'\n';}var blob=new Blob([csv],{type:"text/csv"});var url=URL.createObjectURL(blob);var a=document.createElement("a");a.href=url;a.download="GracePharmacy_Debts_V11.2_"+new Date().toISOString().split("T")[0]+".csv";a.click();URL.revokeObjectURL(url);addLogV112("EXPORT_DEBTS","Exported debts CSV V11.2");}catch(e){showAlert("Debts export failed","warn");}}
-function clearAllDataV112(){try{if(!currentUser||currentUser.role!=="admin"){showAlert("Admin only","warn");return;}var code=prompt("Type DELETE to clear ALL data including debts - V11.2:");if(code!=="DELETE"){showAlert("Cancelled","warn");return;}medicines=JSON.parse(JSON.stringify(DEFAULT_MEDS));sales=[];expenses=[];creditors=[];debtors=[];auditLogs=[];saveV112();addLogV112("CLEAR_ALL","Admin cleared ALL data V11.2");renderAllV112();showAlert("All data cleared - Reset to 10 default","ok");}catch(e){}}
-function renderAllV112(){try{updateShiftDisplaysV112();renderMedSelectV112();renderLiveV112();renderStockV112();renderExpensesV112();renderCreditorsV112();renderDebtorsV112();renderReportsV112();renderAuditV112();}catch(e){console.log("renderAll error",e);}}
-// INIT V11.2 FIXED
-try{
-  if(medicines.length===0){medicines=JSON.parse(JSON.stringify(DEFAULT_MEDS));saveV112();}
-  updateShiftDisplaysV112();renderAllV112();
-  if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').then(()=>console.log("SW V11.2 Registered")).catch(()=>{});}
-  // Check auto login - FIXED with try/catch
-  try{
-    var user=localStorage.getItem("tGP_v11_user");
-    var role=localStorage.getItem("tGP_v11_role");
-    var t=parseInt(localStorage.getItem("tGP_v11_time")||"0");
-    if(user&&role&&(Date.now()-t)<43200000){
-      currentUser={name:user,role:role,user:user.toLowerCase()};
-      var ls=document.getElementById("loginScreen");if(ls)ls.classList.add("hidden");
-      var lu=document.getElementById("loggedUser");if(lu)lu.textContent=user;
-      var ro=document.getElementById("userRole");if(ro)ro.textContent=role.toUpperCase();
-      setTimeout(function(){try{renderAllV112();}catch(e){}},300);
-    }
-  }catch(e){console.log("auto login error",e);}
-  console.log("The Grace Pharmacy V11.2 Fixed - Login Guaranteed - Debts + Shifts - Firebase Safe - Developed by E-Mutwokil Sadik - +211928813308");
-}catch(e){console.log("init error V11.2",e);}
-// Enter key login
-try{
-  document.getElementById("loginPass").addEventListener("keypress",function(e){if(e.key==="Enter")doLoginV112();});
-  document.getElementById("loginUser").addEventListener("keypress",function(e){if(e.key==="Enter")doLoginV112();});
-}catch(e){}
+
+function addMed(){ let b=sanitize(prompt('Barcode:')), n=sanitize(prompt('Name:')), q=parseInt(prompt('Qty:')), s=parseFloat(prompt('Price SSP:')), e=sanitize(prompt('Expiry YYYY-MM-DD:')); if(b&&n){let med={barcode:b,name:n,qty:q,sell:s,exp:e}; stock.push(med); localStorage.setItem('grace_stock',JSON.stringify(stock)); if(window.db&&navigator.onLine) window.setDoc(window.doc(window.db,'stock',b), med).catch(()=>{}); renderStock();}}
+
+function initSync(){ if(!window.db) return setTimeout(initSync,500); window.onSnapshot(window.collection(window.db,'stock'), snap=>{snap.docChanges().forEach(ch=>{let d=ch.doc.data(); let i=stock.findIndex(s=>s.barcode===d.barcode); if(i>-1) stock[i]=d; else stock.push(d);}); localStorage.setItem('grace_stock',JSON.stringify(stock)); renderStock();}); window.addEventListener('online',()=>document.getElementById('online').innerText='Online'); window.addEventListener('offline',()=>document.getElementById('online').innerText='Offline');}
+
+function renderDebts(){ let tb=document.getElementById('debtList'); if(!tb) return; tb.innerHTML=''; let tot=0; debts.forEach((d,i)=>{tot+=d.amountSSP; tb.innerHTML+=`<tr class='border-b'><td>${sanitize(d.customer)}</td><td>${sanitize(d.phone||'')}</td><td>${d.amountSSP}</td><td>$${d.amountUSD}</td><td>${new Date(d.date).toLocaleDateString()}</td><td>${sanitize(d.status)}</td><td><button onclick='debts[${i}].status="Paid"; localStorage.setItem("grace_debts",JSON.stringify(debts)); renderDebts();' class='bg-emerald-700 text-white px-2 py-1 rounded'>Pay</button></td></tr>`;}); document.getElementById('totalDebtSSP').innerText=tot; document.getElementById('totalDebtUSD').innerText=sspToUsd(tot);}
+function renderDelivery(){ let tb=document.getElementById('deliveryList'); if(!tb) return; tb.innerHTML=''; deliveries.forEach((d,i)=>{tb.innerHTML+=`<tr class='border-b'><td>${d.id.slice(-5)}</td><td>${sanitize(d.customer)}</td><td>${sanitize(d.address)}</td><td>${d.totalSSP}</td><td>${d.feeSSP}</td><td>${sanitize(d.rider)}</td><td>${sanitize(d.status)}</td><td><button onclick='deliveries[${i}].status="Delivered"; localStorage.setItem("grace_deliveries",JSON.stringify(deliveries)); renderDelivery();' class='bg-emerald-700 text-white px-2 py-1 rounded'>Delivered</button></td></tr>`;});}
+function renderReport(){ let today=new Date().toDateString(); let todaySales=sales.filter(s=>new Date(s.date).toDateString()===today); let sum=todaySales.reduce((a,b)=>a+b.totalSSP,0); document.getElementById('reportSSP').innerText=sum; document.getElementById('reportUSD').innerText=sspToUsd(sum); document.getElementById('reportMorning').innerText=todaySales.filter(s=>s.shift==='Morning').reduce((a,b)=>a+b.totalSSP,0); document.getElementById('reportEvening').innerText=todaySales.filter(s=>s.shift==='Evening').reduce((a,b)=>a+b.totalSSP,0); document.getElementById('reportDelivery').innerText=todaySales.filter(s=>s.paymentType==='Delivery').reduce((a,b)=>a+b.totalSSP,0);}
+function exportReport(){ let csv='Date,Cashier,Shift,Total SSP,Total USD,Payment,Customer\n'+sales.map(s=>`${s.date},${s.cashier},${s.shift},${s.totalSSP},${s.totalUSD},${s.paymentType},${s.customer||''}`).join('\n'); let blob=new Blob([csv],{type:'text/csv'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='Grace_Report.csv'; a.click();}
+
+let html5Qr;
+function startCameraScanner(){
+  document.getElementById('reader').classList.remove('hidden');
+  html5Qr=new Html5Qrcode('qr-reader');
+  html5Qr.start({facingMode:'environment'},{fps:10,qrbox:250},(decoded)=>{
+    document.getElementById('barcode').value=decoded;
+    document.getElementById('barcode').dispatchEvent(new KeyboardEvent('keydown',{key:'Enter'}));
+    html5Qr.stop().then(()=>document.getElementById('reader').classList.add('hidden'));
+    if(navigator.vibrate) navigator.vibrate(100);
+  }).catch(()=>alert('Allow camera'));
+}
+function stopCameraScanner(){ if(html5Qr) html5Qr.stop().then(()=>document.getElementById('reader').classList.add('hidden'));}
+
+async function changePass(user){ let np=document.getElementById(user==='admin'?'newAdminPass':user==='cashier.morning'?'newMorningPass':'newEveningPass').value; if(!np) return alert('Enter new password'); let h=await sha256(np); let hashes=getUserHashes(); hashes[user]=h; localStorage.setItem('user_hashes',JSON.stringify(hashes)); alert('Password updated securely (hashed)');}
+
+if(stock.length===0){ stock=[{barcode:'123456',name:'Panadol Extra',qty:50,sell:2500,exp:'2026-12-31'}]; localStorage.setItem('grace_stock',JSON.stringify(stock));}
+document.addEventListener('mousemove',()=>lastActivity=Date.now()); document.addEventListener('keydown',()=>lastActivity=Date.now());
 </script>
-</body>
-</html>
+</body></html>
