@@ -1,14 +1,24 @@
 {
-  "name": "The Grace Pharmacy - Give your health a new lift",
-  "short_name": "TGP",
-  "description": "Professional Pharmacy Management System V11.0 - Debts + Shifts + Firebase - Developed by E-Mutwokil Sadik - Contact +211928813308",
+  "name": "The Grace Pharmacy - Sidigi Edition",
+  "short_name": "GracePharma",
+  "description": "Give your health a new lift - Offline + Firebase",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0A8C4A",
-  "theme_color": "#0A8C4A",
-  "orientation": "any",
+  "background_color": "#22B573",
+  "theme_color": "#22B573",
+  "orientation": "portrait-primary",
   "icons": [
-    {"src": "logo.jpg","sizes": "192x192","type": "image/jpeg","purpose": "any maskable"},
-    {"src": "logo.jpg","sizes": "512x512","type": "image/jpeg","purpose": "any maskable"}
+    {
+      "src": "./logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }
