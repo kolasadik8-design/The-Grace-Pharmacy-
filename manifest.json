@@ -1,10 +1,9 @@
 {
-  "name": "The Grace Pharmacy Pro",
-  "short_name": "GracePro",
-  "description": "Give your health a new lift - Offline Ready",
+  "name": "Grace Pharmacy Offline Pro",
+  "short_name": "Grace Offline",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#22B573",
   "theme_color": "#22B573",
-  "icons": [{"src": "./logo.png","sizes": "512x512","type": "image/png","purpose":"any maskable"}]
+  "icons": [{"src": "logo.png","sizes": "192x192","type": "image/png"}]
 }
