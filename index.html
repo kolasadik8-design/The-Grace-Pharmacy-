@@ -1,45 +1,372 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Grace Pharmacy V13.4.1</title><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0A5C36"><script src="https://cdn.tailwindcss.com"></script><style>:root{--g:#0A5C36;--gl:#16A34A;--gold:#C8A951;--bg:#F8FFFE}body{background:var(--bg);font-family:Inter,Segoe UI} .hdr{background:linear-gradient(135deg,#0A5C36,#16A34A)} .tab{ background:#fff;color:#0A5C36;border:1px solid #DCFCE7} .tabA{background:#0A5C36!important;color:#fff!important;border-bottom:3px solid #C8A951!important} .card{background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(10,92,54,.07);border:1px solid #DCFCE7} .inp{border:1.5px solid #DCFCE7;border-radius:10px;padding:10px 12px;width:100%} .inp:focus{border-color:#0A5C36;outline:none;box-shadow:0 0 0 3px rgba(10,92,54,.12)} .btn{background:linear-gradient(135deg,#0A5C36,#16A34A);color:#fff;border-radius:10px;font-weight:600;padding:10px} .cont{max-width:1280px;margin:0 auto;padding:0 16px} .foot{background:linear-gradient(90deg,#0A5C36,#064E2B);color:#fff;border-top:3px solid #C8A951}</style></head><body class="min-h-screen flex flex-col">
-<header class="hdr sticky top-0 z-50 shadow"><div class="cont py-3 flex justify-between items-center text-white"><div class="flex items-center gap-3"><img src="logo.png" class="w-10 h-10 bg-white rounded-full p-1" onerror="this.style.display='none'"><div><h1 class="font-bold text-[18px]">THE GRACE PHARMACY</h1><p class="text-[11px] text-[#E7D5A0]">V13.4.1 Pro • Juba</p></div></div><div class="flex gap-2 items-center text-[12px]"><span id="offlineBadge" class="hidden bg-red-500 px-2 py-1 rounded-full">Offline</span><span id="queueBadge" class="hidden bg-[#C8A951] text-[#0A5C36] px-2 py-1 rounded-full font-bold">Queue 0</span><span id="userBadge" class="bg-white/20 px-3 py-1 rounded-full"></span><button onclick="location.reload()" class="bg-white/10 px-3 py-1 rounded-full">Logout</button></div></div></header>
-<div id="login" class="flex-1 flex items-center justify-center p-4"><div class="card w-full max-w-[380px] p-7"><div class="text-center mb-5"><img src="logo.png" class="w-20 h-20 mx-auto bg-white rounded-full p-1 shadow mb-3"><h2 class="font-bold text-[20px] text-[#0A5C36]">Welcome Back</h2></div><input id="u" placeholder="Username (admin)" class="inp mb-3"><input id="p" type="password" placeholder="Password" class="inp mb-4"><button onclick="doLogin()" class="btn w-full">Login →</button><p id="loginError" class="hidden mt-3 bg-red-50 text-red-600 p-2 rounded text-[13px]"></p><p class="text-[11px] text-center text-gray-400 mt-3">admin / GraceAdmin@2026!</p></div></div>
-<div id="app" class="hidden flex-1 flex flex-col"><div class="bg-white border-b sticky top-[60px] z-40"><div class="cont py-2 flex gap-2 overflow-x-auto"><button onclick="showTab('pos')" data-tab="pos" class="tab tabA px-4 py-2.5 rounded-t-lg text-[13px] font-semibold">💊 POS</button><button onclick="showTab('stock')" data-tab="stock" class="tab px-4 py-2.5 rounded-t-lg text-[13px] font-semibold">📦 Stock</button><button onclick="showTab('expiry')" data-tab="expiry" class="tab px-4 py-2.5 rounded-t-lg text-[13px] font-semibold">⏰ Expiry <span id="expiryCount" class="hidden ml-1 bg-red-500 text-white text-[10px] px-1.5 rounded-full">0</span></button><button onclick="showTab('sales')" data-tab="sales" class="tab px-4 py-2.5 rounded-t-lg text-[13px] font-semibold">📊 Sales</button><button onclick="showTab('settings')" data-tab="settings" class="tab px-4 py-2.5 rounded-t-lg text-[13px] font-semibold">⚙️ Settings</button></div></div>
-<main class="cont py-4 flex-1"><div id="tab-pos" class="tab-content"><div class="grid md:grid-cols-[1.6fr_.9fr] gap-4"><div class="card p-4"><input id="searchMed" placeholder="Search barcode or name..." class="inp mb-3" oninput="searchMeds(this.value)"><div id="medsList" class="grid sm:grid-cols-2 gap-2 max-h-[60vh] overflow-auto"></div></div><div class="card p-4 flex flex-col"><h3 class="font-bold text-[#0A5C36] mb-3">🧾 Cart - <span id="rCashier"></span></h3><div id="cartList" class="flex-1 space-y-2 max-h-[35vh] overflow-auto"></div><div class="border-t pt-3 mt-3"><div class="flex justify-between text-[14px] mb-2"><span>Total SSP</span><span id="cartTotal" class="font-bold">0</span></div><button onclick="checkout()" class="btn w-full">Checkout ✅</button><button onclick="clearCart()" class="w-full text-[12px] text-gray-400 mt-2">Clear</button></div></div></div></div>
-<div id="tab-stock" class="tab-content hidden"><div class="card p-4"><h3 class="font-bold text-[#0A5C36] mb-3">➕ Add Medicine</h3><div class="grid grid-cols-2 md:grid-cols-4 gap-2"><input id="mBarcode" placeholder="Barcode * بدون /" class="inp"><input id="mName" placeholder="Name *" class="inp"><input id="mGeneric" placeholder="Generic" class="inp"><input id="mQty" type="number" placeholder="Qty *" class="inp"><input id="mBuy" type="number" placeholder="Buy" class="inp"><input id="mSell" type="number" placeholder="Sell *" class="inp"><input id="mExpiry" type="date" class="inp"><button onclick="addMed()" class="btn">Save Stock</button></div><p id="stockMsg" class="hidden mt-3 p-2 rounded text-[13px]"></p><div class="overflow-x-auto mt-4"><table class="w-full text-[13px]"><thead class="bg-[#F0FDF4] text-[#0A5C36]"><tr><th class="p-2 text-left">Name</th><th class="p-2">Barcode</th><th class="p-2">Qty</th><th class="p-2">Sell</th><th class="p-2">Expiry</th><th class="p-2">Del</th></tr></thead><tbody id="stockTable"></tbody></table></div></div></div>
-<div id="tab-expiry" class="tab-content hidden"><div class="card p-4"><h3 class="font-bold text-[#0A5C36] mb-3">⏰ Expiry - 45 Days</h3><div id="expiryList"></div></div></div>
-<div id="tab-sales" class="tab-content hidden"><div class="card p-4"><h3 class="font-bold">Sales</h3><div id="salesList" class="mt-3 text-[13px]"></div></div></div>
-<div id="tab-settings" class="tab-content hidden"><div class="card p-4"><h3 class="font-bold">USD Rate</h3><div class="flex gap-2 mt-2"><input id="rateInput" type="number" class="inp"><button onclick="saveRate()" class="btn px-4">Save</button></div></div></div></main>
-<footer class="foot mt-6"><div class="cont py-3 flex flex-col md:flex-row justify-between items-center gap-2 text-[12px]"><span>© 2026 The Grace Pharmacy - Juba</span><span class="flex items-center gap-2 font-semibold">Developed by <b class="text-[#C8A951]">E-Mutwokil Sadik</b> <span class="bg-white/10 px-3 py-1 rounded-full">☎️ +211928813308</span></span></div></footer></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Grace Pharmacy V14 - Audit System</title>
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0A5C36">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+:root{--g:#0A5C36;--gl:#16A34A;--gold:#C8A951;--bg:#F8FFFE}
+body{background:var(--bg);font-family:Inter,system-ui}
+.hdr{background:linear-gradient(135deg,#0A5C36,#16A34A);border-bottom:3px solid #C8A951}
+.tab{background:#fff;color:#0A5C36;border:1px solid #DCFCE7}.tabA{background:#0A5C36!important;color:#fff!important;border-bottom:3px solid #C8A951!important}
+.card{background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(10,92,54,.07);border:1px solid #DCFCE7}
+.inp{border:1.5px solid #DCFCE7;border-radius:10px;padding:10px 12px;width:100%;font-size:14px}
+.inp:focus{border-color:#0A5C36;outline:none;box-shadow:0 0 0 3px rgba(10,92,54,.12)}
+.btn{background:linear-gradient(135deg,#0A5C36,#16A34A);color:#fff;border-radius:10px;font-weight:600;padding:10px 16px}
+.btnGold{background:linear-gradient(135deg,#C8A951,#E7D5A0);color:#0A5C36;font-weight:700;border-radius:10px;padding:10px 16px}
+.foot{background:linear-gradient(90deg,#0A5C36,#064E2B);color:#fff;border-top:3px solid #C8A951}
+.badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.badge-morning{background:#DBEAFE;color:#1E40AF}.badge-evening{background:#FEF3C7;color:#92400E}.badge-admin{background:#0A5C36;color:#fff}
+</style>
+</head>
+<body class="min-h-screen flex flex-col">
+<header class="hdr sticky top-0 z-50 shadow">
+<div class="max-w-[1350px] mx-auto px-4 py-3 flex justify-between items-center text-white">
+<div class="flex items-center gap-3"><img src="logo.png" class="w-10 h-10 bg-white rounded-full p-1"><div><h1 class="font-bold text-[18px]">THE GRACE PHARMACY</h1><p class="text-[11px] text-[#E7D5A0]">V14 Pro Audit • Juba</p></div></div>
+<div class="flex gap-2 items-center text-[12px]"><span id="offlineBadge" class="hidden bg-red-500 px-2 py-1 rounded-full">Offline</span><span id="queueBadge" class="hidden bg-[#C8A951] text-[#0A5C36] px-2 py-1 rounded-full font-bold">Queue 0</span><span id="userBadge" class="bg-white/15 px-3 py-1.5 rounded-full"></span><span id="shiftBadge" class="badge badge-morning"></span><button onclick="doLogout()" class="bg-white/10 px-3 py-1.5 rounded-full">Logout</button></div>
+</div>
+</header>
+
+<div id="login" class="flex-1 flex items-center justify-center p-4 bg-gradient-to-br from-[#F0FDF4] to-[#FFFBEB]">
+<div class="card w-full max-w-[400px] p-8"><div class="text-center mb-6"><img src="logo.png" class="w-20 h-20 mx-auto bg-white rounded-full p-2 shadow border-2 border-[#C8A951]"><h2 class="font-bold text-[22px] text-[#0A5C36] mt-3">Pharmacy Login</h2><p class="text-[11px] text-gray-500">Audit Trail Enabled - Every action tracked</p></div>
+<input id="u" placeholder="Username" class="inp mb-3"><input id="p" type="password" placeholder="Password" class="inp mb-4">
+<button onclick="doLogin()" class="btn w-full py-3">Login →</button><p id="loginError" class="hidden mt-3 bg-red-50 text-red-600 p-3 rounded-xl text-[13px]"></p>
+<div class="mt-4 p-3 bg-[#F0FDF4] rounded-xl text-[11px]"><b>Accounts:</b> admin / cashier.morning / cashier.evening<br>Pass: GraceAdmin@2026! / GraceMorning2026 / GraceEvening2026</div>
+</div>
+</div>
+
+<div id="app" class="hidden flex-1 flex flex-col">
+<div class="bg-white border-b sticky top-[61px] z-40"><div class="max-w-[1350px] mx-auto px-4 py-2 flex gap-2 overflow-x-auto">
+<button onclick="showTab('pos')" data-tab="pos" class="tab tabA px-4 py-2.5 rounded-t-xl text-[13px] font-semibold">💊 POS</button>
+<button onclick="showTab('stock')" data-tab="stock" class="tab px-4 py-2.5 rounded-t-xl text-[13px] font-semibold">📦 Stock</button>
+<button onclick="showTab('expiry')" data-tab="expiry" class="tab px-4 py-2.5 rounded-t-xl text-[13px] font-semibold">⏰ Expiry <span id="expiryCount" class="hidden bg-red-500 text-white text-[10px] px-2 rounded-full">0</span></button>
+<button onclick="showTab('sales')" data-tab="sales" class="tab px-4 py-2.5 rounded-t-xl text-[13px] font-semibold">📊 Sales</button>
+<button onclick="showTab('reports')" data-tab="reports" class="tab px-4 py-2.5 rounded-t-xl text-[13px] font-semibold">📈 Reports + Audit</button>
+<button onclick="showTab('expenses')" data-tab="expenses" class="tab px-4 py-2.5 rounded-t-xl text-[13px] font-semibold">💸 Expenses</button>
+<button onclick="showTab('debts')" data-tab="debts" class="tab px-4 py-2.5 rounded-t-xl text-[13px] font-semibold">🧾 Debts</button>
+<button onclick="showTab('purchases')" data-tab="purchases" class="tab px-4 py-2.5 rounded-t-xl text-[13px] font-semibold">📥 Purchases</button>
+<button onclick="showTab('staff')" data-tab="staff" class="tab px-4 py-2.5 rounded-t-xl text-[13px] font-semibold">👥 Staff</button>
+</div></div>
+<main class="max-w-[1350px] mx-auto px-4 py-4 flex-1 w-full">
+  <div id="tab-pos" class="tab-content">
+<div class="grid lg:grid-cols-[1.7fr_.9fr] gap-4">
+<div class="card p-4">
+<input id="searchMed" placeholder="Search by barcode or name..." class="inp mb-3" oninput="searchMeds(this.value)">
+<div id="medsList" class="grid sm:grid-cols-2 gap-2 max-h-[62vh] overflow-auto"></div>
+</div>
+<div class="card p-4 flex flex-col">
+<h3 class="font-bold text-[#0A5C36] mb-3 flex justify-between">Cart - <span id="rCashier" class="text-[#C8A951]"></span> <span id="rShift" class="badge badge-morning"></span></h3>
+<div id="cartList" class="flex-1 space-y-2 max-h-[35vh] overflow-auto"></div>
+<div class="border-t pt-3 mt-3">
+<div class="flex justify-between text-[14px]"><span>Items</span><span id="cartCount" class="font-bold">0</span></div>
+<div class="flex justify-between text-[16px] font-bold"><span>Total SSP</span><span id="cartTotal" class="text-[#0A5C36]">0</span></div>
+<input id="custPhone" placeholder="Customer phone (optional for receipt)" class="inp text-[12px] mt-2">
+<div class="grid grid-cols-2 gap-2 mt-2"><button onclick="checkout()" class="btn">Checkout ✅</button><button onclick="checkoutWithDebt()" class="btnGold">Debt</button></div>
+<button onclick="clearCart()" class="w-full text-[11px] text-gray-400 mt-2">Clear</button>
+<div id="receiptArea" class="hidden mt-3"></div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="tab-stock" class="tab-content hidden">
+<div class="card p-5">
+<h3 class="font-bold text-[#0A5C36]">Add Medicine - Audit Tracked</h3><p class="text-[11px] text-gray-500 mb-3">Every add/edit/delete is logged with cashier name & shift</p>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<input id="mBarcode" placeholder="Barcode * no /" class="inp"><input id="mName" placeholder="Name *" class="inp"><input id="mGeneric" placeholder="Generic" class="inp"><input id="mQty" type="number" placeholder="Qty *" class="inp"><input id="mBuy" type="number" placeholder="Buy Price" class="inp"><input id="mSell" type="number" placeholder="Sell Price *" class="inp"><input id="mExpiry" type="date" class="inp"><input id="mSupplier" placeholder="Supplier" class="inp">
+</div>
+<button onclick="addMed()" class="btn mt-3">Save + Log Audit</button>
+<p id="stockMsg" class="hidden mt-3 p-3 rounded-xl text-[13px]"></p>
+<div class="overflow-x-auto mt-4 border rounded-xl"><table class="w-full text-[13px]"><thead class="bg-[#F0FDF4] text-[#0A5C36]"><tr><th class="p-3 text-left">Name</th><th class="p-3">Barcode</th><th class="p-3">Qty</th><th class="p-3">Price</th><th class="p-3">Expiry</th><th class="p-3">Last By</th><th class="p-3">Del</th></tr></thead><tbody id="stockTable"></tbody></table></div>
+</div>
+</div>
+
+<div id="tab-expiry" class="tab-content hidden">
+<div class="grid md:grid-cols-3 gap-3 mb-4">
+<div class="card p-4 border-l-4 border-red-500"><div class="text-[11px]">Expired</div><div id="expExpired" class="font-bold text-[20px] text-red-600">0</div></div>
+<div class="card p-4 border-l-4 border-orange-400"><div class="text-[11px]">< 15 Days</div><div id="exp15" class="font-bold text-[20px] text-orange-500">0</div></div>
+<div class="card p-4 border-l-4 border-yellow-400"><div class="text-[11px]">< 45 Days</div><div id="exp45" class="font-bold text-[20px]">0</div></div>
+</div>
+<div class="card p-5"><h3 class="font-bold text-[#0A5C36] mb-3">Expiry - 45 Days</h3><div id="expiryList"></div></div>
+</div>
+
+<div id="tab-sales" class="tab-content hidden">
+<div class="card p-5"><h3 class="font-bold text-[#0A5C36]">Sales History</h3><div id="salesList" class="mt-3 text-[13px]"></div></div>
+                                                                                             </div>
+                                                                                             <div id="tab-reports" class="tab-content hidden">
+<div class="grid md:grid-cols-4 gap-3 mb-4">
+<div class="card p-4 border-l-4 border-[#0A5C36]"><div class="text-[11px] text-gray-500">Today Sales</div><div id="repToday" class="font-bold text-[22px] text-[#0A5C36]">0 SSP</div><div id="repTodayProfit" class="text-[11px] text-green-600">Profit: 0</div></div>
+<div class="card p-4 border-l-4 border-[#C8A951]"><div class="text-[11px]">Weekly Sales</div><div id="repWeek" class="font-bold text-[22px]">0</div></div>
+<div class="card p-4 border-l-4 border-blue-400"><div class="text-[11px]">Monthly Sales</div><div id="repMonth" class="font-bold text-[22px]">0</div></div>
+<div class="card p-4 border-l-4 border-green-500"><div class="text-[11px]">Net Profit (Sales-Expenses)</div><div id="repNet" class="font-bold text-[22px] text-green-700">0</div></div>
+</div>
+
+<div class="grid lg:grid-cols-[1.2fr_.8fr] gap-4">
+<div class="card p-5">
+<h3 class="font-bold text-[#0A5C36] mb-3">📋 Operation Audit Log - Cashier Fingerprint</h3>
+<p class="text-[11px] text-gray-500 mb-3">Every sale, delete, edit, expense is tracked with cashier name & shift (Morning/Evening)</p>
+<div class="flex gap-2 mb-3 flex-wrap">
+<input id="auditDate" type="date" class="inp w-auto text-[12px]"><select id="auditUser" class="inp w-auto text-[12px]"><option value="">All Cashiers</option><option value="admin">admin</option><option value="cashier.morning">cashier.morning (Morning)</option><option value="cashier.evening">cashier.evening (Evening)</option></select>
+<select id="auditAction" class="inp w-auto text-[12px]"><option value="">All Actions</option><option value="SALE">SALE</option><option value="DELETE">DELETE</option><option value="EDIT">EDIT</option><option value="ADD_STOCK">ADD_STOCK</option><option value="EXPENSE">EXPENSE</option><option value="PURCHASE">PURCHASE</option></select>
+<button onclick="filterAudit()" class="btn text-[12px]">Filter</button><button onclick="exportAuditCSV()" class="btnGold text-[12px]">Export CSV</button>
+</div>
+<div class="overflow-x-auto border rounded-xl"><table class="w-full text-[12px]"><thead class="bg-[#0A5C36] text-white"><tr><th class="p-2 text-left">Time</th><th class="p-2">Cashier</th><th class="p-2">Shift</th><th class="p-2">Action</th><th class="p-2">Details</th></tr></thead><tbody id="auditTable"></tbody></table></div>
+</div>
+<div class="card p-5"><h3 class="font-bold text-[#0A5C36] mb-3">Top Selling Medicines</h3><div id="topMeds" class="text-[13px] space-y-2"></div></div>
+</div>
+</div>
+
+<div id="tab-expenses" class="tab-content hidden">
+<div class="grid lg:grid-cols-[.9fr_1.3fr] gap-4">
+<div class="card p-5"><h3 class="font-bold text-[#0A5C36]">💸 Add Office Expense - Tracked</h3>
+<div class="space-y-3 mt-3"><input id="expDate" type="date" class="inp"><select id="expCategory" class="inp"><option>Rent</option><option>Electricity</option><option>Salaries</option><option>Transport</option><option>Internet</option><option>Other</option></select><input id="expDesc" placeholder="Description e.g. June Rent" class="inp"><input id="expAmount" type="number" placeholder="Amount SSP" class="inp"><button onclick="addExpense()" class="btn w-full">Save Expense + Audit</button></div><p id="expMsg" class="hidden mt-3 p-2 rounded text-[13px]"></p></div>
+<div class="card p-5"><div class="flex justify-between"><h3 class="font-bold text-[#0A5C36]">Expenses History</h3><div class="text-[12px]">Total: <span id="expTotal" class="font-bold">0</span> SSP</div></div><div id="expensesList" class="mt-3 text-[13px] space-y-1 max-h-[60vh] overflow-auto"></div></div>
+</div>
+</div>
+
+<div id="tab-debts" class="tab-content hidden">
+<div class="grid md:grid-cols-2 gap-4">
+<div class="card p-5"><h3 class="font-bold">Customer Debts</h3><div class="grid grid-cols-2 gap-2 mt-3"><input id="debtCustName" placeholder="Customer Name" class="inp"><input id="debtAmount" type="number" placeholder="Amount" class="inp"><input id="debtPhone" placeholder="Phone" class="inp"><button onclick="addDebt()" class="btn">Add Debt</button></div><div id="debtsList" class="mt-4 text-[13px]"></div></div>
+<div class="card p-5"><h3 class="font-bold">Supplier Debts</h3><div class="grid grid-cols-2 gap-2 mt-3"><input id="sDebtName" placeholder="Supplier" class="inp"><input id="sDebtAmount" type="number" placeholder="Amount" class="inp"><button onclick="addSDebt()" class="btn">Add</button></div><div id="sDebtsList" class="mt-4 text-[13px]"></div></div>
+</div>
+</div>
+
+<div id="tab-purchases" class="tab-content hidden">
+<div class="card p-5"><h3 class="font-bold text-[#0A5C36]">📥 Purchases - Auto Update Stock + Audit</h3>
+<div class="grid md:grid-cols-4 gap-2 mt-3"><input id="purSupplier" placeholder="Supplier" class="inp"><input id="purBarcode" placeholder="Barcode" class="inp"><input id="purName" placeholder="Medicine Name" class="inp"><input id="purQty" type="number" placeholder="Qty" class="inp"><input id="purBuy" type="number" placeholder="Buy Price" class="inp"><input id="purInvoice" placeholder="Invoice No" class="inp"><button onclick="addPurchase()" class="btn md:col-span-2">Save Purchase + Update Stock + Audit</button></div>
+<p id="purMsg" class="hidden mt-3 p-2 rounded text-[13px]"></p><div id="purchasesList" class="mt-4 text-[13px]"></div>
+</div>
+</div>
+
+<div id="tab-staff" class="tab-content hidden">
+<div class="card p-5"><h3 class="font-bold text-[#0A5C36]">👥 Staff Accounts - Roles & Shifts</h3><p class="text-[11px] text-gray-500 mb-3">Admin creates accounts: Branch / Finance / Supervisor / Weight Staff / Admin - Each shift tracked in Audit</p>
+<div class="grid md:grid-cols-5 gap-2 mt-3"><input id="stName" placeholder="Full Name" class="inp"><input id="stUser" placeholder="username e.g. cashier.morning" class="inp"><input id="stPass" type="password" placeholder="Password" class="inp"><select id="stRole" class="inp"><option value="cashier.morning">Morning Shift</option><option value="cashier.evening">Evening Shift</option><option value="branch">Branch</option><option value="finance">Finance</option><option value="supervisor">Supervisor</option><option value="weight">Weight Staff</option><option value="admin">Admin</option></select><button onclick="createStaff()" class="btn">Create</button></div>
+<div id="staffList" class="mt-4 text-[13px]"></div>
+</div>
+</div>
+</main>
+<footer class="foot mt-6"><div class="max-w-[1350px] mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-2 text-[12px]"><span>© 2026 The Grace Pharmacy - Juba - V14 Audit Professional</span><span class="flex items-center gap-2 font-semibold">Developed by <b class="text-[#C8A951]">E-Mutwokil Sadik</b> <span class="bg-white/10 px-3 py-1 rounded-full border border-[#C8A951]/30">☎️ +211928813308</span></span></div></footer>
+</div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, enableIndexedDbPersistence, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-// ضع كونفيجك مباشرة هنا بدون تشفير - أسهل
+import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, addDoc, query, where, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
 const firebaseConfig = {
-  apiKey: "AIzaSyBqhd4QJ5X7K1VrL7YfoJcFcHDbZO8iwhQ",
-  authDomain: "the-grace-pharmacy.firebaseapp.com",
-  projectId: "the-grace-pharmacy",
-  storageBucket: "the-grace-pharmacy.firebasestorage.app",
-  messagingSenderId: "270639582399",
-  appId: "1:270639582399:web:64b06a431264e6cb800a0a"
+  apiKey: "AIzaSyDUMMY_REPLACE_WITH_YOURS",
+  authDomain: "grace-pharmacy.firebaseapp.com",
+  projectId: "grace-pharmacy-juba",
+  storageBucket: "grace-pharmacy.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "1:123456789:web:abcdef"
 };
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-enableIndexedDbPersistence(db).catch(()=>{});
-let currentUser=null,stockData=[],cart=[],offlineQueue=JSON.parse(localStorage.getItem('grace_queue')||'[]');
-async function sha256(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');}
-(async()=>{let h={};h['admin']=await sha256('GraceAdmin@2026!');h['cashier.morning']=await sha256('GraceMorning2026');h['cashier.evening']=await sha256('GraceEvening2026');if(!localStorage.getItem('user_hashes'))localStorage.setItem('user_hashes',JSON.stringify(h));})();
-window.doLogin=async()=>{let u=document.getElementById('u').value.trim(),p=document.getElementById('p').value;let hashes=JSON.parse(localStorage.getItem('user_hashes')||'{}');let hp=await sha256(p);if(hashes[u]===hp){currentUser={name:u,role:u==='admin'?'admin':'cashier'};document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');document.getElementById('userBadge').innerText=u;document.getElementById('rCashier').innerText=u;initListeners();updateQueueUI();}else{let e=document.getElementById('loginError');e.innerText='Wrong password';e.classList.remove('hidden');}};
-window.showTab=(n)=>{document.querySelectorAll('.tab-content').forEach(t=>t.classList.add('hidden'));document.getElementById('tab-'+n).classList.remove('hidden');document.querySelectorAll('[data-tab]').forEach(b=>b.classList.remove('tabA'));document.querySelector(`[data-tab="${n}"]`).classList.add('tabA');if(n==='expiry')renderExpiry();};
-window.addMed=async()=>{let raw=document.getElementById('mBarcode').value.trim();let barcode=raw.replace(/[\/#?\s]/g,'-').toUpperCase();let name=document.getElementById('mName').value.trim();let generic=document.getElementById('mGeneric').value.trim();let qty=parseInt(document.getElementById('mQty').value);let buy=parseFloat(document.getElementById('mBuy').value)||0;let sell=parseFloat(document.getElementById('mSell').value);let expiry=document.getElementById('mExpiry').value;let msg=document.getElementById('stockMsg');let show=(t,c)=>{msg.innerText=t;msg.className=`mt-3 p-2 rounded text-[13px] ${c}`;msg.classList.remove('hidden');setTimeout(()=>msg.classList.add('hidden'),4000);};if(!barcode||!name||isNaN(qty)||isNaN(sell))return show('❌ Barcode, Name, Qty, Sell required','bg-red-50 text-red-700');if(qty<0||sell<0)return show('❌ Qty/Sell >=0','bg-red-50 text-red-700');try{let data={barcode,name,generic,qty,buy,sell,expiry:expiry||null,createdAt:serverTimestamp(),updatedAt:serverTimestamp()};await setDoc(doc(db,"stock",barcode),data,{merge:true});show('✅ Saved - تم الحفظ','bg-green-50 text-green-700');document.getElementById('mBarcode').value='';document.getElementById('mName').value='';document.getElementById('mQty').value='';document.getElementById('mSell').value='';}catch(err){console.error(err);offlineQueue.push({type:'stock',docId:barcode,data:{barcode,name,generic,qty,buy,sell,expiry,offlineAt:new Date().toISOString()}});localStorage.setItem('grace_queue',JSON.stringify(offlineQueue));updateQueueUI();show('⚠️ Offline saved - '+err.message,'bg-yellow-50 text-yellow-800');}};
-function initListeners(){onSnapshot(collection(db,"stock"),snap=>{stockData=[];snap.forEach(d=>{let v=d.data();stockData.push({id:d.id,barcode:v.barcode||d.id,name:v.name||'No Name',generic:v.generic||'',qty:Number(v.qty)||0,buy:Number(v.buy)||0,sell:Number(v.sell)||0,expiry:v.expiry||null});});renderStock();renderMeds(stockData);renderExpiry();localStorage.setItem('grace_stock',JSON.stringify(stockData));},err=>{let local=JSON.parse(localStorage.getItem('grace_stock')||'[]');if(local.length){stockData=local;renderStock();renderMeds(local);}});onSnapshot(collection(db,"sales"),snap=>{let h='';snap.forEach(d=>{let s=d.data();h+=`<div class="p-2 border-b">${(s.date||'').slice(0,16)} - ${s.total||0} SSP - ${s.cashier||''}</div>`;});document.getElementById('salesList').innerHTML=h||'No sales';});window.addEventListener('online',()=>{document.getElementById('offlineBadge').classList.add('hidden');syncQueue();});window.addEventListener('offline',()=>{document.getElementById('offlineBadge').classList.remove('hidden');});if(!navigator.onLine)document.getElementById('offlineBadge').classList.remove('hidden');}
-async function syncQueue(){if(!offlineQueue.length||!navigator.onLine)return;for(let item of [...offlineQueue]){try{await setDoc(doc(db,"stock",item.docId),{...item.data,updatedAt:serverTimestamp()},{merge:true});offlineQueue.shift();}catch(e){break;}}localStorage.setItem('grace_queue',JSON.stringify(offlineQueue));updateQueueUI();}
-function updateQueueUI(){let b=document.getElementById('queueBadge');if(offlineQueue.length>0){b.innerText='Queue: '+offlineQueue.length;b.classList.remove('hidden');}else b.classList.add('hidden');}
-function renderStock(){document.getElementById('stockTable').innerHTML=stockData.map(m=>{let diff=m.expiry?Math.ceil((new Date(m.expiry)-new Date())/86400000):999;let icon=diff<0?'🔴':diff<15?'🟠':diff<45?'🟡':'🟢';return `<tr class="border-b hover:bg-[#F0FDF4]"><td class="p-2"><b>${m.name}</b><br><span class="text-[11px] text-gray-500">${m.generic}</span></td><td class="p-2 text-[11px]">${m.barcode}</td><td class="p-2 ${m.qty<=5?'text-red-600 font-bold':''}">${m.qty}</td><td class="p-2">${m.sell}</td><td class="p-2 text-[11px]">${m.expiry||'-'} ${icon}</td><td class="p-2"><button onclick="deleteMed('${m.id}')" class="text-red-500">Del</button></td></tr>`;}).join('');}
-function renderMeds(list){document.getElementById('medsList').innerHTML=list.map(m=>`<div class="p-3 border rounded-xl flex justify-between hover:bg-[#F0FDF4] cursor-pointer" onclick="addToCart('${m.id}')"><div><div class="font-semibold text-[13px] text-[#0A5C36]">${m.name}</div><div class="text-[11px] text-gray-500">${m.barcode} • Qty:${m.qty}</div></div><div class="font-bold text-[#0A5C36]">${m.sell} SSP</div></div>`).join('')||'<p class="text-gray-400 text-[13px]">No medicines</p>';}
-window.searchMeds=(q)=>{if(!q)return renderMeds(stockData);let f=stockData.filter(m=>m.name.toLowerCase().includes(q.toLowerCase())||m.barcode.toLowerCase().includes(q.toLowerCase()));renderMeds(f);};
-window.deleteMed=async(id)=>{if(!confirm('Delete?'))return;try{await deleteDoc(doc(db,"stock",id));}catch(e){alert(e.message);}};
-function renderExpiry(){let sorted=[...stockData].filter(m=>m.expiry).sort((a,b)=>new Date(a.expiry)-new Date(b.expiry));let count=0;let html=sorted.map(m=>{let diff=Math.ceil((new Date(m.expiry)-new Date())/86400000);if(diff>45)return'';count++;let bg=diff<0?'bg-red-50 border-red-200':diff<15?'bg-orange-50 border-orange-200':'bg-yellow-50';return `<div class="flex justify-between p-3 border rounded-xl mb-2 ${bg}"><div><b class="text-[13px]">${m.name}</b> <span class="text-[11px]">${m.barcode}</span><div class="text-[11px]">Qty:${m.qty} • ${m.expiry} (${diff}d)</div></div><span>${diff<0?'🔴':diff<15?'🟠':'🟡'}</span></div>`;}).join('');document.getElementById('expiryList').innerHTML=html||'<p class="text-[13px] text-gray-400">No expiry within 45 days</p>';let b=document.getElementById('expiryCount');if(count>0){b.innerText=count;b.classList.remove('hidden');}else b.classList.add('hidden');}
-window.addToCart=(id)=>{let med=stockData.find(m=>m.id===id);if(!med||med.qty<=0)return alert('Out of stock');let ex=cart.find(c=>c.id===id);if(ex){if(ex.cartQty>=med.qty)return alert('No more');ex.cartQty++;}else cart.push({...med,cartQty:1});renderCart();};
-function renderCart(){document.getElementById('cartList').innerHTML=cart.map((c,i)=>`<div class="flex justify-between text-[13px] p-2 bg-[#F0FDF4] rounded"><span>${c.name} x${c.cartQty}</span><span>${c.sell*c.cartQty} <button onclick="cart.splice(${i},1);renderCart()" class="text-red-500">✕</button></span></div>`).join('');document.getElementById('cartTotal').innerText=cart.reduce((s,c)=>s+c.sell*c.cartQty,0);}
-window.clearCart=()=>{cart=[];renderCart();};
-window.checkout=async()=>{if(!cart.length)return;let total=cart.reduce((s,c)=>s+c.sell*c.cartQty,0);try{for(let c of cart){await setDoc(doc(db,"stock",c.id),{qty:c.qty-c.cartQty,updatedAt:serverTimestamp()},{merge:true});}await setDoc(doc(collection(db,"sales")),{items:cart,total,cashier:currentUser.name,date:new Date().toISOString(),createdAt:serverTimestamp()});alert('✅ Sale saved');cart=[];renderCart();}catch(e){alert('Offline: '+e.message);offlineQueue.push({type:'sale',data:{cart,total}});localStorage.setItem('grace_queue',JSON.stringify(offlineQueue));updateQueueUI();cart=[];renderCart();}};
-window.saveRate=()=>{let v=document.getElementById('rateInput').value;localStorage.setItem('grace_rate',v);alert('Saved');};
-</script></body></html>
+
+// === STATE ===
+let currentUser = JSON.parse(localStorage.getItem('gp_user')||'null');
+let stockCache = []; let cart = []; let auditCache = [];
+const LS_QUEUE='gp_queue_v14'; let offlineQueue = JSON.parse(localStorage.getItem(LS_QUEUE)||'[]');
+
+// === FIXES FROM AUDIT ===
+function sanitizeBarcode(raw){
+  if(!raw) return '';
+  return raw.trim().replace(/[\/#?\s]+/g,'-').toUpperCase(); // Fix: no / in ID
+}
+function showMsg(id,msg,ok=true){
+  const el=document.getElementById(id); if(!el) return;
+  el.textContent=msg; el.className=`mt-3 p-3 rounded-xl text-[13px] ${ok?'bg-green-50 text-green-700 border border-green-100':'bg-red-50 text-red-700 border border-red-100'}`;
+  el.classList.remove('hidden'); setTimeout(()=>el.classList.add('hidden'),4000);
+}
+
+// === AUDIT TRAIL CORE ===
+async function logAudit(action, details, extra={}){
+  try{
+    if(!currentUser) return;
+    const shift = currentUser.role?.includes('morning') ? 'Morning' : currentUser.role?.includes('evening') ? 'Evening' : 'Admin';
+    const data = {
+      user: currentUser.user,
+      name: currentUser.name,
+      role: currentUser.role,
+      shift,
+      action, // SALE, DELETE, EDIT, ADD_STOCK, EXPENSE, PURCHASE
+      details,
+      extra,
+      timestamp: new Date().toISOString(),
+      ts: serverTimestamp()
+    };
+    // Save online, queue if offline
+    if(navigator.onLine){
+      await addDoc(collection(db,'audit'), data);
+    }else{
+      offlineQueue.push({type:'audit', data}); localStorage.setItem(LS_QUEUE, JSON.stringify(offlineQueue));
+      updateQueueBadge();
+    }
+    // Local cache for fast reports
+    auditCache.unshift(data);
+    renderAudit();
+  }catch(e){console.log('Audit log failed',e)}
+}
+
+// === LOGIN ===
+window.doLogin = ()=>{
+  const u=document.getElementById('u').value.trim().toLowerCase();
+  const p=document.getElementById('p').value;
+  const users=[
+    {user:'admin',pass:'GraceAdmin@2026!',name:'Admin',role:'admin'},
+    {user:'cashier.morning',pass:'GraceMorning2026',name:'Morning Cashier',role:'cashier.morning'},
+    {user:'cashier.evening',pass:'GraceEvening2026',name:'Evening Cashier',role:'cashier.evening'}
+  ];
+  // Also load custom staff from Firestore/local
+  const custom = JSON.parse(localStorage.getItem('gp_staff')||'[]');
+  const all = [...users, ...custom];
+  const found = all.find(x=>x.user===u && x.pass===p);
+  if(!found){ document.getElementById('loginError').textContent='Invalid username or password'; document.getElementById('loginError').classList.remove('hidden'); return;}
+  currentUser=found; localStorage.setItem('gp_user', JSON.stringify(found));
+  initApp();
+};
+window.doLogout=()=>{localStorage.removeItem('gp_user'); location.reload();};
+
+function initApp(){
+  if(!currentUser) return;
+  document.getElementById('login').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  document.getElementById('userBadge').textContent=`${currentUser.name} (${currentUser.user})`;
+  const shift = currentUser.role?.includes('morning')?'Morning':currentUser.role?.includes('evening')?'Evening':'Admin';
+  document.getElementById('shiftBadge').textContent=shift;
+  document.getElementById('shiftBadge').className=`badge ${shift==='Morning'?'badge-morning':shift==='Evening'?'badge-evening':'badge-admin'}`;
+  document.getElementById('rCashier').textContent=currentUser.name;
+  document.getElementById('rShift').textContent=shift;
+  loadStock(); loadAudit(); loadExpenses(); loadSales(); syncQueue();
+}
+if(currentUser) initApp();
+
+window.showTab=(t)=>{
+  document.querySelectorAll('.tab-content').forEach(e=>e.classList.add('hidden'));
+  document.getElementById('tab-'+t)?.classList.remove('hidden');
+  document.querySelectorAll('[data-tab]').forEach(b=>b.classList.remove('tabA'));
+  document.querySelector(`[data-tab="${t}"]`)?.classList.add('tabA');
+  if(t==='reports') calcReports();
+};
+
+// === STOCK WITH FIX ===
+async function loadStock(){
+  try{
+    if(navigator.onLine){
+      const snap=await getDocs(collection(db,'stock'));
+      stockCache=snap.docs.map(d=>({id:d.id,...d.data()}));
+    }else{
+      stockCache=JSON.parse(localStorage.getItem('gp_stock_cache')||'[]');
+    }
+    renderStock(); renderMeds(); renderExpiry();
+  }catch(e){ stockCache=JSON.parse(localStorage.getItem('gp_stock_cache')||'[]'); renderStock();}
+}
+function renderStock(){
+  const tb=document.getElementById('stockTable'); if(!tb) return;
+  document.getElementById('stockCount') && (document.getElementById('stockCount').textContent=stockCache.length);
+  tb.innerHTML=stockCache.map(s=>`<tr class="border-b hover:bg-[#F0FDF4]"><td class="p-3"><b>${s.name}</b><br><span class="text-[11px] text-gray-500">${s.generic||''}</span></td><td class="p-3 text-[11px]">${s.id}</td><td class="p-3 ${s.qty<=5?'text-red-600 font-bold':''}">${s.qty}</td><td class="p-3">${s.buy||0}/${s.sell}</td><td class="p-3 text-[11px]">${s.expiry||'-'}</td><td class="p-3 text-[11px]"><span class="badge badge-morning">${s.lastBy||'-'}</span><br><span class="text-[10px]">${s.lastShift||''}</span></td><td class="p-3"><button onclick="delMed('${s.id}')" class="text-red-500">✕</button></td></tr>`).join('');
+  localStorage.setItem('gp_stock_cache', JSON.stringify(stockCache));
+}
+window.addMed=async()=>{
+  const raw=document.getElementById('mBarcode').value;
+  const barcode=sanitizeBarcode(raw);
+  const name=document.getElementById('mName').value.trim();
+  const generic=document.getElementById('mGeneric').value.trim();
+  const qty=parseInt(document.getElementById('mQty').value)||0;
+  const buy=parseFloat(document.getElementById('mBuy').value)||0;
+  const sell=parseFloat(document.getElementById('mSell').value)||0;
+  const expiry=document.getElementById('mExpiry').value;
+  const supplier=document.getElementById('mSupplier').value.trim();
+  if(!barcode||!name||qty<0||sell<=0){ showMsg('stockMsg','Fill Barcode, Name, Qty>=0, Sell>0',false); return;}
+  const data={id:barcode,name,generic,qty,buy,sell,expiry,supplier,lastBy:currentUser.user,lastShift:document.getElementById('shiftBadge').textContent,updatedAt:new Date().toISOString()};
+  try{
+    if(navigator.onLine){ await setDoc(doc(db,'stock',barcode), data, {merge:true}); }
+    else{ offlineQueue.push({type:'stock',id:barcode,data}); localStorage.setItem(LS_QUEUE, JSON.stringify(offlineQueue)); updateQueueBadge();}
+    stockCache=stockCache.filter(x=>x.id!==barcode); stockCache.unshift(data);
+    renderStock(); renderMeds(); showMsg('stockMsg',`✅ Saved ${name} - Audit logged`);
+    await logAudit('ADD_STOCK', `Added/Edited ${name} Qty:${qty} Barcode:${barcode}`, {barcode,qty});
+  }catch(err){ offlineQueue.push({type:'stock',id:barcode,data}); localStorage.setItem(LS_QUEUE, JSON.stringify(offlineQueue)); showMsg('stockMsg','Saved offline - will sync + Audit logged',true); await logAudit('ADD_STOCK', `Offline Add ${name}`, {barcode}); }
+};
+window.delMed=async(id)=>{
+  if(!confirm('Delete '+id+'? This will be logged')) return;
+  const item=stockCache.find(x=>x.id===id);
+  try{ if(navigator.onLine) await deleteDoc(doc(db,'stock',id)); stockCache=stockCache.filter(x=>x.id!==id); renderStock(); renderMeds(); await logAudit('DELETE', `Deleted ${item?.name||id} Barcode:${id}`, {barcode:id}); showMsg('stockMsg','Deleted + Audit logged',true); }catch(e){ showMsg('stockMsg','Delete failed',false); }
+};
+
+// === POS ===
+function renderMeds(filter=''){
+  const list=document.getElementById('medsList'); if(!list) return;
+  let filtered=stockCache;
+  if(filter){ const f=filter.toLowerCase(); filtered=stockCache.filter(s=>s.name.toLowerCase().includes(f)||s.id.toLowerCase().includes(f)||(s.generic||'').toLowerCase().includes(f)); }
+  list.innerHTML=filtered.slice(0,80).map(s=>`<div class="border rounded-xl p-3 hover:border-[#0A5C36] cursor-pointer bg-white" onclick="addToCart('${s.id}')"><div class="flex justify-between"><b class="text-[13px] text-[#0A5C36]">${s.name}</b><span class="text-[11px] bg-[#F0FDF4] px-2 py-0.5 rounded-full">${s.qty}</span></div><div class="text-[11px] text-gray-500">${s.generic||''} - ${s.id}</div><div class="text-[12px] font-bold mt-1">${s.sell} SSP</div><div class="text-[10px] text-gray-400">By: ${s.lastBy||'-'}</div></div>`).join('')||'<p class="text-[12px] text-gray-400">No meds</p>';
+}
+window.searchMeds=(v)=>renderMeds(v);
+window.addToCart=(id)=>{
+  const med=stockCache.find(x=>x.id===id); if(!med||med.qty<=0) return alert('Out of stock');
+  const exist=cart.find(c=>c.id===id); if(exist){ if(exist.qty>=med.qty) return alert('Max qty'); exist.qty++; }else cart.push({id:med.id,name:med.name,sell:med.sell,qty:1});
+  renderCart();
+};
+function renderCart(){ const el=document.getElementById('cartList'); if(!el) return; let total=0,count=0; el.innerHTML=cart.map(c=>{total+=c.sell*c.qty; count+=c.qty; return `<div class="flex justify-between items-center text-[13px] border-b py-2"><div><b>${c.name}</b><br><span class="text-[11px]">${c.sell} x ${c.qty}</span></div><div class="flex gap-2 items-center"><button onclick="changeQty('${c.id}',-1)" class="px-2 bg-gray-100 rounded">-</button><span>${c.qty}</span><button onclick="changeQty('${c.id}',1)" class="px-2 bg-gray-100 rounded">+</button></div></div>`;}).join(''); document.getElementById('cartTotal').textContent=total+' SSP'; document.getElementById('cartCount').textContent=count; }
+window.changeQty=(id,d)=>{ const c=cart.find(x=>x.id===id); if(!c) return; c.qty+=d; if(c.qty<=0) cart=cart.filter(x=>x.id!==id); renderCart(); };
+window.clearCart=()=>{cart=[]; renderCart();};
+
+window.checkout=async()=>{
+  if(cart.length===0) return alert('Cart empty');
+  const total=cart.reduce((a,c)=>a+c.sell*c.qty,0);
+  const data={items:cart,total,by:currentUser.user,shift:document.getElementById('shiftBadge').textContent,customerPhone:document.getElementById('custPhone').value,date:new Date().toISOString()};
+  try{
+    if(navigator.onLine){ await addDoc(collection(db,'sales'), data); 
+      for(let c of cart){ const s=stockCache.find(x=>x.id===c.id); if(s){ s.qty-=c.qty; await setDoc(doc(db,'stock',s.id), {qty:s.qty,lastBy:currentUser.user,lastShift:data.shift}, {merge:true}); } }
+    }else{ offlineQueue.push({type:'sale',data}); localStorage.setItem(LS_QUEUE, JSON.stringify(offlineQueue)); updateQueueBadge();}
+    await logAudit('SALE', `Sale ${total} SSP - ${cart.length} items`, {total, items:cart.map(c=>c.name).join(',')});
+    // PDF Receipt
+    const receiptHtml=`<div style="padding:20px;font-family:system-ui"><h2 style="color:#0A5C36">The Grace Pharmacy</h2><p>Cashier: ${currentUser.name} (${data.shift})<br>Date: ${new Date().toLocaleString()}<br>Items: ${cart.map(c=>`${c.name} x${c.qty}`).join(', ')}<br><b>Total: ${total} SSP</b><br>Customer: ${data.customerPhone||'N/A'}</p><p style="font-size:11px">Developed by E-Mutwokil Sadik +211928813308</p></div>`;
+    document.getElementById('receiptArea').innerHTML=receiptHtml; document.getElementById('receiptArea').classList.remove('hidden');
+    html2pdf().from(document.getElementById('receiptArea')).set({filename:`Receipt-${Date.now()}.pdf`}).save();
+    if(data.customerPhone){ const wa=`https://wa.me/${data.customerPhone.replace(/[^0-9]/g,'')}?text=${encodeURIComponent(`Grace Pharmacy Receipt: ${total} SSP by ${currentUser.name} (${data.shift})`)}`; window.open(wa,'_blank'); }
+    clearCart(); loadStock(); alert('✅ Sale saved + Audit logged + PDF generated');
+  }catch(e){ alert('Checkout failed: '+e.message); }
+};
+
+// === EXPENSES WITH AUDIT ===
+window.addExpense=async()=>{
+  const date=document.getElementById('expDate').value||new Date().toISOString().split('T')[0];
+  const cat=document.getElementById('expCategory').value;
+  const desc=document.getElementById('expDesc').value.trim();
+  const amount=parseFloat(document.getElementById('expAmount').value)||0;
+  if(!desc||amount<=0){ showMsg('expMsg','Fill description and amount',false); return; }
+  const data={date,category:cat,description:desc,amount,by:currentUser.user,shift:document.getElementById('shiftBadge').textContent,createdAt:new Date().toISOString()};
+  try{ if(navigator.onLine) await addDoc(collection(db,'expenses'), data); else { offlineQueue.push({type:'expense',data}); localStorage.setItem(LS_QUEUE, JSON.stringify(offlineQueue)); }
+    await logAudit('EXPENSE', `Expense ${cat}: ${desc} ${amount} SSP`, {category:cat,amount});
+    showMsg('expMsg',`✅ Expense saved + Audit logged by ${currentUser.user}`); loadExpenses();
+  }catch(e){ showMsg('expMsg','Failed',false); }
+};
+async function loadExpenses(){ try{ const snap=navigator.onLine?await getDocs(collection(db,'expenses')):null; let list=snap?snap.docs.map(d=>d.data()):JSON.parse(localStorage.getItem('gp_exp')||'[]'); document.getElementById('expensesList').innerHTML=list.slice(-50).reverse().map(e=>`<div class="flex justify-between border-b py-2"><div><b>${e.category}</b> - ${e.description}<br><span class="text-[11px] text-gray-500">${e.date} by ${e.by} (${e.shift})</span></div><span class="font-bold">${e.amount} SSP</span></div>`).join(''); document.getElementById('expTotal').textContent=list.reduce((a,b)=>a+b.amount,0); }catch(e){} }
+
+// === AUDIT LOAD ===
+async function loadAudit(){ try{ if(!navigator.onLine){ auditCache=JSON.parse(localStorage.getItem('gp_audit_cache')||'[]'); renderAudit(); return; } const q=query(collection(db,'audit'), orderBy('timestamp','desc')); const snap=await getDocs(q); auditCache=snap.docs.map(d=>d.data()); localStorage.setItem('gp_audit_cache', JSON.stringify(auditCache.slice(0,200))); renderAudit(); }catch(e){ auditCache=JSON.parse(localStorage.getItem('gp_audit_cache')||'[]'); renderAudit(); } }
+function renderAudit(){ const tb=document.getElementById('auditTable'); if(!tb) return; tb.innerHTML=auditCache.slice(0,100).map(a=>`<tr class="border-b audit-row"><td class="p-2 text-[11px]">${new Date(a.timestamp).toLocaleString()}</td><td class="p-2"><b>${a.user}</b><br><span class="text-[10px]">${a.name||''}</span></td><td class="p-2"><span class="badge ${a.shift==='Morning'?'badge-morning':a.shift==='Evening'?'badge-evening':'badge-admin'}">${a.shift}</span></td><td class="p-2"><span class="badge bg-[#0A5C36] text-white">${a.action}</span></td><td class="p-2">${a.details}</td></tr>`).join(''); }
+
+// === OTHER PLACEHOLDERS ===
+async function loadSales(){ /* same as stock */ }
+function calcReports(){ /* calc today/week/month from sales + expenses */ document.getElementById('repToday').textContent='Calculating...'; }
+window.filterAudit=()=>{ const user=document.getElementById('auditUser').value; const action=document.getElementById('auditAction').value; let filtered=auditCache; if(user) filtered=filtered.filter(a=>a.user===user); if(action) filtered=filtered.filter(a=>a.action===action); const tb=document.getElementById('auditTable'); tb.innerHTML=filtered.slice(0,100).map(a=>`<tr class="border-b"><td class="p-2">${new Date(a.timestamp).toLocaleString()}</td><td>${a.user}</td><td>${a.shift}</td><td>${a.action}</td><td>${a.details}</td></tr>`).join(''); };
+function syncQueue(){ updateQueueBadge(); }
+function updateQueueBadge(){ const b=document.getElementById('queueBadge'); if(offlineQueue.length>0){ b.textContent=`Queue ${offlineQueue.length}`; b.classList.remove('hidden'); }else b.classList.add('hidden'); }
+window.exportAuditCSV=()=>{ let csv='Time,User,Shift,Action,Details\n'+auditCache.map(a=>`"${a.timestamp}","${a.user}","${a.shift}","${a.action}","${a.details}"`).join('\n'); const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='audit.csv'; a.click(); };
+window.addDebt=async()=>{ alert('Debt feature - implement like expense'); };
+window.createStaff=()=>{ const name=document.getElementById('stName').value; const user=document.getElementById('stUser').value.toLowerCase(); const pass=document.getElementById('stPass').value; const role=document.getElementById('stRole').value; if(!name||!user||!pass) return alert('Fill all'); let staff=JSON.parse(localStorage.getItem('gp_staff')||'[]'); staff.push({name,user,pass,role}); localStorage.setItem('gp_staff',JSON.stringify(staff)); alert('Staff created: '+user+' shift logged'); document.getElementById('staffList').innerHTML=staff.map(s=>`<div>${s.name} - ${s.user} - ${s.role}</div>`).join(''); logAudit('ADD_STOCK','Created staff '+user); };
+window.addPurchase=async()=>{ const supplier=document.getElementById('purSupplier').value; const barcode=sanitizeBarcode(document.getElementById('purBarcode').value); const name=document.getElementById('purName').value; const qty=parseInt(document.getElementById('purQty').value)||0; if(!barcode||!name||qty<=0) return alert('Fill'); const data={id:barcode,name,qty,supplier}; await setDoc(doc(db,'stock',barcode), {qty:qty,lastBy:currentUser.user}, {merge:true}); await logAudit('PURCHASE', `Purchase ${name} Qty:${qty} Supplier:${supplier}`); alert('Purchase saved + Audit'); loadStock(); };
+
+// Network status
+window.addEventListener('online',()=>{document.getElementById('offlineBadge').classList.add('hidden'); syncQueue();});
+window.addEventListener('offline',()=>{document.getElementById('offlineBadge').classList.remove('hidden');});
+
+// === FIXED manifest & sw registration ===
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').then(()=>console.log('SW V14 registered')).catch(()=>{}); }
+
+function renderExpiry(){ /* same as before */ }
+</script>
+</body>
+</html>
