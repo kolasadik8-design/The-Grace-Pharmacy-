@@ -1,101 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Grace Pharmacy V13.4.1</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0A5C36">
-<script src="https://cdn.tailwindcss.com"></script>
-<script>tailwind.config={theme:{extend:{colors:{grace:{700:'#0A5C36',500:'#16A34A',gold:'#C8A951',goldLight:'#E7D5A0'}}}}}</script>
-<style>
-:root{--green:#0A5C36;--greenL:#16A34A;--gold:#C8A951;--bg:#F8FFFE}
-body{background:var(--bg);font-family:Inter,Segoe UI,sans-serif}
-.grace-header{background:linear-gradient(135deg,#0A5C36 0%,#16A34A 100%)}
-.tab-active{background:#0A5C36!important;color:#fff!important;border-bottom:3px solid #C8A951!important}
-.tab{ background:#fff;color:#0A5C36;border:1px solid #DCFCE7}
-.card{ background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(10,92,54,.07);border:1px solid #DCFCE7}
-.input{border:1.5px solid #DCFCE7;border-radius:10px;padding:10px 12px;width:100%}
-.input:focus{border-color:#0A5C36;outline:none;box-shadow:0 0 0 3px rgba(10,92,54,.12)}
-.btn{ background:linear-gradient(135deg,#0A5C36,#16A34A);color:#fff;border-radius:10px;font-weight:600;padding:10px}
-.container-pro{max-width:1280px;margin:0 auto;padding:0 16px}
-.footer{ background:linear-gradient(90deg,#0A5C36,#064E2B);color:#fff;border-top:3px solid #C8A951}
-</style>
-</head>
-<body class="min-h-screen flex flex-col">
-<header class="grace-header sticky top-0 z-50 shadow">
-<div class="container-pro py-3 flex justify-between items-center text-white">
-<div class="flex items-center gap-3">
-<img src="logo.png" class="w-10 h-10 bg-white rounded-full p-1" onerror="this.style.display='none'">
-<div><h1 class="font-bold text-[18px]">THE GRACE PHARMACY</h1><p class="text-[11px] text-[#E7D5A0]">V13.4.1 • Professional</p></div>
-</div>
-<div class="flex gap-2 items-center text-[12px]">
-<span id="offlineBadge" class="hidden bg-red-500 px-2 py-1 rounded-full">Offline</span>
-<span id="queueBadge" class="hidden bg-[#C8A951] text-[#0A5C36] px-2 py-1 rounded-full font-bold">Queue 0</span>
-<span id="userBadge" class="bg-white/20 px-3 py-1 rounded-full"></span>
-<button onclick="location.reload()" class="bg-white/10 px-3 py-1 rounded-full">Logout</button>
-</div>
-</div>
-</header>
-
-<div id="login" class="flex-1 flex items-center justify-center p-4">
-<div class="card w-full max-w-[380px] p-7">
-<div class="text-center mb-5"><img src="logo.png" class="w-20 h-20 mx-auto bg-white rounded-full p-1 shadow mb-3"><h2 class="font-bold text-[20px] text-[#0A5C36]">Welcome Back</h2></div>
-<input id="u" placeholder="Username" class="input mb-3">
-<input id="p" type="password" placeholder="Password" class="input mb-4">
-<button onclick="doLogin()" class="btn w-full">Login →</button>
-<p id="loginError" class="hidden mt-3 bg-red-50 text-red-600 p-2 rounded text-[13px]"></p>
-</div>
-</div>
-
-<div id="app" class="hidden flex-1 flex flex-col">
-<div class="bg-white border-b sticky top-[60px] z-40">
-<div class="container-pro py-2 flex gap-2 overflow-x-auto">
-<button onclick="showTab('pos')" data-tab="pos" class="tab tab-active px-4 py-2.5 rounded-t-lg text-[13px] font-semibold">💊 POS</button>
-<button onclick="showTab('stock')" data-tab="stock" class="tab px-4 py-2.5 rounded-t-lg text-[13px] font-semibold">📦 Stock</button>
-<button onclick="showTab('expiry')" data-tab="expiry" class="tab px-4 py-2.5 rounded-t-lg text-[13px] font-semibold">⏰ Expiry <span id="expiryCount" class="hidden ml-1 bg-red-500 text-white text-[10px] px-1.5 rounded-full">0</span></button>
-<button onclick="showTab('sales')" data-tab="sales" class="tab px-4 py-2.5 rounded-t-lg text-[13px] font-semibold">📊 Sales</button>
-<button onclick="showTab('settings')" data-tab="settings" class="tab px-4 py-2.5 rounded-t-lg text-[13px] font-semibold">⚙️ Settings</button>
-</div>
-</div>
-
-<main class="container-pro py-4 flex-1">
-<div id="tab-pos" class="tab-content">
-<div class="grid md:grid-cols-[1.6fr_.9fr] gap-4">
-<div class="card p-4"><input id="searchMed" placeholder="Search barcode or name..." class="input mb-3" oninput="searchMeds(this.value)"><div id="medsList" class="grid sm:grid-cols-2 gap-2 max-h-[60vh] overflow-auto"></div></div>
-<div class="card p-4 flex flex-col"><h3 class="font-bold text-[#0A5C36] mb-3">🧾 Cart - <span id="rCashier"></span></h3><div id="cartList" class="flex-1 space-y-2 max-h-[35vh] overflow-auto"></div><div class="border-t pt-3 mt-3"><div class="flex justify-between text-[14px] mb-2"><span>Total SSP</span><span id="cartTotal" class="font-bold">0</span></div><button onclick="checkout()" class="btn w-full">Checkout ✅</button><button onclick="clearCart()" class="w-full text-[12px] text-gray-400 mt-2">Clear</button></div></div>
-</div>
-</div>
-
-<div id="tab-stock" class="tab-content hidden">
-<div class="card p-4">
-<h3 class="font-bold text-[#0A5C36] mb-3">➕ Add Medicine</h3>
-<div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-<input id="mBarcode" placeholder="Barcode * بدون /" class="input">
-<input id="mName" placeholder="Name *" class="input">
-<input id="mGeneric" placeholder="Generic" class="input">
-<input id="mQty" type="number" placeholder="Qty *" class="input">
-<input id="mBuy" type="number" placeholder="Buy" class="input">
-<input id="mSell" type="number" placeholder="Sell *" class="input">
-<input id="mExpiry" type="date" class="input">
-<button onclick="addMed()" class="btn">Save Stock</button>
-</div>
-<p id="stockMsg" class="hidden mt-3 p-2 rounded text-[13px]"></p>
-<div class="overflow-x-auto mt-4"><table class="w-full text-[13px]"><thead class="bg-[#F0FDF4] text-[#0A5C36]"><tr><th class="p-2 text-left">Name</th><th class="p-2">Barcode</th><th class="p-2">Qty</th><th class="p-2">Sell</th><th class="p-2">Expiry</th><th class="p-2">Del</th></tr></thead><tbody id="stockTable"></tbody></table></div>
-</div>
-</div>
-
-<div id="tab-expiry" class="tab-content hidden"><div class="card p-4"><h3 class="font-bold text-[#0A5C36] mb-3">⏰ Expiry Alerts - 45 Days</h3><div id="expiryList"></div></div></div>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Grace Pharmacy V13.4.1</title><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0A5C36"><script src="https://cdn.tailwindcss.com"></script><style>:root{--g:#0A5C36;--gl:#16A34A;--gold:#C8A951;--bg:#F8FFFE}body{background:var(--bg);font-family:Inter,Segoe UI} .hdr{background:linear-gradient(135deg,#0A5C36,#16A34A)} .tab{ background:#fff;color:#0A5C36;border:1px solid #DCFCE7} .tabA{background:#0A5C36!important;color:#fff!important;border-bottom:3px solid #C8A951!important} .card{background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(10,92,54,.07);border:1px solid #DCFCE7} .inp{border:1.5px solid #DCFCE7;border-radius:10px;padding:10px 12px;width:100%} .inp:focus{border-color:#0A5C36;outline:none;box-shadow:0 0 0 3px rgba(10,92,54,.12)} .btn{background:linear-gradient(135deg,#0A5C36,#16A34A);color:#fff;border-radius:10px;font-weight:600;padding:10px} .cont{max-width:1280px;margin:0 auto;padding:0 16px} .foot{background:linear-gradient(90deg,#0A5C36,#064E2B);color:#fff;border-top:3px solid #C8A951}</style></head><body class="min-h-screen flex flex-col">
+<header class="hdr sticky top-0 z-50 shadow"><div class="cont py-3 flex justify-between items-center text-white"><div class="flex items-center gap-3"><img src="logo.png" class="w-10 h-10 bg-white rounded-full p-1" onerror="this.style.display='none'"><div><h1 class="font-bold text-[18px]">THE GRACE PHARMACY</h1><p class="text-[11px] text-[#E7D5A0]">V13.4.1 Pro • Juba</p></div></div><div class="flex gap-2 items-center text-[12px]"><span id="offlineBadge" class="hidden bg-red-500 px-2 py-1 rounded-full">Offline</span><span id="queueBadge" class="hidden bg-[#C8A951] text-[#0A5C36] px-2 py-1 rounded-full font-bold">Queue 0</span><span id="userBadge" class="bg-white/20 px-3 py-1 rounded-full"></span><button onclick="location.reload()" class="bg-white/10 px-3 py-1 rounded-full">Logout</button></div></div></header>
+<div id="login" class="flex-1 flex items-center justify-center p-4"><div class="card w-full max-w-[380px] p-7"><div class="text-center mb-5"><img src="logo.png" class="w-20 h-20 mx-auto bg-white rounded-full p-1 shadow mb-3"><h2 class="font-bold text-[20px] text-[#0A5C36]">Welcome Back</h2></div><input id="u" placeholder="Username (admin)" class="inp mb-3"><input id="p" type="password" placeholder="Password" class="inp mb-4"><button onclick="doLogin()" class="btn w-full">Login →</button><p id="loginError" class="hidden mt-3 bg-red-50 text-red-600 p-2 rounded text-[13px]"></p><p class="text-[11px] text-center text-gray-400 mt-3">admin / GraceAdmin@2026!</p></div></div>
+<div id="app" class="hidden flex-1 flex flex-col"><div class="bg-white border-b sticky top-[60px] z-40"><div class="cont py-2 flex gap-2 overflow-x-auto"><button onclick="showTab('pos')" data-tab="pos" class="tab tabA px-4 py-2.5 rounded-t-lg text-[13px] font-semibold">💊 POS</button><button onclick="showTab('stock')" data-tab="stock" class="tab px-4 py-2.5 rounded-t-lg text-[13px] font-semibold">📦 Stock</button><button onclick="showTab('expiry')" data-tab="expiry" class="tab px-4 py-2.5 rounded-t-lg text-[13px] font-semibold">⏰ Expiry <span id="expiryCount" class="hidden ml-1 bg-red-500 text-white text-[10px] px-1.5 rounded-full">0</span></button><button onclick="showTab('sales')" data-tab="sales" class="tab px-4 py-2.5 rounded-t-lg text-[13px] font-semibold">📊 Sales</button><button onclick="showTab('settings')" data-tab="settings" class="tab px-4 py-2.5 rounded-t-lg text-[13px] font-semibold">⚙️ Settings</button></div></div>
+<main class="cont py-4 flex-1"><div id="tab-pos" class="tab-content"><div class="grid md:grid-cols-[1.6fr_.9fr] gap-4"><div class="card p-4"><input id="searchMed" placeholder="Search barcode or name..." class="inp mb-3" oninput="searchMeds(this.value)"><div id="medsList" class="grid sm:grid-cols-2 gap-2 max-h-[60vh] overflow-auto"></div></div><div class="card p-4 flex flex-col"><h3 class="font-bold text-[#0A5C36] mb-3">🧾 Cart - <span id="rCashier"></span></h3><div id="cartList" class="flex-1 space-y-2 max-h-[35vh] overflow-auto"></div><div class="border-t pt-3 mt-3"><div class="flex justify-between text-[14px] mb-2"><span>Total SSP</span><span id="cartTotal" class="font-bold">0</span></div><button onclick="checkout()" class="btn w-full">Checkout ✅</button><button onclick="clearCart()" class="w-full text-[12px] text-gray-400 mt-2">Clear</button></div></div></div></div>
+<div id="tab-stock" class="tab-content hidden"><div class="card p-4"><h3 class="font-bold text-[#0A5C36] mb-3">➕ Add Medicine</h3><div class="grid grid-cols-2 md:grid-cols-4 gap-2"><input id="mBarcode" placeholder="Barcode * بدون /" class="inp"><input id="mName" placeholder="Name *" class="inp"><input id="mGeneric" placeholder="Generic" class="inp"><input id="mQty" type="number" placeholder="Qty *" class="inp"><input id="mBuy" type="number" placeholder="Buy" class="inp"><input id="mSell" type="number" placeholder="Sell *" class="inp"><input id="mExpiry" type="date" class="inp"><button onclick="addMed()" class="btn">Save Stock</button></div><p id="stockMsg" class="hidden mt-3 p-2 rounded text-[13px]"></p><div class="overflow-x-auto mt-4"><table class="w-full text-[13px]"><thead class="bg-[#F0FDF4] text-[#0A5C36]"><tr><th class="p-2 text-left">Name</th><th class="p-2">Barcode</th><th class="p-2">Qty</th><th class="p-2">Sell</th><th class="p-2">Expiry</th><th class="p-2">Del</th></tr></thead><tbody id="stockTable"></tbody></table></div></div></div>
+<div id="tab-expiry" class="tab-content hidden"><div class="card p-4"><h3 class="font-bold text-[#0A5C36] mb-3">⏰ Expiry - 45 Days</h3><div id="expiryList"></div></div></div>
 <div id="tab-sales" class="tab-content hidden"><div class="card p-4"><h3 class="font-bold">Sales</h3><div id="salesList" class="mt-3 text-[13px]"></div></div></div>
-<div id="tab-settings" class="tab-content hidden"><div class="card p-4"><h3 class="font-bold">USD Rate</h3><div class="flex gap-2 mt-2"><input id="rateInput" type="number" class="input"><button onclick="saveRate()" class="btn px-4">Save</button></div></div></div>
-</main>
-
-<footer class="footer mt-6"><div class="container-pro py-3 flex flex-col md:flex-row justify-between items-center gap-2 text-[12px]"><span>© 2026 The Grace Pharmacy - Juba</span><span class="flex items-center gap-2 font-semibold">Developed by <b class="text-[#C8A951]">E-Mutwokil Sadik</b> <span class="bg-white/10 px-3 py-1 rounded-full">☎️ +211928813308</span></span></div></footer>
-</div>
-
+<div id="tab-settings" class="tab-content hidden"><div class="card p-4"><h3 class="font-bold">USD Rate</h3><div class="flex gap-2 mt-2"><input id="rateInput" type="number" class="inp"><button onclick="saveRate()" class="btn px-4">Save</button></div></div></div></main>
+<footer class="foot mt-6"><div class="cont py-3 flex flex-col md:flex-row justify-between items-center gap-2 text-[12px]"><span>© 2026 The Grace Pharmacy - Juba</span><span class="flex items-center gap-2 font-semibold">Developed by <b class="text-[#C8A951]">E-Mutwokil Sadik</b> <span class="bg-white/10 px-3 py-1 rounded-full">☎️ +211928813308</span></span></div></footer></div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, enableIndexedDbPersistence, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+// ضع كونفيجك مباشرة هنا بدون تشفير - أسهل
 const firebaseConfig = {
   apiKey: "AIzaSyBqhd4QJ5X7K1VrL7YfoJcFcHDbZO8iwhQ",
   authDomain: "the-grace-pharmacy.firebaseapp.com",
@@ -106,92 +22,24 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-// ✅ إصلاح 1: تفعيل الأوفلاين الحقيقي
 enableIndexedDbPersistence(db).catch(()=>{});
-
-let currentUser=null, stockData=[], cart=[], offlineQueue=JSON.parse(localStorage.getItem('grace_queue')||'[]');
-
-async function sha256(s){ const b=await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)); return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join(''); }
-(async()=>{ let h={}; h['admin']=await sha256('GraceAdmin@2026!'); h['cashier.morning']=await sha256('GraceMorning2026'); h['cashier.evening']=await sha256('GraceEvening2026'); if(!localStorage.getItem('user_hashes')) localStorage.setItem('user_hashes',JSON.stringify(h)); })();
-
-window.doLogin=async()=>{
-  let u=document.getElementById('u').value.trim(), p=document.getElementById('p').value;
-  let hashes=JSON.parse(localStorage.getItem('user_hashes')||'{}');
-  let hp=await sha256(p);
-  if(hashes[u]===hp){ currentUser={name:u,role:u==='admin'?'admin':'cashier'}; document.getElementById('login').classList.add('hidden'); document.getElementById('app').classList.remove('hidden'); document.getElementById('userBadge').innerText=u; document.getElementById('rCashier').innerText=u; initListeners(); updateQueueUI(); }else{ let e=document.getElementById('loginError'); e.innerText='Wrong password'; e.classList.remove('hidden'); }
-}
-window.showTab=(n)=>{ document.querySelectorAll('.tab-content').forEach(t=>t.classList.add('hidden')); document.getElementById('tab-'+n).classList.remove('hidden'); document.querySelectorAll('[data-tab]').forEach(b=>b.classList.remove('tab-active')); document.querySelector(`[data-tab="${n}"]`).classList.add('tab-active'); if(n==='expiry') renderExpiry(); }
-
-// ✅ إصلاح 2 و 3: تنظيف الباركود + معالجة خطأ الحفظ
-window.addMed=async()=>{
-  let rawBarcode=document.getElementById('mBarcode').value.trim();
-  let barcode=rawBarcode.replace(/[\/#?\s]/g,'-').toUpperCase(); // ممنوع / # ? في Firestore ID
-  let name=document.getElementById('mName').value.trim();
-  let generic=document.getElementById('mGeneric').value.trim();
-  let qty=parseInt(document.getElementById('mQty').value);
-  let buy=parseFloat(document.getElementById('mBuy').value)||0;
-  let sell=parseFloat(document.getElementById('mSell').value);
-  let expiry=document.getElementById('mExpiry').value;
-  let msg=document.getElementById('stockMsg');
-  let show=(t,c)=>{ msg.innerText=t; msg.className=`mt-3 p-2 rounded text-[13px] ${c}`; msg.classList.remove('hidden'); setTimeout(()=>msg.classList.add('hidden'),4000); };
-  if(!barcode||!name||isNaN(qty)||isNaN(sell)) return show('❌ Barcode, Name, Qty, Sell required','bg-red-50 text-red-700');
-  if(qty<0||sell<0) return show('❌ Qty/Sell must >=0','bg-red-50 text-red-700');
-  try{
-    let data={barcode,name,generic,qty,buy,sell,expiry:expiry||null,createdAt:serverTimestamp(),updatedAt:serverTimestamp()};
-    await setDoc(doc(db,"stock",barcode), data, {merge:true});
-    show('✅ تم الحفظ بنجاح - Saved','bg-green-50 text-green-700');
-    document.getElementById('mBarcode').value=''; document.getElementById('mName').value=''; document.getElementById('mQty').value=''; document.getElementById('mSell').value='';
-  }catch(err){
-    console.error(err);
-    offlineQueue.push({type:'stock',docId:barcode,data:{barcode,name,generic,qty,buy,sell,expiry}});
-    localStorage.setItem('grace_queue',JSON.stringify(offlineQueue));
-    updateQueueUI();
-    show('⚠️ تم الحفظ أوفلاين - سيتم المزامنة عند عودة النت (خطأ: '+err.message+')','bg-yellow-50 text-yellow-800');
-  }
-}
-
-function initListeners(){
-  onSnapshot(collection(db,"stock"), snap=>{
-    stockData=[]; snap.forEach(d=>{ let v=d.data(); stockData.push({id:d.id,barcode:v.barcode||d.id,name:v.name||'No Name',generic:v.generic||'',qty:Number(v.qty)||0,buy:Number(v.buy)||0,sell:Number(v.sell)||0,expiry:v.expiry||null}); });
-    renderStock(); renderMeds(stockData); renderExpiry(); localStorage.setItem('grace_stock',JSON.stringify(stockData));
-  }, err=>{ console.error(err); let local=JSON.parse(localStorage.getItem('grace_stock')||'[]'); if(local.length){ stockData=local; renderStock(); renderMeds(local); } });
-  onSnapshot(collection(db,"sales"), snap=>{ let h=''; snap.forEach(d=>{ let s=d.data(); h+=`<div class="p-2 border-b">${s.date?.slice(0,16)||''} - ${s.total||0} SSP - ${s.cashier||''}</div>`; }); document.getElementById('salesList').innerHTML=h||'No sales'; });
-  window.addEventListener('online', ()=>{ document.getElementById('offlineBadge').classList.add('hidden'); syncQueue(); });
-  window.addEventListener('offline', ()=>{ document.getElementById('offlineBadge').classList.remove('hidden'); });
-  if(!navigator.onLine) document.getElementById('offlineBadge').classList.remove('hidden');
-}
-
-async function syncQueue(){
-  if(!offlineQueue.length||!navigator.onLine) return;
-  for(let item of [...offlineQueue]){
-    try{ await setDoc(doc(db,"stock",item.docId), {...item.data,updatedAt:serverTimestamp()}, {merge:true}); offlineQueue.shift(); }catch(e){ break; }
-  }
-  localStorage.setItem('grace_queue',JSON.stringify(offlineQueue)); updateQueueUI();
-}
-function updateQueueUI(){ let b=document.getElementById('queueBadge'); if(offlineQueue.length>0){ b.innerText='Queue: '+offlineQueue.length; b.classList.remove('hidden'); }else b.classList.add('hidden'); }
-
-function renderStock(){
-  document.getElementById('stockTable').innerHTML=stockData.map(m=>{
-    let diff=m.expiry?Math.ceil((new Date(m.expiry)-new Date())/86400000):999; let icon=diff<0?'🔴':diff<15?'🟠':diff<45?'🟡':'🟢';
-    return `<tr class="border-b hover:bg-[#F0FDF4]"><td class="p-2"><b>${m.name}</b><br><span class="text-[11px] text-gray-500">${m.generic}</span></td><td class="p-2 text-[11px]">${m.barcode}</td><td class="p-2 ${m.qty<=5?'text-red-600 font-bold':''}">${m.qty}</td><td class="p-2">${m.sell}</td><td class="p-2 text-[11px]">${m.expiry||'-'} ${icon}</td><td class="p-2"><button onclick="deleteMed('${m.id}')" class="text-red-500">Del</button></td></tr>`;
-  }).join('');
-}
-function renderMeds(list){
-  document.getElementById('medsList').innerHTML=list.map(m=>`<div class="p-3 border rounded-xl flex justify-between hover:bg-[#F0FDF4] cursor-pointer" onclick="addToCart('${m.id}')"><div><div class="font-semibold text-[13px] text-[#0A5C36]">${m.name}</div><div class="text-[11px] text-gray-500">${m.barcode} • Qty:${m.qty}</div></div><div class="font-bold text-[#0A5C36]">${m.sell} SSP</div></div>`).join('')||'<p class="text-gray-400 text-[13px]">No medicines</p>';
-}
-window.searchMeds=(q)=>{ if(!q) return renderMeds(stockData); let f=stockData.filter(m=> m.name.toLowerCase().includes(q.toLowerCase())||m.barcode.toLowerCase().includes(q.toLowerCase())); renderMeds(f); };
-window.deleteMed=async(id)=>{ if(!confirm('Delete?')) return; try{ await deleteDoc(doc(db,"stock",id)); }catch(e){ alert(e.message); } };
-function renderExpiry(){
-  let sorted=[...stockData].filter(m=>m.expiry).sort((a,b)=>new Date(a.expiry)-new Date(b.expiry));
-  let count=0; let html=sorted.map(m=>{ let diff=Math.ceil((new Date(m.expiry)-new Date())/86400000); if(diff>45) return ''; count++; let bg=diff<0?'bg-red-50 border-red-200':diff<15?'bg-orange-50 border-orange-200':'bg-yellow-50'; return `<div class="flex justify-between p-3 border rounded-xl mb-2 ${bg}"><div><b class="text-[13px]">${m.name}</b> <span class="text-[11px]">${m.barcode}</span><div class="text-[11px]">Qty:${m.qty} • ${m.expiry} (${diff}d)</div></div><span>${diff<0?'🔴':diff<15?'🟠':'🟡'}</span></div>`; }).join('');
-  document.getElementById('expiryList').innerHTML=html||'<p class="text-[13px] text-gray-400">No expiry within 45 days</p>';
-  let b=document.getElementById('expiryCount'); if(count>0){ b.innerText=count; b.classList.remove('hidden'); }else b.classList.add('hidden');
-}
-window.addToCart=(id)=>{ let med=stockData.find(m=>m.id===id); if(!med||med.qty<=0) return alert('Out of stock'); let ex=cart.find(c=>c.id===id); if(ex){ if(ex.cartQty>=med.qty) return alert('No more'); ex.cartQty++; }else cart.push({...med,cartQty:1}); renderCart(); };
-function renderCart(){ document.getElementById('cartList').innerHTML=cart.map((c,i)=>`<div class="flex justify-between text-[13px] p-2 bg-[#F0FDF4] rounded"><span>${c.name} x${c.cartQty}</span><span>${c.sell*c.cartQty} <button onclick="cart.splice(${i},1);renderCart()" class="text-red-500">✕</button></span></div>`).join(''); document.getElementById('cartTotal').innerText=cart.reduce((s,c)=>s+c.sell*c.cartQty,0); }
-window.clearCart=()=>{ cart=[]; renderCart(); };
-window.checkout=async()=>{ if(!cart.length) return; let total=cart.reduce((s,c)=>s+c.sell*c.cartQty,0); try{ for(let c of cart){ await setDoc(doc(db,"stock",c.id),{qty:c.qty-c.cartQty,updatedAt:serverTimestamp()},{merge:true}); } await setDoc(doc(collection(db,"sales")),{items:cart,total,cashier:currentUser.name,date:new Date().toISOString(),createdAt:serverTimestamp()}); alert('✅ Sale saved'); cart=[]; renderCart(); }catch(e){ alert('Offline saved: '+e.message); offlineQueue.push({type:'sale',data:{cart,total}}); localStorage.setItem('grace_queue',JSON.stringify(offlineQueue)); updateQueueUI(); cart=[]; renderCart(); } };
-window.saveRate=()=>{ let v=document.getElementById('rateInput').value; localStorage.setItem('grace_rate',v); alert('Saved'); };
-</script>
-</body>
-</html>
+let currentUser=null,stockData=[],cart=[],offlineQueue=JSON.parse(localStorage.getItem('grace_queue')||'[]');
+async function sha256(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');}
+(async()=>{let h={};h['admin']=await sha256('GraceAdmin@2026!');h['cashier.morning']=await sha256('GraceMorning2026');h['cashier.evening']=await sha256('GraceEvening2026');if(!localStorage.getItem('user_hashes'))localStorage.setItem('user_hashes',JSON.stringify(h));})();
+window.doLogin=async()=>{let u=document.getElementById('u').value.trim(),p=document.getElementById('p').value;let hashes=JSON.parse(localStorage.getItem('user_hashes')||'{}');let hp=await sha256(p);if(hashes[u]===hp){currentUser={name:u,role:u==='admin'?'admin':'cashier'};document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');document.getElementById('userBadge').innerText=u;document.getElementById('rCashier').innerText=u;initListeners();updateQueueUI();}else{let e=document.getElementById('loginError');e.innerText='Wrong password';e.classList.remove('hidden');}};
+window.showTab=(n)=>{document.querySelectorAll('.tab-content').forEach(t=>t.classList.add('hidden'));document.getElementById('tab-'+n).classList.remove('hidden');document.querySelectorAll('[data-tab]').forEach(b=>b.classList.remove('tabA'));document.querySelector(`[data-tab="${n}"]`).classList.add('tabA');if(n==='expiry')renderExpiry();};
+window.addMed=async()=>{let raw=document.getElementById('mBarcode').value.trim();let barcode=raw.replace(/[\/#?\s]/g,'-').toUpperCase();let name=document.getElementById('mName').value.trim();let generic=document.getElementById('mGeneric').value.trim();let qty=parseInt(document.getElementById('mQty').value);let buy=parseFloat(document.getElementById('mBuy').value)||0;let sell=parseFloat(document.getElementById('mSell').value);let expiry=document.getElementById('mExpiry').value;let msg=document.getElementById('stockMsg');let show=(t,c)=>{msg.innerText=t;msg.className=`mt-3 p-2 rounded text-[13px] ${c}`;msg.classList.remove('hidden');setTimeout(()=>msg.classList.add('hidden'),4000);};if(!barcode||!name||isNaN(qty)||isNaN(sell))return show('❌ Barcode, Name, Qty, Sell required','bg-red-50 text-red-700');if(qty<0||sell<0)return show('❌ Qty/Sell >=0','bg-red-50 text-red-700');try{let data={barcode,name,generic,qty,buy,sell,expiry:expiry||null,createdAt:serverTimestamp(),updatedAt:serverTimestamp()};await setDoc(doc(db,"stock",barcode),data,{merge:true});show('✅ Saved - تم الحفظ','bg-green-50 text-green-700');document.getElementById('mBarcode').value='';document.getElementById('mName').value='';document.getElementById('mQty').value='';document.getElementById('mSell').value='';}catch(err){console.error(err);offlineQueue.push({type:'stock',docId:barcode,data:{barcode,name,generic,qty,buy,sell,expiry,offlineAt:new Date().toISOString()}});localStorage.setItem('grace_queue',JSON.stringify(offlineQueue));updateQueueUI();show('⚠️ Offline saved - '+err.message,'bg-yellow-50 text-yellow-800');}};
+function initListeners(){onSnapshot(collection(db,"stock"),snap=>{stockData=[];snap.forEach(d=>{let v=d.data();stockData.push({id:d.id,barcode:v.barcode||d.id,name:v.name||'No Name',generic:v.generic||'',qty:Number(v.qty)||0,buy:Number(v.buy)||0,sell:Number(v.sell)||0,expiry:v.expiry||null});});renderStock();renderMeds(stockData);renderExpiry();localStorage.setItem('grace_stock',JSON.stringify(stockData));},err=>{let local=JSON.parse(localStorage.getItem('grace_stock')||'[]');if(local.length){stockData=local;renderStock();renderMeds(local);}});onSnapshot(collection(db,"sales"),snap=>{let h='';snap.forEach(d=>{let s=d.data();h+=`<div class="p-2 border-b">${(s.date||'').slice(0,16)} - ${s.total||0} SSP - ${s.cashier||''}</div>`;});document.getElementById('salesList').innerHTML=h||'No sales';});window.addEventListener('online',()=>{document.getElementById('offlineBadge').classList.add('hidden');syncQueue();});window.addEventListener('offline',()=>{document.getElementById('offlineBadge').classList.remove('hidden');});if(!navigator.onLine)document.getElementById('offlineBadge').classList.remove('hidden');}
+async function syncQueue(){if(!offlineQueue.length||!navigator.onLine)return;for(let item of [...offlineQueue]){try{await setDoc(doc(db,"stock",item.docId),{...item.data,updatedAt:serverTimestamp()},{merge:true});offlineQueue.shift();}catch(e){break;}}localStorage.setItem('grace_queue',JSON.stringify(offlineQueue));updateQueueUI();}
+function updateQueueUI(){let b=document.getElementById('queueBadge');if(offlineQueue.length>0){b.innerText='Queue: '+offlineQueue.length;b.classList.remove('hidden');}else b.classList.add('hidden');}
+function renderStock(){document.getElementById('stockTable').innerHTML=stockData.map(m=>{let diff=m.expiry?Math.ceil((new Date(m.expiry)-new Date())/86400000):999;let icon=diff<0?'🔴':diff<15?'🟠':diff<45?'🟡':'🟢';return `<tr class="border-b hover:bg-[#F0FDF4]"><td class="p-2"><b>${m.name}</b><br><span class="text-[11px] text-gray-500">${m.generic}</span></td><td class="p-2 text-[11px]">${m.barcode}</td><td class="p-2 ${m.qty<=5?'text-red-600 font-bold':''}">${m.qty}</td><td class="p-2">${m.sell}</td><td class="p-2 text-[11px]">${m.expiry||'-'} ${icon}</td><td class="p-2"><button onclick="deleteMed('${m.id}')" class="text-red-500">Del</button></td></tr>`;}).join('');}
+function renderMeds(list){document.getElementById('medsList').innerHTML=list.map(m=>`<div class="p-3 border rounded-xl flex justify-between hover:bg-[#F0FDF4] cursor-pointer" onclick="addToCart('${m.id}')"><div><div class="font-semibold text-[13px] text-[#0A5C36]">${m.name}</div><div class="text-[11px] text-gray-500">${m.barcode} • Qty:${m.qty}</div></div><div class="font-bold text-[#0A5C36]">${m.sell} SSP</div></div>`).join('')||'<p class="text-gray-400 text-[13px]">No medicines</p>';}
+window.searchMeds=(q)=>{if(!q)return renderMeds(stockData);let f=stockData.filter(m=>m.name.toLowerCase().includes(q.toLowerCase())||m.barcode.toLowerCase().includes(q.toLowerCase()));renderMeds(f);};
+window.deleteMed=async(id)=>{if(!confirm('Delete?'))return;try{await deleteDoc(doc(db,"stock",id));}catch(e){alert(e.message);}};
+function renderExpiry(){let sorted=[...stockData].filter(m=>m.expiry).sort((a,b)=>new Date(a.expiry)-new Date(b.expiry));let count=0;let html=sorted.map(m=>{let diff=Math.ceil((new Date(m.expiry)-new Date())/86400000);if(diff>45)return'';count++;let bg=diff<0?'bg-red-50 border-red-200':diff<15?'bg-orange-50 border-orange-200':'bg-yellow-50';return `<div class="flex justify-between p-3 border rounded-xl mb-2 ${bg}"><div><b class="text-[13px]">${m.name}</b> <span class="text-[11px]">${m.barcode}</span><div class="text-[11px]">Qty:${m.qty} • ${m.expiry} (${diff}d)</div></div><span>${diff<0?'🔴':diff<15?'🟠':'🟡'}</span></div>`;}).join('');document.getElementById('expiryList').innerHTML=html||'<p class="text-[13px] text-gray-400">No expiry within 45 days</p>';let b=document.getElementById('expiryCount');if(count>0){b.innerText=count;b.classList.remove('hidden');}else b.classList.add('hidden');}
+window.addToCart=(id)=>{let med=stockData.find(m=>m.id===id);if(!med||med.qty<=0)return alert('Out of stock');let ex=cart.find(c=>c.id===id);if(ex){if(ex.cartQty>=med.qty)return alert('No more');ex.cartQty++;}else cart.push({...med,cartQty:1});renderCart();};
+function renderCart(){document.getElementById('cartList').innerHTML=cart.map((c,i)=>`<div class="flex justify-between text-[13px] p-2 bg-[#F0FDF4] rounded"><span>${c.name} x${c.cartQty}</span><span>${c.sell*c.cartQty} <button onclick="cart.splice(${i},1);renderCart()" class="text-red-500">✕</button></span></div>`).join('');document.getElementById('cartTotal').innerText=cart.reduce((s,c)=>s+c.sell*c.cartQty,0);}
+window.clearCart=()=>{cart=[];renderCart();};
+window.checkout=async()=>{if(!cart.length)return;let total=cart.reduce((s,c)=>s+c.sell*c.cartQty,0);try{for(let c of cart){await setDoc(doc(db,"stock",c.id),{qty:c.qty-c.cartQty,updatedAt:serverTimestamp()},{merge:true});}await setDoc(doc(collection(db,"sales")),{items:cart,total,cashier:currentUser.name,date:new Date().toISOString(),createdAt:serverTimestamp()});alert('✅ Sale saved');cart=[];renderCart();}catch(e){alert('Offline: '+e.message);offlineQueue.push({type:'sale',data:{cart,total}});localStorage.setItem('grace_queue',JSON.stringify(offlineQueue));updateQueueUI();cart=[];renderCart();}};
+window.saveRate=()=>{let v=document.getElementById('rateInput').value;localStorage.setItem('grace_rate',v);alert('Saved');};
+</script></body></html>
