@@ -1,1 +1,26 @@
-{"name":"The Grace Pharmacy V13.4.1","short_name":"Grace","start_url":"./index.html","display":"standalone","background_color":"#0A5C36","theme_color":"#0A5C36","icons":[{"src":"logo.png","sizes":"512x512","type":"image/png"}]}
+{
+  "name": "The Grace Pharmacy V13.4.1",
+  "short_name": "Grace Pharmacy",
+  "description": "Professional Pharmacy POS System - Juba",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0A5C36",
+  "theme_color": "#0A5C36",
+  "scope": "./",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
