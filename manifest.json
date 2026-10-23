@@ -1,14 +1,13 @@
 {
-  "name": "The Grace Pharmacy V13.4.1",
-  "short_name": "Grace Pharmacy",
-  "description": "Professional Pharmacy POS System - Juba",
+  "name": "The Grace Pharmacy V14 Audit",
+  "short_name": "Grace V14",
+  "description": "Pharmacy POS with Audit Trail - Every action tracked by cashier & shift",
   "start_url": "./index.html",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#0A5C36",
+  "background_color": "#F8FFFE",
   "theme_color": "#0A5C36",
+  "orientation": "portrait-primary",
   "scope": "./",
-  "lang": "en",
   "icons": [
     {
       "src": "logo.png",
@@ -22,5 +21,6 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "categories": ["medical", "business", "productivity"]
 }
