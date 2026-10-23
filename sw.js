@@ -1,22 +1,64 @@
-const CACHE_NAME = 'grace-pro-v13-2';
-const CORE_ASSETS = ['./','./index.html','./logo.png','./manifest.json'];
+// Grace Pharmacy SW V13.4.1 - Fixed Cache Bug
+const CACHE_NAME = 'grace-v13-4-1'; // ✅ غيّر الاسم - ده المهم
+const urlsToCache = [
+  './',
+  './index.html',
+  './manifest.json',
+  './logo.png'
+];
 
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(CORE_ASSETS).catch(()=>{})));
-  self.skipWaiting();
+// تثبيت
+self.addEventListener('install', event => {
+  self.skipWaiting(); // ✅ يجبر التحديث فورا
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        console.log('Opened cache', CACHE_NAME);
+        return cache.addAll(urlsToCache);
+      })
+  );
 });
 
-self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))));
-  self.clients.claim();
+// تفعيل - امسح الكاش القديم
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheName !== CACHE_NAME) {
+            console.log('Deleting old cache:', cacheName);
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    }).then(() => self.clients.claim())
+  );
 });
 
-self.addEventListener('fetch', e => {
-  if (e.request.url.includes('firestore.googleapis.com') || e.request.url.includes('firebase')) return;
-  e.respondWith(
-    fetch(e.request).then(res => {
-      if (res.ok) { const clone = res.clone(); caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone)); }
-      return res;
-    }).catch(() => caches.match(e.request).then(c => c || caches.match('./index.html')))
+// جلب - Network First عشان ما يعلق الحفظ
+self.addEventListener('fetch', event => {
+  // لا تعمل cache لـ Firestore
+  if (event.request.url.includes('firestore.googleapis.com') || 
+      event.request.url.includes('firebase') ||
+      event.request.url.includes('fcm')) {
+    return; // خلي Firebase يتعامل مباشر
+  }
+
+  event.respondWith(
+    fetch(event.request)
+      .then(response => {
+        // حدّث الكاش بالنسخة الجديدة
+        if (response && response.status === 200 && response.type === 'basic') {
+          let responseToCache = response.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, responseToCache);
+          });
+        }
+        return response;
+      })
+      .catch(() => {
+        // لو مافي نت، جيب من الكاش
+        return caches.match(event.request);
+      })
   );
 });
