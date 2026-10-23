@@ -1,9 +1,1 @@
-{
-  "name": "The Grace Pharmacy V13.4.1",
-  "short_name": "Grace",
-  "start_url": "./index.html",
-  "display": "standalone",
-  "background_color": "#0A5C36",
-  "theme_color": "#0A5C36",
-  "icons": [{"src":"logo.png","sizes":"512x512","type":"image/png"}]
-}
+{"name":"The Grace Pharmacy V13.4.1","short_name":"Grace","start_url":"./index.html","display":"standalone","background_color":"#0A5C36","theme_color":"#0A5C36","icons":[{"src":"logo.png","sizes":"512x512","type":"image/png"}]}
