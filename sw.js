@@ -1,65 +1,67 @@
-// The Grace Pharmacy - Service Worker V13.4.1
-// Fixes cache bug that prevented saving
-
-const CACHE_NAME = 'grace-v13-4-1';
-const urlsToCache = [
+const CACHE_NAME = 'grace-pharmacy-v14-audit';
+const ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './logo.png'
+  './logo.png',
+  'https://cdn.tailwindcss.com',
+  'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js'
 ];
 
-// Install - force update
+// Install - cache assets
 self.addEventListener('install', event => {
-  self.skipWaiting();
+  console.log('[SW V14] Installing');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('[SW] Opened cache', CACHE_NAME);
-        return cache.addAll(urlsToCache);
+        console.log('[SW V14] Caching');
+        return cache.addAll(ASSETS.map(url => new Request(url, {mode: 'no-cors'}))).catch(err=>console.log('Cache skip',err));
       })
   );
+  self.skipWaiting();
 });
 
-// Activate - delete old caches
+// Activate - clean old caches
 self.addEventListener('activate', event => {
+  console.log('[SW V14] Activating');
   event.waitUntil(
-    caches.keys().then(cacheNames => {
+    caches.keys().then(keys => {
       return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('[SW] Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
+        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
       );
-    }).then(() => self.clients.claim())
+    })
   );
+  self.clients.claim();
 });
 
-// Fetch - Network First, don't cache Firestore
+// Fetch - NETWORK FIRST (يصلح مشكلة عدم الحفظ)
 self.addEventListener('fetch', event => {
-  // Never cache Firebase requests
-  if (event.request.url.includes('firestore.googleapis.com') || 
+  // Don't cache Firestore / Firebase requests
+  if (event.request.url.includes('firestore.googleapis.com') ||
       event.request.url.includes('firebase') ||
-      event.request.url.includes('fcm') ||
-      event.request.url.includes('googleapis')) {
-    return;
+      event.request.url.includes('googleapis.com')) {
+    return; // Let browser handle it - network only
   }
 
   event.respondWith(
     fetch(event.request)
       .then(response => {
-        if (response && response.status === 200 && response.type === 'basic') {
-          const responseToCache = response.clone();
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, responseToCache);
-          });
+        // Clone and cache successful GET requests
+        if (event.request.method === 'GET' && response.status === 200) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
         }
         return response;
       })
       .catch(() => {
-        return caches.match(event.request);
+        // Fallback to cache if offline
+        return caches.match(event.request).then(cached => {
+          if (cached) return cached;
+          // Fallback to index.html for navigation
+          if (event.request.mode === 'navigate') {
+            return caches.match('./index.html');
+          }
+        });
       })
   );
 });
