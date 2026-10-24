@@ -1,49 +1,17 @@
-const CACHE_NAME = 'grace-pharmacy-v14-1-1';
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json'
-];
-
-self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(urlsToCache))
-  );
-  self.skipWaiting();
-});
-
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(name => {
-          if (name !== CACHE_NAME) {
-            return caches.delete(name);
-          }
-        })
-      );
+const CACHE = 'grace-v14-3-7500-expiry';
+const FILES = ['./','./index.html','./logo.png','./manifest.json'];
+self.addEventListener('install', e=>{ e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES))); self.skipWaiting(); });
+self.addEventListener('activate', e=>{ e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==CACHE).map(x=>caches.delete(x))))); });
+self.addEventListener('fetch', e=>{
+  e.respondWith(
+    caches.match(e.request).then(r=>{
+      return r || fetch(e.request).then(res=>{
+        if(e.request.method==='GET' && res.status===200){
+          const clone=res.clone();
+          caches.open(CACHE).then(c=>c.put(e.request, clone));
+        }
+        return res;
+      }).catch(()=>caches.match('./index.html'));
     })
-  );
-  self.clients.claim();
-});
-
-self.addEventListener('fetch', event => {
-  // Don't cache Firebase / Firestore
-  if (event.request.url.includes('firestore') || 
-      event.request.url.includes('firebase') || 
-      event.request.url.includes('googleapis')) {
-    return;
-  }
-  
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        if (response) return response;
-        return fetch(event.request).catch(() => {
-          // Offline fallback - keep app working
-          return caches.match('/index.html');
-        });
-      })
   );
 });
