@@ -1,0 +1,112 @@
+<div style="padding:12px; background:white; border-radius:12px; border:2px solid #0a5c36;">
+  <h3>📦 New Bulk Purchase Invoice</h3>
+  
+  <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
+    <input id="supplier" placeholder="Supplier Name" style="flex:1; padding:10px; border-radius:8px; border:1px solid #ccc;">
+    <input id="invoiceNo" placeholder="Invoice No." style="width:130px; padding:10px; border-radius:8px; border:1px solid #ccc;">
+    <input id="usdRate" type="number" placeholder="USD Rate SSP" style="width:140px; padding:10px; border-radius:8px; border:1px solid #ccc;">
+    <input id="profit" type="number" placeholder="Profit %" value="30" style="width:90px; padding:10px; border-radius:8px; border:1px solid #ccc;">
+  </div>
+
+  <table id="bulkTable" style="width:100%; border-collapse:collapse; font-size:14px;">
+    <tr style="background:#0a5c36; color:white;">
+      <th style="padding:8px;">Medicine Name *</th>
+      <th>Qty *</th>
+      <th>Rate USD</th>
+      <th>Buy SSP</th>
+      <th>Sell SSP</th>
+      <th>Expiry Date *</th>
+      <th></th>
+    </tr>
+  </table>
+
+  <button onclick="addRow()" style="margin:10px 0; padding:8px 15px; border-radius:20px; border:1px solid #0a5c36;">+ Add Row</button>
+  
+  <div style="background:#f0fdf4; padding:10px; border-radius:8px; margin-top:10px; display:flex; justify-content:space-between;">
+    <b id="totalUSD">Total USD: 0.00</b>
+    <b id="totalSSP">Total SSP: 0</b>
+  </div>
+
+  <button onclick="saveInvoice()" style="background:#0a5c36; color:white; padding:14px; width:100%; border-radius:10px; font-weight:bold; margin-top:12px; border:none;">💾 SAVE ALL TO PHARMACY</button>
+</div>
+
+<script>
+function addRow(d={}) {
+  let tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input class="mName" value="${d.name||''}" placeholder="e.g. Entecavir 1mg" style="width:100%; padding:7px;"></td>
+    <td><input class="mQty" type="number" value="${d.qty||1}" style="width:55px; padding:7px;" oninput="calc()"></td>
+    <td><input class="mRate" type="number" value="${d.rate||''}" step="0.01" placeholder="USD" style="width:75px; padding:7px;" oninput="calc()"></td>
+    <td><span class="buy">0</span></td>
+    <td><span class="sell">0</span></td>
+    <td><input class="mExp" type="date" style="padding:7px;"></td>
+    <td><button onclick="this.parentElement.parentElement.remove(); calc()" style="color:red; border:none; background:none; cursor:pointer;">✕</button></td>
+  `;
+  document.getElementById('bulkTable').appendChild(tr);
+}
+
+function calc(){
+  let rateUSD = parseFloat(document.getElementById('usdRate').value) || 0;
+  let profit = parseFloat(document.getElementById('profit').value) || 30;
+  let totalUSD = 0, totalSSP = 0;
+
+  document.querySelectorAll('#bulkTable tr').forEach((tr,i)=>{
+    if(i==0) return;
+    let q = parseFloat(tr.querySelector('.mQty')?.value || 0);
+    let r = parseFloat(tr.querySelector('.mRate')?.value || 0);
+    totalUSD += q * r;
+    
+    let buy = rateUSD > 0 ? r * rateUSD : r;
+    let sell = buy * (1 + profit/100);
+    totalSSP += buy * q;
+
+    if(tr.querySelector('.buy')){
+      tr.querySelector('.buy').textContent = buy ? buy.toFixed(0) : 0;
+      tr.querySelector('.sell').textContent = sell ? sell.toFixed(0) : 0;
+    }
+  });
+  document.getElementById('totalUSD').textContent = `Total USD: ${totalUSD.toFixed(2)}`;
+  document.getElementById('totalSSP').textContent = `Total SSP: ${totalSSP.toFixed(0)}`;
+}
+
+function saveInvoice(){
+  let supplier = document.getElementById('supplier').value || "General Supplier";
+  let usdRate = parseFloat(document.getElementById('usdRate').value) || 0;
+  let profit = parseFloat(document.getElementById('profit').value) || 30;
+  
+  let stock = JSON.parse(localStorage.getItem('grace_stock') || "[]");
+  let count = 0;
+
+  document.querySelectorAll('#bulkTable tr').forEach((tr,i)=>{
+    if(i==0) return;
+    let name = tr.querySelector('.mName').value.trim();
+    if(!name) return;
+    let qty = parseInt(tr.querySelector('.mQty').value) || 0;
+    let rate = parseFloat(tr.querySelector('.mRate').value) || 0;
+    let exp = tr.querySelector('.mExp').value;
+    
+    if(!qty || !exp){ alert(`Please complete Qty and Expiry for ${name}`); throw ""; }
+
+    let buySSP = usdRate > 0 ? rate * usdRate : rate;
+    let sellSSP = buySSP * (1 + profit/100);
+
+    stock.push({
+      id: Date.now()+Math.random(),
+      medicineName: name,
+      qty: qty,
+      buyPrice: buySSP,
+      sellPrice: sellSSP,
+      expiry: exp,
+      supplier: supplier,
+      dateAdded: new Date().toISOString()
+    });
+    count++;
+  });
+
+  localStorage.setItem('grace_stock', JSON.stringify(stock));
+  alert(`Successfully saved ${count} medicines from ${supplier}!`);
+  location.reload();
+}
+
+for(let i=0;i<8;i++) addRow();
+</script>
