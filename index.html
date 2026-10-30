@@ -129,8 +129,15 @@
 </div><script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, setDoc, doc, getDocs, deleteDoc, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-const firebaseConfig = { apiKey: "AIzaSyBqhd4QJ5X7K1VrL7YfoJcFcHDbZO8iwhQ", authDomain: "the-grace-pharmacy.firebaseapp.com", projectId: "the-grace-pharmacy", storageBucket: "the-grace-pharmacy.firebasestorage.app", messagingSenderId: "270639582399", appId: "1:270639582399:web:64b06a431264e6cb800a0a" };
-let db; let firebaseEnabled=false;
+const firebaseConfig = {
+  apiKey: "AIzaSyD14R3WMA_x_r5AaUQismNciaiLQFowgMc",
+  authDomain: "the-grace-78e6c.firebaseapp.com",
+  projectId: "the-grace-78e6c",
+  storageBucket: "the-grace-78e6c.firebasestorage.app",
+  messagingSenderId: "155088026492",
+  appId: "1:155088026492:web:c4b08420f69e36145b42f9"
+};
+  let db; let firebaseEnabled=false;
 const badgeEl=document.getElementById('fbStatusBadge');
 try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); firebaseEnabled=true; badgeEl.textContent='Firebase: Online ✅'; badgeEl.className='mt-2 px-3 py-1 rounded-full bg-green-100 border border-green-300 text-[10px] text-green-700 font-bold'; }catch(e){ badgeEl.textContent='Firebase: Offline - '+e.message; badgeEl.className='mt-2 px-3 py-1 rounded-full bg-red-50 border text-[10px] text-red-600 font-bold'; }
 
