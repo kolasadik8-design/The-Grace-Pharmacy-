@@ -1,10 +1,10 @@
 {
-  "name": "The Grace Pharmacy - V15.3",
+  "name": "The Grace Pharmacy V15.4",
   "short_name": "Grace Pharma",
-  "description": "The Grace Pharmacy - Juba - Firebase Secured POS with Bulk Import",
+  "description": "The Grace Pharmacy - Juba - Stock, POS, Expiry Alerts - V15.4 FIXED",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0A5C36",
+  "background_color": "#F9FAFB",
   "theme_color": "#0A5C36",
   "orientation": "portrait-primary",
   "icons": [
