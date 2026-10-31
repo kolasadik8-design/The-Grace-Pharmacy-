@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Grace Pharmacy V15.6 - Based on V15.5</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0A5C36">
+<link rel="icon" href="logo.png">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{ --green:#0A5C36; --gold:#C8A951; }
+.card{background:#fff;border-radius:16px;border:1px solid #e5e7eb;box-shadow:0 4px 20px rgba(10,92,54,0.06)}
+.inp{border:1px solid #d1d5db;border-radius:10px;padding:9px 11px;width:100%;font-size:13px;outline:none;background:#fff}
+.inp:focus{border-color:var(--green);box-shadow:0 0 0 2px rgba(10,92,54,.1)}
+.btn{background:var(--green);color:#fff;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer}
+.btn-gold{background:var(--gold);color:#000;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:700}
+.badge{padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600}
+.badge-morning{background:#FEF3C7;color:#92400E;border:1px solid #FCD34D}
+.badge-evening{background:#EDE9FE;color:#5B21B6;border:1px solid #DDD6FE}
+.badge-admin{background:var(--green);color:#fff}
+.badge-expiry-red{background:#FEE2E2;color:#991B1B;border:1px solid #FCA5A5;animation:pulse 1.2s infinite}
+.badge-expiry-orange{background:#FFEDD5;color:#9A3412;border:1px solid #FDBA74}
+.badge-expiry-yellow{background:#FEF3C7;color:#92400E;border:1px solid #FCD34D}
+.badge-expiry-green{background:#DCFCE7;color:#166534;border:1px solid #86EFAC}
+@keyframes pulse{0%{opacity:1}50%{opacity:.6}100%{opacity:1}}
+.row-expired{background:#FFF1F2!important}.row-warning{background:#FFFBEB!important}.row-orange{background:#FFF7ED!important}
+.tabA{background:var(--green)!important;color:#fff!important;border-color:var(--green)!important}
+.tabN{background:#fff;color:#374151;border:1px solid #d1d5db}
+.tabSales{background:#FEF3C7;color:#000;border:1px solid #FDE68A;font-weight:700}
+.foot{background:var(--green);color:#fff}
+.so-table th{border:1px solid #9ca3af;padding:8px;background:#f3f4f6;font-size:12px}
+.so-table td{border:1px solid #d1d5db;padding:4px}
+.shift-active{border:2px solid var(--green);box-shadow:0 0 0 3px rgba(10,92,54,0.15)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:50;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(2px)}
+.modal-card{background:#fff;border-radius:20px;border-top:4px solid var(--green);box-shadow:0 20px 60px rgba(0,0,0,0.3);max-width:520px;width:100%}
+.alert-critical{background:#FEE2E2;border:2px solid #FCA5A5;color:#991B1B}
+.alert-warning{background:#FFEDD5;border:2px solid #FDBA74;color:#9A3412}
+.card-click{cursor:pointer;transition:all .2s}.card-click:hover{transform:translateY(-2px);border-color:var(--green);box-shadow:0 8px 25px rgba(10,92,54,.15)}
+</style>
+</head>
+<body class="bg-[#F9FAFB]">
+<div id="customModal" class="modal-overlay hidden">
+<div class="modal-card p-6">
+<div class="flex items-center gap-3 mb-4">
+<img src="logo.png" class="w-10 h-10 rounded-lg border p-1" onerror="this.style.display='none'">
+<div><h3 id="modalTitle" class="font-bold text-[#0A5C36] text-[16px]">System Report</h3><p class="text-[11px] text-[#C8A951] font-bold">The Grace Pharmacy - V15.6 Based on V15.5</p></div>
+</div>
+<div id="modalBody" class="bg-[#F9FAFB] border rounded-xl p-4 text-[13px] mb-4"></div>
+<div class="flex justify-end gap-2">
+<button id="modalCancel" onclick="closeModal(false)" class="border bg-white px-4 py-2 rounded-full text-[12px] hidden">Cancel</button>
+<button onclick="closeModal(true)" class="btn px-6 py-2 rounded-full">OK - Confirm</button>
+</div>
+</div>
+</div>
+<div id="login" class="min-h-screen flex items-center justify-center p-4">
+<div class="card p-8 w-full max-w-sm border-t-4 border-[#0A5C36]">
+<div class="flex flex-col items-center">
+<img src="logo.png" class="w-[90px] h-[90px] rounded-[18px] object-contain bg-white border-2 border-[#0A5C36]/20 p-2" onerror="this.style.display='none'">
+<h1 class="font-extrabold text-[#0A5C36] text-[20px] mt-3">The Grace Pharmacy</h1>
+<p class="text-[10px] font-bold tracking-[0.2em] text-[#C8A951]">JUBA - V15.6 BASED ON V15.5 - FIREBASE+MANIFEST+SW</p>
+<div class="mt-2 px-3 py-1 rounded-full bg-[#F0FDF4] border text-[10px] text-[#0A5C36] font-bold" id="fbStatusBadge">Firebase: Connecting...</div>
+<div class="mt-2 text-[11px] text-gray-600 text-center">Morning: 8AM-2PM | Evening: 2PM-9PM (Juba UTC+2)<br><span class="text-[10px] text-[#C8A951]">60-Day Alert | Expired Blocked | Admin Only</span></div>
+</div>
+<div class="mt-6 space-y-3">
+<input id="u" placeholder="Username" class="inp">
+<div class="relative"><input id="p" type="password" placeholder="Password" class="inp pr-[44px]"><span onclick="togglePass()" class="absolute right-[10px] top-1/2 -translate-y-1/2 cursor-pointer">👁️</span></div>
+<button onclick="doLogin()" class="btn w-full py-3">Login to Dashboard</button>
+<p id="loginError" class="hidden mt-3 p-2 rounded-lg bg-red-50 text-red-600 text-[12px] border text-center"></p>
+</div></div></div>
+<div id="app" class="hidden">
+<header class="bg-white border-b sticky top-0 z-20">
+<div class="max-w-[1350px] mx-auto px-4 py-3 flex justify-between items-center flex-wrap gap-2">
+<div class="flex gap-2 items-center">
+<img src="logo.png" class="w-[36px] h-[36px] rounded-lg bg-white border p-1" onerror="this.style.display='none'">
+<span class="font-bold text-[#0A5C36]">The Grace Pharmacy</span>
+<span id="userBadge" class="text-[11px] bg-[#F0FDF4] border px-2 py-1 rounded-full font-bold"></span>
+<span id="shiftBadge" class="badge"></span>
+<span id="liveTime" class="text-[11px] bg-gray-50 border px-2 py-1 rounded-full font-mono"></span>
+</div>
+<div class="flex gap-1 flex-wrap items-center">
+<button data-tab="pos" onclick="showTab('pos')" class="tab-btn px-3 py-2 rounded-full text-[12px] tabA">POS</button>
+<button data-tab="stock" onclick="showTab('stock')" class="tab-btn px-3 py-2 rounded-full text-[12px] tabN">Stock</button>
+<button data-tab="reports" onclick="showTab('reports')" class="tab-btn px-3 py-2 rounded-full text-[12px] tabN">Reports</button>
+<button data-tab="expenses" onclick="showTab('expenses')" class="tab-btn px-3 py-2 rounded-full text-[12px] tabN">Expenses</button>
+<button data-tab="shifts" onclick="showTab('shifts')" class="tab-btn px-3 py-2 rounded-full text-[12px] tabN bg-[#EDE9FE]">Shifts</button>
+<button data-tab="purchases" onclick="showTab('purchases')" class="tab-btn px-3 py-2 rounded-full text-[12px] tabSales">Sales Order</button>
+<button onclick="doLogout()" class="ml-2 text-[11px] bg-red-50 text-red-600 border px-3 py-1.5 rounded-full">Logout</button>
+</div></div></header>
+<main class="max-w-[1350px] mx-auto p-4">
+<div id="expiryCriticalBanner" class="hidden mb-3 p-3 rounded-xl alert-critical text-[13px] font-bold"></div>
+<div id="expiryWarningBanner" class="hidden mb-3 p-3 rounded-xl alert-warning text-[13px] font-bold"></div>
+<div id="shiftBanner" class="hidden mb-3 p-3 rounded-xl bg-[#FEF3C7] border border-[#FCD34D] text-[#92400E] text-[13px] font-bold text-center flex justify-between items-center flex-wrap gap-2"></div>
+<div id="tab-pos" class="tab-content">
+<div class="grid lg:grid-cols-[1.6fr_.9fr] gap-4">
+<div class="card p-4">
+<div class="flex justify-between items-center mb-3 flex-wrap gap-2"><h3 class="font-bold text-[#0A5C36]">Search Medicine - 60-Day Alert - Expired Blocked</h3><div class="flex gap-2"><span class="text-[10px] bg-[#C8A951]/15 px-2 py-1 rounded-full font-bold">Rate: <span id="posRate">7500</span> SSP</span><span id="currentShiftDisplay" class="text-[10px] px-2 py-1 rounded-full font-bold"></span></div></div>
+<input id="searchMed" oninput="searchMeds(this.value)" placeholder="Scan barcode or type medicine name - Expired blocked automatically" class="inp mb-3 py-3">
+<div id="medsList" class="grid md:grid-cols-2 gap-2 max-h-[60vh] overflow-auto"></div>
+</div>
+<div class="card p-4 border-t-4 border-[#C8A951]">
+<h3 class="font-bold text-[#0A5C36] flex justify-between">Shopping Cart <span id="cartCount" class="bg-[#0A5C36] text-white px-2.5 py-0.5 rounded-full text-[11px]">0</span></h3>
+<div id="cartList" class="mt-3 min-h-[20vh] text-[13px] text-gray-500 text-center py-8">Cart is empty - Expired blocked, 60-day warning active</div>
+<div class="border-t-2 border-dashed mt-3 pt-3">
+<div class="flex justify-between font-bold text-[16px]"><span>Total SSP</span><span id="cartTotal">0 SSP</span></div>
+<div class="flex justify-between text-[13px] font-bold text-[#C8A951]"><span>Total USD</span><span id="cartTotalUSD">0 $</span></div>
+<div class="flex justify-between text-[11px] text-green-700 mt-1"><span>Profit for this sale</span><span id="cartProfit">0 SSP</span></div>
+<div class="grid grid-cols-2 gap-2 mt-3"><button onclick="clearCart()" class="border bg-red-50 text-red-600 rounded-xl py-2.5 text-[13px] font-bold">Clear Cart</button><button onclick="checkout()" class="btn py-2.5">Checkout - Confirmation Report</button></div>
+<div class="mt-3 p-2 bg-[#F0FDF4] border rounded-xl text-[10px] text-center"><span id="rCashier">-</span> | <span id="rShift">-</span> | <span id="rShiftTime">-</span> | 1$=<span id="rRate">7500</span> | Expired Blocked: ON | 60-Day Alert: ON | Firebase Linked</div>
+</div></div></div></div><div id="tab-stock" class="tab-content hidden">
+<div class="card p-4 mb-4 border-2 border-dashed border-[#0A5C36] bg-[#F0FDF4]">
+<h3 class="font-bold text-[#0A5C36] text-[14px]">Bulk Import - Fixed 0 SSP Issue - Reads Item / Rate USD / Amount USD - Firebase Linked</h3>
+<p class="text-[11px] text-gray-600 mt-1">Supported: Name/Item, Qty, Rate USD/Cost, Amount USD, Expiry Date, Barcode - 60-Day Warning Active - Same Old Shape V15.5</p>
+<div class="grid md:grid-cols-[1fr_auto] gap-2 mt-3"><input type="file" id="bulkFile" accept=".csv,.xlsx,.xls" class="inp bg-white text-[12px]"><button onclick="importBulk()" class="btn bg-[#C8A951] text-black text-[13px] px-6">Import Now - Firebase Sync</button></div>
+<div class="flex gap-2 mt-2"><button onclick="downloadTemplate()" class="text-[11px] border bg-white px-3 py-1 rounded-full font-bold">Download CSV Template</button><span id="importProgress" class="text-[11px] text-[#0A5C36] font-bold"></span><span id="activeFilterBadge" class="hidden text-[11px] bg-[#0A5C36] text-white px-3 py-1 rounded-full font-bold"></span><button id="clearFilterBtn" onclick="clearStockFilter()" class="hidden text-[11px] bg-red-50 text-red-600 border px-3 py-1 rounded-full">Clear Filter X</button></div>
+<p id="importMsg" class="hidden mt-2 p-2 rounded text-[12px]"></p>
+</div>
+<div class="card p-5 border-l-4 border-[#0A5C36]">
+<h3 class="font-bold text-[#0A5C36]">Add Single Medicine to Stock - 60-Day Alert System - Firebase</h3>
+<div class="grid md:grid-cols-4 gap-2 mt-3">
+<input id="mBarcode" placeholder="Barcode (Optional - Auto Generated)" class="inp"><input id="mName" placeholder="Medicine Name *" class="inp"><input id="mGeneric" placeholder="Generic Name" class="inp"><input id="mQty" type="number" min="0" placeholder="Quantity" class="inp">
+<input id="mBuy" type="number" min="0" placeholder="Buy Price SSP" class="inp"><div class="relative"><input id="mSell" type="number" min="0" placeholder="Sell Price SSP" class="inp"><span id="mSellUSD" class="absolute right-2 top-2 text-[10px] bg-[#FFFBEB] border px-2 py-1 rounded-full text-[#C8A951] font-bold">0 $</span></div><input id="mExpiry" type="date" class="inp"><input id="mSupplier" placeholder="Supplier" class="inp">
+<button onclick="addMed()" class="btn md:col-span-4 py-3">Save to Firebase + Create Audit + Confirmation Report</button>
+</div>
+<p id="stockMsg" class="hidden mt-3 p-3 rounded-xl text-[13px]"></p>
+</div>
+<div class="card p-5 mt-4">
+<div class="flex justify-between items-center mb-3 flex-wrap gap-2"><h3 class="font-bold text-[#0A5C36]">Stock List - Firebase Realtime Sync - 60-Day Alert - Admin Edit/Delete Only</h3><div class="flex gap-2"><select id="expiryFilter" onchange="renderStock(document.getElementById('stockSearch').value)" class="inp w-auto text-[12px]"><option value="All">All Stock</option><option value="Expired">🔴 EXPIRED BLOCKED</option><option value="Critical">🔴 Critical <=30 Days</option><option value="Warning60">🟠 Warning <=60 Days</option><option value="LowStock">⚠️ Low Stock &lt;5</option><option value="Safe">🟢 Safe Stock</option></select><input id="stockSearch" oninput="renderStock(this.value)" placeholder="Search stock..." class="inp w-[140px] text-[12px]"></div></div>
+<div class="overflow-x-auto border rounded-xl"><table class="w-full text-[12px]"><thead class="bg-[#0A5C36] text-white"><tr><th class="p-3 text-left rounded-tl-xl">Medicine Name</th><th class="p-3">Barcode</th><th class="p-3">Quantity</th><th class="p-3">Price SSP/USD</th><th class="p-3">Expiry Status</th><th class="p-3 rounded-tr-xl">Admin Edit/Delete Only</th></tr></thead><tbody id="stockTable"></tbody></table></div>
+</div></div>
+<div id="tab-reports" class="tab-content hidden">
+<div class="card p-5">
+<div class="flex justify-between items-center flex-wrap gap-2"><h3 class="font-bold text-[#0A5C36] text-[16px]">Reports - Admin Full Dashboard - 8AM-2PM 2PM-9PM - No Cross Shift View - Firebase Linked</h3><div class="flex gap-2"><span id="reportDate" class="text-[11px] bg-gray-50 border px-3 py-1 rounded-full"></span><button onclick="exportReportsCSV()" class="text-[11px] bg-[#0A5C36] text-white px-3 py-1 rounded-full">Export Reports CSV</button></div></div>
+<div class="grid md:grid-cols-4 gap-3 mt-4">
+<div class="card p-4 bg-[#F0FDF4] border-l-4 border-[#0A5C36]"><p class="text-[11px] text-gray-500">Total Medicines in Stock</p><p id="repTotalMeds" class="font-bold text-[22px]">0</p><p class="text-[10px] text-gray-500">Total items - Firebase</p></div>
+<div class="card p-4 bg-[#FFFBEB] border-l-4 border-[#C8A951]"><p class="text-[11px] text-gray-500">Stock Value (Buy Price)</p><p id="repStockVal" class="font-bold text-[16px]">0 SSP</p><p id="repStockUSD" class="text-[10px] text-[#C8A951] font-bold">0 $ USD</p></div>
+<div id="lowStockCard" onclick="viewLowStock()" class="card p-4 bg-[#FEF3C7] border-l-4 border-[#FCD34D] card-click"><p class="text-[11px] text-gray-500">Low Stock Items (<5) - Click to View List</p><p id="repLowStock" class="font-bold text-[18px] text-red-600">0</p><p class="text-[10px] font-bold text-[#0A5C36]">👁️ Click to view low stock list - Same Shape</p></div>
+<div id="expiredCard" onclick="viewExpired()" class="card p-4 bg-[#FEE2E2] border-l-4 border-red-500 card-click"><p class="text-[11px] text-gray-500">Expired Items - Click to View List - 60-Day Alert</p><p id="repExpired" class="font-bold text-[18px] text-red-700">0</p><p class="text-[10px] font-bold text-red-600">👁️ Click to view expired + warning 60 days</p></div>
+</div>
+<div class="grid md:grid-cols-3 gap-3 mt-4">
+<div class="card p-4 bg-gradient-to-br from-[#0A5C36] to-[#084a2b] text-white"><p class="text-[11px] opacity-80">Today Total Sales (All Shifts - Admin Only - Firebase)</p><p id="repTodaySSP" class="font-bold text-[20px]">0 SSP</p><p id="repTodayUSD" class="text-[12px] text-[#C8A951]">0 $</p><p id="repTodayCount" class="text-[10px] opacity-70">0 transactions today</p></div>
+<div class="card p-4 bg-gradient-to-br from-[#C8A951] to-[#b89a3d] text-black"><p class="text-[11px] opacity-70">Today Total Profit (Sell-Buy) - Admin Full View</p><p id="repTodayProfit" class="font-bold text-[20px]">0 SSP</p><p id="repTodayProfitUSD" class="text-[12px]">0 $</p><p id="repTodayMargin" class="text-[10px]">0% profit margin</p></div>
+<div class="card p-4 bg-[#EDE9FE] border-l-4 border-[#7C3AED]"><p class="text-[11px] text-gray-600">Current Shift Sales (Own Shift Only - No Cross View)</p><p id="repShiftSSP" class="font-bold text-[18px] text-[#5B21B6]">0 SSP</p><p id="repShiftInfo" class="text-[11px] text-gray-600">No shift active - 8AM-2PM 2PM-9PM</p><button id="closeShiftBtn" onclick="closeCurrentShift()" class="mt-2 text-[11px] bg-[#5B21B6] text-white px-3 py-1 rounded-full hidden">Close Current Shift & Send Report to Admin</button></div>
+</div>
+<div class="grid md:grid-cols-2 gap-4 mt-4">
+<div class="card p-4">
+<h4 class="font-bold text-[#0A5C36] text-[13px]">Top 10 Most Sold - Shift Filtered (No Cross View) - Firebase</h4>
+<div class="overflow-x-auto border rounded-xl mt-3"><table class="w-full text-[11px]"><thead class="bg-[#0A5C36] text-white"><tr><th class="p-2 text-left">#</th><th class="p-2 text-left">Medicine Name</th><th class="p-2">Quantity Sold</th><th class="p-2">Total SSP</th><th class="p-2">Total Profit</th></tr></thead><tbody id="top10Table"><tr><td colspan="5" class="p-4 text-center text-gray-400">No sales data yet - Firebase Linked</td></tr></tbody></table></div>
+</div>
+<div class="card p-4">
+<h4 class="font-bold text-[#0A5C36] text-[13px]">Daily Sales vs Expenses Summary - 8AM-2PM 2PM-9PM</h4>
+<div class="grid grid-cols-3 gap-2 mt-3">
+<div class="p-3 bg-[#F0FDF4] rounded-xl text-center"><p class="text-[10px]">Total Sales</p><p id="repSalesVsExp_Sales" class="font-bold text-[13px]">0</p></div>
+<div class="p-3 bg-[#FEE2E2] rounded-xl text-center"><p class="text-[10px]">Total Expenses</p><p id="repSalesVsExp_Exp" class="font-bold text-[13px]">0</p></div>
+<div class="p-3 bg-[#FEF3C7] rounded-xl text-center"><p class="text-[10px]">Net Profit</p><p id="repSalesVsExp_Net" class="font-bold text-[13px]">0</p></div>
+</div>
+<div class="mt-3"><p class="text-[11px] font-bold">Sales Breakdown by Shift (Filtered by User Shift - No Cross View):</p><div id="shiftBreakdown" class="mt-2 space-y-2 text-[11px]"></div></div>
+</div>
+</div><div class="card p-4 mt-4">
+<div class="flex justify-between items-center mb-3"><h4 class="font-bold text-[#0A5C36]">Audit Log - Last 100 Actions - Shift Filtered (No Cross View) - Firebase</h4><button onclick="clearAudit()" class="text-[11px] bg-red-50 text-red-600 border px-3 py-1 rounded-full">Clear Audit (Admin Only)</button></div>
+<div class="overflow-x-auto border rounded-xl max-h-[40vh] overflow-auto"><table class="w-full text-[11px]"><thead class="bg-[#0A5C36] text-white sticky top-0"><tr><th class="p-2 text-left">Time</th><th class="p-2">User / Shift</th><th class="p-2">Action Type</th><th class="p-2">Details</th><th class="p-2">Profit</th></tr></thead><tbody id="auditTable"></tbody></table></div>
+</div>
+</div></div>
+<div id="tab-shifts" class="tab-content hidden">
+<div class="card p-5">
+<div class="flex justify-between items-center flex-wrap gap-2"><h3 class="font-bold text-[#0A5C36] text-[16px]">Shift Management - 8AM-2PM | 2PM-9PM Juba Time - NEW TIMING - Firebase Linked</h3><button onclick="loadShiftReports()" class="text-[11px] bg-[#0A5C36] text-white px-3 py-1 rounded-full">Refresh Data - Firebase</button></div>
+<div class="grid md:grid-cols-2 gap-4 mt-4">
+<div id="morningShiftCard" class="card p-4 border-l-4 border-[#FCD34D] bg-[#FFFBEB]">
+<div class="flex justify-between"><h4 class="font-bold">Morning Shift - 8:00 AM to 2:00 PM (480-840 min)</h4><span id="morningStatus" class="badge">Inactive</span></div>
+<p class="text-[11px] text-gray-600 mt-2">Assigned Cashier: Morning Shift Cashier - 8AM-2PM - Firebase Sync</p>
+<div class="grid grid-cols-3 gap-2 mt-3 text-[11px]">
+<div class="bg-white p-2 rounded-xl border text-center"><p class="text-[10px]">Sales Today</p><p id="morningSales" class="font-bold">0 SSP</p></div>
+<div class="bg-white p-2 rounded-xl border text-center"><p class="text-[10px]">Transactions</p><p id="morningTrans" class="font-bold">0</p></div>
+<div class="bg-white p-2 rounded-xl border text-center"><p class="text-[10px]">Profit</p><p id="morningProfit" class="font-bold text-green-600">0 SSP</p></div>
+</div>
+<button id="closeMorningBtn" onclick="closeShift('Morning')" class="btn-gold w-full mt-3 hidden">Close Morning Shift 8AM-2PM & Send Report to Admin - Firebase</button>
+</div>
+<div id="eveningShiftCard" class="card p-4 border-l-4 border-[#7C3AED] bg-[#EDE9FE]">
+<div class="flex justify-between"><h4 class="font-bold">Evening Shift - 2:00 PM to 9:00 PM (840-1260 min)</h4><span id="eveningStatus" class="badge">Inactive</span></div>
+<p class="text-[11px] text-gray-600 mt-2">Assigned Cashier: Evening Shift Cashier - 2PM-9PM - Firebase Sync</p>
+<div class="grid grid-cols-3 gap-2 mt-3 text-[11px]">
+<div class="bg-white p-2 rounded-xl border text-center"><p class="text-[10px]">Sales Today</p><p id="eveningSales" class="font-bold">0 SSP</p></div>
+<div class="bg-white p-2 rounded-xl border text-center"><p class="text-[10px]">Transactions</p><p id="eveningTrans" class="font-bold">0</p></div>
+<div class="bg-white p-2 rounded-xl border text-center"><p class="text-[10px]">Profit</p><p id="eveningProfit" class="font-bold text-green-600">0 SSP</p></div>
+</div>
+<button id="closeEveningBtn" onclick="closeShift('Evening')" class="btn w-full mt-3 bg-[#5B21B6] hidden">Close Evening Shift 2PM-9PM & Send Report to Admin - Firebase</button>
+</div>
+</div>
+<div class="card p-4 mt-4">
+<h4 class="font-bold text-[#0A5C36]">Closed Shift Reports - Filtered: No Cross Shift View - Each Sees Own Only Unless Admin - Firebase</h4>
+<p class="text-[11px] text-gray-600">Admin sees all, Morning sees Morning only 8AM-2PM, Evening sees Evening only 2PM-9PM - Firebase Linked</p>
+<div class="overflow-x-auto border rounded-xl mt-3"><table class="w-full text-[11px]"><thead class="bg-[#0A5C36] text-white"><tr><th class="p-2 text-left">Date Closed</th><th class="p-2">Shift Type</th><th class="p-2">Cashier</th><th class="p-2">Sales SSP / USD</th><th class="p-2">Profit</th><th class="p-2">Transactions</th><th class="p-2">Expenses</th><th class="p-2">Status</th></tr></thead><tbody id="shiftReportsTable"><tr><td colspan="8" class="p-4 text-center text-gray-400">No closed shift reports yet - Firebase</td></tr></tbody></table></div>
+</div>
+<div class="card p-4 mt-4 bg-[#F0FDF4] border-l-4 border-[#0A5C36]">
+<h4 class="font-bold text-[#0A5C36] text-[13px]">Admin Dashboard - Total Overview - 8AM-2PM 2PM-9PM - Firebase Linked</h4>
+<div class="grid md:grid-cols-4 gap-3 mt-3">
+<div class="bg-white p-3 rounded-xl border text-center"><p class="text-[10px]">Total Sales All Time</p><p id="adminTotalSales" class="font-bold text-[14px]">0 SSP</p></div>
+<div class="bg-white p-3 rounded-xl border text-center"><p class="text-[10px]">Total Profit All Time</p><p id="adminTotalProfit" class="font-bold text-[14px] text-green-600">0 SSP</p></div>
+<div class="bg-white p-3 rounded-xl border text-center"><p class="text-[10px]">Total Transactions</p><p id="adminTotalTrans" class="font-bold text-[14px]">0</p></div>
+<div class="bg-white p-3 rounded-xl border text-center"><p class="text-[10px]">Pending Shift Reports</p><p id="adminPendingShifts" class="font-bold text-[14px]">0</p></div>
+</div>
+</div>
+</div></div>
+<div id="tab-expenses" class="tab-content hidden">
+<div class="card p-5 border-l-4 border-[#C8A951]">
+<h3 class="font-bold text-[#0A5C36]">Expenses Management - Filtered by Shift (No Cross View) - Firebase Linked</h3>
+<div class="grid md:grid-cols-5 gap-2 mt-4">
+<input id="expTitle" placeholder="Expense Title *" class="inp"><input id="expAmount" type="number" placeholder="Amount SSP *" class="inp"><input id="expDate" type="date" class="inp"><select id="expCat" class="inp"><option>General</option><option>Rent</option><option>Transport</option><option>Salaries</option><option>Utilities</option><option>Purchase</option></select><button onclick="addExpense()" class="btn">Save Expense + Report - Firebase</button>
+</div>
+<p id="expMsg" class="hidden mt-2"></p>
+<div class="grid md:grid-cols-3 gap-3 mt-4">
+<div class="card p-3 bg-[#F0FDF4]"><p class="text-[11px]">Today Total Expenses</p><p id="expTodayTotal" class="font-bold">0 SSP</p></div>
+<div class="card p-3 bg-[#FFFBEB]"><p class="text-[11px]">This Month Total Expenses</p><p id="expMonthTotal" class="font-bold">0 SSP</p></div>
+<div class="card p-3"><p class="text-[11px]">Total Expense Records</p><p id="expCount" class="font-bold">0</p></div>
+</div>
+<div class="overflow-x-auto border rounded-xl mt-4"><table class="w-full text-[12px]"><thead class="bg-[#0A5C36] text-white"><tr><th class="p-2 text-left">Title</th><th class="p-2">Amount</th><th class="p-2">Date</th><th class="p-2">Shift</th><th class="p-2">By</th><th class="p-2">Action (Admin Only)</th></tr></thead><tbody id="expTable"></tbody></table></div>
+</div></div>
+<div id="tab-purchases" class="tab-content hidden">
+<div class="card p-4 border-t-4 border-[#0A5C36]">
+<div class="flex justify-between items-center mb-3 flex-wrap gap-2"><h3 class="font-bold text-[#0A5C36]">Sales Order - Purchase Order - Same Old Shape V15.5 - Firebase Linked</h3><div class="flex gap-2"><input id="soSupplier" placeholder="Supplier Name" class="inp w-[150px] text-[12px]"><input id="soInvoice" placeholder="S.O. Number" class="inp w-[100px] text-[12px]"><button onclick="soAddRow()" class="btn text-[12px] bg-[#C8A951] text-black">+ Add New Row</button></div></div>
+<div class="overflow-x-auto border-2 border-gray-400 rounded"><table class="w-full so-table bg-white"><thead><tr><th>Item Name</th><th>Description</th><th>Quantity</th><th>Unit Measure</th><th>Rate USD</th><th>Amount USD</th><th>Expiry Date</th><th>Remove</th></tr></thead><tbody id="soTableBody"></tbody><tfoot><tr class="bg-gray-100 font-bold"><td colspan="5" class="p-3 text-right">Grand Total</td><td class="p-3 bg-[#FFFBEB]"><span id="soTotalUSD">USD 0.00</span><br><span id="soTotalSSP" class="text-[10px]">0 SSP</span></td><td colspan="2"></td></tr></tfoot></table></div>
+<div class="grid md:grid-cols-3 gap-3 mt-4"><div class="flex items-center gap-2"><span class="text-[12px] font-bold">Profit %:</span><input id="soProfit" type="number" value="30" class="inp w-[80px]"></div><div class="flex gap-2 col-span-2"><button onclick="saveSalesOrder()" class="btn w-full py-3">SAVE ALL TO STOCK + CONFIRMATION REPORT - FIREBASE</button><button onclick="clearSalesOrder()" class="border bg-red-50 text-red-600 rounded-xl px-4 py-3 font-bold">Clear All</button></div></div>
+<p id="soMsg" class="hidden mt-3"></p>
+</div></div>
+</main>
+<footer class="foot mt-8"><div class="max-w-[1350px] mx-auto px-4 py-4 flex justify-between items-center text-[12px]"><span>© 2026 The Grace Pharmacy - V15.6 Based on V15.5 - 8AM-2PM 2PM-9PM 60-Day Alert Expired Blocked Admin Only No Cross View - Firebase+Manifest+SW</span><span>Developed by <b class="text-[#C8A951]">E-Mutwokil Sadik</b></span></div></footer>
+</div><script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc, setDoc, doc, getDocs, deleteDoc, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+const firebaseConfig = { apiKey: "AIzaSyD14R3WMA_x_r5AaUQismNciaiLQFowgMc", authDomain: "the-grace-78e6c.firebaseapp.com", projectId: "the-grace-78e6c", storageBucket: "the-grace-78e6c.firebasestorage.app", messagingSenderId: "155088026492", appId: "1:155088026492:web:c4b08420f69e36145b42f9" };
+let db, firebaseEnabled=false;
+try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); firebaseEnabled=true; document.getElementById('fbStatusBadge').textContent='Firebase: Online - Connected - V15.6 Based on V15.5'; }catch(e){ document.getElementById('fbStatusBadge').textContent='Firebase: Offline Mode - LocalStorage'; }
+function esc(s){ if(!s) return ''; const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+function safeId(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,8).toUpperCase(); }
+function sanitizeStr(str,max=200){ if(!str) return ''; return String(str).slice(0,max).replace(/[<>]/g,'').trim(); }
+let currentUser=JSON.parse(localStorage.getItem('gp_user')||'null');
+const USERS_HASH={'admin':{hash:'GraceAdmin@2026!',shift:'Admin'},'cashier.morning':{hash:'GraceMorning2026',shift:'Morning'},'cashier.evening':{hash:'GraceEvening2026',shift:'Evening'}};
+let meds=JSON.parse(localStorage.getItem('gp_meds')||'[]'); let cart=[]; let rate=7500;
+let auditLog=JSON.parse(localStorage.getItem('gp_audit')||'[]'); let expenses=JSON.parse(localStorage.getItem('gp_expenses')||'[]'); let sales=JSON.parse(localStorage.getItem('gp_sales')||'[]'); let shiftReports=JSON.parse(localStorage.getItem('gp_shift_reports')||'[]');
+let pendingConfirmAction=null; let activeStockFilter='All';
+function getJubaTime(){ const now=new Date(); const utc=now.getTime()+(now.getTimezoneOffset()*60000); return new Date(utc+(2*3600000)); }
+function getCurrentShiftByTime(){ const juba=getJubaTime(); const h=juba.getHours(); const m=juba.getMinutes(); const totalMin=h*60+m; if(totalMin>=480 && totalMin<840) return 'Morning'; if(totalMin>=840 && totalMin<1260) return 'Evening'; if(totalMin<480) return 'Morning'; return 'Evening'; }
+function getShiftTimeRange(s){ if(s==='Morning') return '8:00 AM - 2:00 PM'; if(s==='Evening') return '2:00 PM - 9:00 PM'; return 'All Day (Admin)'; }
+function formatJubaTime(){ const j=getJubaTime(); return j.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',hour12:true})+' Juba Time'; }
+window.togglePass=()=>{ const p=document.getElementById('p'); p.type=p.type==='password'?'text':'password'; };
+window.doLogin=()=>{ const u=document.getElementById('u').value.trim().toLowerCase(); const p=document.getElementById('p').value; const errorEl=document.getElementById('loginError'); if(!USERS_HASH[u]||USERS_HASH[u].hash!==p){ errorEl.textContent='Invalid username or password.'; errorEl.classList.remove('hidden'); return;} currentUser={username:u,shift:USERS_HASH[u].shift}; localStorage.setItem('gp_user',JSON.stringify(currentUser)); location.reload(); };
+window.doLogout=()=>{ localStorage.removeItem('gp_user'); location.reload(); };
+window.showModal=(title,body,showCancel=false,onConfirm=null)=>{ document.getElementById('modalTitle').textContent=title; document.getElementById('modalBody').innerHTML=body; const cancel=document.getElementById('modalCancel'); if(showCancel) cancel.classList.remove('hidden'); else cancel.classList.add('hidden'); document.getElementById('customModal').classList.remove('hidden'); pendingConfirmAction=onConfirm; };
+window.closeModal=(confirmed)=>{ document.getElementById('customModal').classList.add('hidden'); if(confirmed && typeof pendingConfirmAction==='function') pendingConfirmAction(); pendingConfirmAction=null; };
+window.showConfirmationReport=(action,details,profit=0)=>{ const juba=getJubaTime(); const html=`<div class="space-y-2"><div class="flex justify-between"><span class="text-gray-500">Action:</span><span class="font-bold text-[#0A5C36]">${esc(action)}</span></div><div class="flex justify-between"><span class="text-gray-500">User:</span><span class="font-bold">${esc(currentUser.username)} (${esc(currentUser.shift)})</span></div><div class="flex justify-between"><span class="text-gray-500">Shift Time:</span><span class="font-bold">${getShiftTimeRange(getCurrentShiftByTime())}</span></div><div class="flex justify-between"><span class="text-gray-500">Juba Time:</span><span class="font-mono">${formatJubaTime()}</span></div><div class="border-t pt-2 mt-2"><p class="text-gray-500 text-[11px]">Details:</p><p class="font-bold">${esc(details)}</p></div>${profit?`<div class="flex justify-between text-green-700 font-bold"><span>Profit:</span><span>${profit.toLocaleString()} SSP</span></div>`:''}<div class="mt-2 p-2 bg-[#F0FDF4] border rounded-xl text-[10px] text-center text-[#0A5C36]">Firebase Linked: ${firebaseEnabled?'Online - Synced':'Offline - LocalStorage'} | V15.6 Based on V15.5</div></div>`; showModal('System Report - Confirmation - Logo Colors #0A5C36 #C8A951',html,false,null); };
+async function addAudit(a,d,profit=0){ const e={time:new Date().toISOString(),user:currentUser?.username||'system',shift:currentUser?.shift||'-',jubaShift:getCurrentShiftByTime(),action:a,details:d,profit,rate}; auditLog.unshift(e); localStorage.setItem('gp_audit',JSON.stringify(auditLog.slice(0,500))); if(firebaseEnabled){ try{ await addDoc(collection(db,'audit'),{...e,ts:serverTimestamp()}); }catch(e){} } showConfirmationReport(a,d,profit); }
+window.showTab=(t)=>{ document.querySelectorAll('.tab-content').forEach(x=>x.classList.add('hidden')); document.getElementById('tab-'+t)?.classList.remove('hidden'); document.querySelectorAll('.tab-btn').forEach(b=>{ b.classList.remove('tabA'); b.classList.add('tabN'); }); const active=document.querySelector(`[data-tab="${t}"]`); if(active){ active.classList.remove('tabN'); active.classList.add('tabA'); } if(t==='reports') renderReports(); if(t==='shifts') loadShiftReports(); if(t==='expenses') renderExpenses(); if(t==='stock') renderStock(); };
+function usd(s){ return (s/rate).toFixed(2); }
+function getExpiryStatus(d){ if(!d) return {text:'No Expiry Date',cls:'badge-expiry-yellow',days:9999,row:''}; const t=new Date(); t.setHours(0,0,0,0); const e=new Date(d); e.setHours(0,0,0,0); if(isNaN(e.getTime())) return {text:'No Expiry Date',cls:'badge-expiry-yellow',days:9999,row:''}; const diff=Math.ceil((e-t)/86400000); if(diff<0) return {text:`EXPIRED BLOCKED - Expired ${Math.abs(diff)} days ago`,cls:'badge-expiry-red',days:diff,row:'row-expired'}; if(diff<=30) return {text:`CRITICAL ${diff} days - URGENT BLOCK CHECK`,cls:'badge-expiry-red',days:diff,row:'row-expired'}; if(diff<=60) return {text:`WARNING ${diff} days - 60-Day Alert`,cls:'badge-expiry-orange',days:diff,row:'row-orange'}; return {text:`Safe - ${diff} days`,cls:'badge-expiry-green',days:diff,row:''}; }
+function checkExpiryAlerts(){ const critical=meds.filter(m=>{ const ex=getExpiryStatus(m.expiry); return ex.days<0 || ex.days<=30; }); const warning=meds.filter(m=>{ const ex=getExpiryStatus(m.expiry); return ex.days>30 && ex.days<=60; }); const critBanner=document.getElementById('expiryCriticalBanner'); const warnBanner=document.getElementById('expiryWarningBanner'); if(critical.length>0){ critBanner.classList.remove('hidden'); critBanner.innerHTML=`🔴 EXPIRED BLOCKED / CRITICAL: ${critical.length} items expired or <=30 days - Cannot be sold - Blocked - <button onclick="viewExpired()" class="underline font-bold ml-2">View List</button>`; } else critBanner.classList.add('hidden'); if(warning.length>0){ warnBanner.classList.remove('hidden'); warnBanner.innerHTML=`🟠 WARNING 60-DAY ALERT: ${warning.length} items expiring within 60 days - Check before selling - <button onclick="viewExpired()" class="underline font-bold ml-2">View List</button>`; } else warnBanner.classList.add('hidden'); }
+async function loadMedsFB(){ if(!firebaseEnabled){ renderStock(); checkExpiryAlerts(); return; } try{ const q=query(collection(db,'meds'), orderBy('date','desc'), limit(500)); const snap=await getDocs(q); if(snap.size>0){ meds=snap.docs.map(d=>d.data()); localStorage.setItem('gp_meds', JSON.stringify(meds)); } }catch(e){} renderStock(); checkExpiryAlerts(); }
+function searchMeds(term){ term=(term||'').toLowerCase(); const list=document.getElementById('medsList'); let filtered=meds.filter(m=> (m.name||'').toLowerCase().includes(term) || (m.barcode||'').toLowerCase().includes(term)).slice(0,20); list.innerHTML=filtered.map(m=>{ const ex=getExpiryStatus(m.expiry); const blocked=ex.days<0; const opacity=blocked?'opacity:0.5':''; const btnLabel=blocked?'Sale Blocked - EXPIRED':'Add to Cart'; const btnClass=blocked?'bg-gray-400 cursor-not-allowed':'btn'; return `<div class="card p-2 border ${ex.row} ${opacity}"><div class="flex justify-between"><span class="font-bold text-[12px]">${esc(m.name)}</span><span class="badge ${ex.cls}">${ex.text}</span></div><div class="text-[11px]">Quantity: ${m.qty} | ${m.sell} SSP | Barcode: ${esc(m.barcode)}</div><button onclick="addToCart('${m.id}')" class="${btnClass} w-full mt-1 text-[11px]" ${blocked?'disabled':''}>${btnLabel}</button></div>`; }).join(''); }
+window.searchMeds=searchMeds;
+window.addToCart=(id)=>{ const med=meds.find(m=>m.id===id); if(!med || med.qty<=0){ showModal('Sale Blocked','<div class="alert-critical p-3 rounded-xl">This item is out of stock or expired blocked - Firebase Linked V15.6.</div>'); return; } const ex=getExpiryStatus(med.expiry); if(ex.days<0){ showModal('Sale Blocked - EXPIRED','<div class="alert-critical p-3 rounded-xl font-bold">🔴 EXPIRED BLOCKED - This medicine expired and cannot be sold. System blocks sale as per V15.6 requirement. Same Shape V15.5.</div>'); return; } if(ex.days<=60){ showModal('Warning - 60-Day Alert',`<div class="alert-warning p-3 rounded-xl"><p class="font-bold">🟠 WARNING: This medicine expires in ${ex.days} days (${esc(med.expiry)})</p><p class="text-[11px] mt-1">Do you want to continue selling? Please confirm with OK button (Logo Colors #0A5C36 #C8A951).</p></div>`,true,()=>{ proceedAddToCart(med); }); return; } proceedAddToCart(med); };
+function proceedAddToCart(med){ let item=cart.find(c=>c.id===med.id); if(item) item.qty++; else cart.push({id:med.id, name:med.name, sell:med.sell, buy:med.buy||Math.round(med.sell/1.3), qty:1, expiry:med.expiry}); renderCart(); }
+function renderCart(){ const list=document.getElementById('cartList'); if(cart.length===0) list.innerHTML='<div class="p-4 text-center text-gray-400">Cart is empty - Expired blocked active, 60-day warning active - Firebase Linked</div>'; else { list.innerHTML=cart.map(c=>{ const ex=getExpiryStatus(c.expiry); return `<div class="flex justify-between py-1 border-b text-[12px] ${ex.days<=60?'bg-[#FFFBEB]':''}"><span>${esc(c.name)} x${c.qty} ${ex.days<=60?`<span class="badge ${ex.cls} text-[9px]">${ex.text}</span>`:''}</span><span>${c.sell*c.qty} SSP <button onclick="removeFromCart('${c.id}')" class="text-red-500 ml-2">Remove</button></span></div>`; }).join(''); } let t=cart.reduce((s,c)=>s+c.sell*c.qty,0); let p=cart.reduce((s,c)=>s+(c.sell-c.buy)*c.qty,0); document.getElementById('cartTotal').textContent=t.toLocaleString()+' SSP'; document.getElementById('cartTotalUSD').textContent=usd(t)+' USD'; document.getElementById('cartCount').textContent=cart.reduce((s,c)=>s+c.qty,0); document.getElementById('cartProfit').textContent=p.toLocaleString()+' SSP ('+usd(p)+' USD)'; }
+window.removeFromCart=(id)=>{ cart=cart.filter(c=>c.id!==id); renderCart(); };
+window.clearCart=()=>{ cart=[]; renderCart(); };
+window.checkout=async()=>{ if(cart.length===0){ showModal('Empty Cart','<p>Cart is empty. Add items first.</p>'); return; } for(let c of cart){ const m=meds.find(mm=>mm.id===c.id); const ex=getExpiryStatus(m?.expiry); if(ex.days<0){ showModal('Sale Blocked - EXPIRED',`<div class="alert-critical p-3 rounded-xl">Cart contains expired medicine: ${esc(c.name)} - EXPIRED BLOCKED. Remove it.</div>`); return; } } let total=cart.reduce((s,c)=>s+c.sell*c.qty,0); let totalBuy=cart.reduce((s,c)=>s+c.buy*c.qty,0); let profit=total-totalBuy; const currentShift=getCurrentShiftByTime(); for(let c of cart){ let m=meds.find(mm=>mm.id===c.id); if(m) m.qty=Math.max(0, m.qty-c.qty); } localStorage.setItem('gp_meds', JSON.stringify(meds)); const saleRecord={id:safeId(), items:cart, total, totalBuy, profit, totalUSD:parseFloat(usd(total)), by:currentUser.username, shift:currentUser.shift, jubaShift:currentShift, time:new Date().toISOString(), date:new Date().toISOString().slice(0,10)}; sales.unshift(saleRecord); localStorage.setItem('gp_sales', JSON.stringify(sales.slice(0,1000))); if(firebaseEnabled){ for(let c of cart){ let m=meds.find(mm=>mm.id===c.id); if(m){ try{ await setDoc(doc(db,'meds',m.id), {...m, ts:serverTimestamp()}); }catch(e){} } } try{ await addDoc(collection(db,'sales'), {...saleRecord, ts:serverTimestamp()}); }catch(e){} } await addAudit('SALE', `Sold ${cart.length} item types - Total ${total} SSP - Profit ${profit} SSP - Shift ${currentShift} 8AM-2PM 2PM-9PM - Firebase Linked`, profit); cart=[]; renderCart(); renderStock(); renderReports(); loadShiftReports(); checkExpiryAlerts(); };
+window.addMed=async()=>{ const barcode=document.getElementById('mBarcode').value||'AUTO-'+safeId(); const name=document.getElementById('mName').value.trim(); const qty=parseInt(document.getElementById('mQty').value||0); const buy=parseInt(document.getElementById('mBuy').value||0); const sell=parseInt(document.getElementById('mSell').value||0); const expiry=document.getElementById('mExpiry').value||'2027-12-31'; if(!name){ showModal('Error','Medicine name is required.'); return; } const med={id:safeId(), barcode:sanitizeStr(barcode,50), name:sanitizeStr(name,100), qty, buy:buy||1500, sell:sell||Math.round((buy||1500)*1.3), expiry, by:currentUser.username, date:new Date().toISOString()}; if(firebaseEnabled){ try{ await setDoc(doc(db,'meds',med.id), {...med, ts:serverTimestamp()}); }catch(e){} } meds.unshift(med); localStorage.setItem('gp_meds', JSON.stringify(meds)); await addAudit('ADD_SINGLE_MEDICINE', `Added new medicine: ${name} - Quantity: ${qty} - Expiry: ${expiry} - Firebase Linked - Same Shape V15.5`,0); renderStock(); checkExpiryAlerts(); };
+window.downloadTemplate=()=>{ const csv="Medicine Name,Generic Name,Quantity,Buy Price SSP,Sell Price SSP,Barcode,Expiry Date,Supplier\nAmoxicillin 500mg,Amoxicillin,50,1000,1500,AUTO-001,2027-12-31,Supplier A\nParacetamol 500mg,Paracetamol,100,500,800,AUTO-002,2027-06-15,Supplier B\n"; const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='The_Grace_Pharmacy_Template_V15_6_Firebase.csv'; a.click(); };
+window.importBulk=async()=>{
+  const file=document.getElementById('bulkFile').files[0]; if(!file){ showModal('Error','Please select a file.'); return; }
+  try{
+    let rows=[]; const norm=(k)=> String(k||'').toLowerCase().replace(/[^a-z0-9]/g,''); const getVal=(obj,keys)=>{ for(let k of keys){ if(obj[k]!==undefined && obj[k]!=='' && String(obj[k]).trim()!=='') return obj[k]; for(let ok in obj){ if(norm(ok)===norm(k) && String(obj[ok]).trim()!=='') return obj[ok]; } } return ''; };
+    if(file.name.toLowerCase().endsWith('.csv')){ const text=await file.text(); const lines=text.split(/\r?\n/).filter(l=>l.trim()); const headers=lines[0].split(',').map(h=>h.trim()); for(let i=1;i<lines.length;i++){ const cols=lines[i].split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/); let obj={}; headers.forEach((h,idx)=>obj[h]=(cols[idx]||'').replace(/^"|"$/g,'').trim()); rows.push(obj); } }else{ const data=await file.arrayBuffer(); const wb=XLSX.read(data,{type:'array'}); const ws=wb.Sheets[wb.SheetNames[0]]; rows=XLSX.utils.sheet_to_json(ws,{defval:''}); }
+    let saved=0; const currentRate=7500;
+    for(let r of rows){
+      const name=sanitizeStr(String(getVal(r,['Medicine Name','Name','Item'])||''),100); if(!name) continue;
+      let qty=parseInt(String(getVal(r,['Quantity','Qty'])||'0').replace(/[^0-9]/g,''))||0;
+      let buy=parseInt(String(getVal(r,['Buy Price SSP','Buy'])||'').replace(/[^0-9]/g,''))||0;
+      let sell=parseInt(String(getVal(r,['Sell Price SSP','Sell'])||'').replace(/[^0-9]/g,''))||0;
+      let rateUSD=parseFloat(String(getVal(r,['Rate USD','Cost'])||'').replace(/[^0-9.]/g,''))||0;
+      let amountUSD=parseFloat(String(getVal(r,['Amount USD','Amount'])||'').replace(/[^0-9.]/g,''))||0;
+      if((!buy||buy<100)&&rateUSD>0) buy=Math.round(rateUSD*currentRate);
+      if((!buy||buy<100)&&amountUSD>0&&qty>0) buy=Math.round((amountUSD/qty)*currentRate);
+      if(buy===0) buy=1500; if((!sell||sell<100)&&buy>0) sell=Math.round(buy*1.3);
+      let expiryRaw=String(getVal(r,['Expiry Date','Expiry'])||'').trim().slice(0,10); let expiry=expiryRaw;
+      if(expiry.includes('/')){ const p=expiry.split('/'); if(p.length===3&&p[2].length===4) expiry=`${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`; }
+      if(!expiry||expiry.length<8||isNaN(new Date(expiry).getTime())) expiry='2027-12-31';
+      const barcode=sanitizeStr(String(getVal(r,['Barcode'])||'AUTO-'+safeId()),50);
+      const med={id:safeId(),barcode,name,qty,buy,sell,expiry,by:currentUser.username,date:new Date().toISOString()};
+      if(firebaseEnabled){ try{ await setDoc(doc(db,'meds',med.id), {...med, ts:serverTimestamp()}); }catch(e){} }
+      meds.unshift(med); saved++;
+    }
+    localStorage.setItem('gp_meds',JSON.stringify(meds)); await addAudit('BULK_IMPORT',`Bulk imported ${saved} medicines - 60-Day Alert Active - Firebase Linked - Same Shape V15.5`,0);
+    document.getElementById('importMsg').textContent=`Import Completed: ${saved} medicines imported successfully - Confirmation Report Shown - Firebase Synced`;
+    document.getElementById('importMsg').className='mt-2 p-2 rounded bg-green-50 border text-green-700'; document.getElementById('importMsg').classList.remove('hidden');
+    renderStock(); checkExpiryAlerts();
+  }catch(e){ showModal('Import Error',e.message); }
+};
+window.viewLowStock=()=>{ activeStockFilter='LowStock'; document.getElementById('expiryFilter').value='LowStock'; renderStock(); showTab('stock'); };
+window.viewExpired=()=>{ activeStockFilter='Expired'; document.getElementById('expiryFilter').value='Expired'; renderStock(); showTab('stock'); };
+window.clearStockFilter=()=>{ activeStockFilter='All'; document.getElementById('expiryFilter').value='All'; document.getElementById('stockSearch').value=''; document.getElementById('activeFilterBadge').classList.add('hidden'); document.getElementById('clearFilterBtn').classList.add('hidden'); renderStock(); };
+window.renderStock=(filter='')=>{ const tbody=document.getElementById('stockTable'); if(!tbody) return; let list=[...meds]; const filterType=document.getElementById('expiryFilter').value; activeStockFilter=filterType; const badge=document.getElementById('activeFilterBadge'); const clearBtn=document.getElementById('clearFilterBtn'); if(filterType!=='All'){ badge.textContent=`Filter: ${filterType}`; badge.classList.remove('hidden'); clearBtn.classList.remove('hidden'); } else { badge.classList.add('hidden'); clearBtn.classList.add('hidden'); }
+  if(filterType==='Expired') list=list.filter(m=>getExpiryStatus(m.expiry).days<0);
+  else if(filterType==='Critical') list=list.filter(m=>{ const d=getExpiryStatus(m.expiry).days; return d>=0 && d<=30; });
+  else if(filterType==='Warning60') list=list.filter(m=>{ const d=getExpiryStatus(m.expiry).days; return d>30 && d<=60; });
+  else if(filterType==='LowStock') list=list.filter(m=>m.qty<=5);
+  else if(filterType==='Safe') list=list.filter(m=>getExpiryStatus(m.expiry).days>60);
+  if(filter){ const f=filter.toLowerCase(); list=list.filter(m=>(m.name||'').toLowerCase().includes(f) || (m.barcode||'').toLowerCase().includes(f)); }
+  badge.textContent=`Filter: ${filterType} - Showing ${list.length} items - Firebase Linked`;
+  tbody.innerHTML=list.slice(0,200).map(m=>{ const ex=getExpiryStatus(m.expiry); const isAdmin=currentUser.shift==='Admin'; const editBtn=isAdmin?`<button onclick="editMed('${m.id}')" class="text-[10px] bg-[#0A5C36] text-white px-2 py-1 rounded-full">Edit</button> <button onclick="deleteMed('${m.id}')" class="text-[10px] bg-red-50 text-red-600 border px-2 py-1 rounded-full">Delete</button>`:`<span class="text-[10px] bg-gray-100 border px-2 py-1 rounded-full">Admin only</span>`; return `<tr class="${ex.row} border-b hover:bg-gray-50"><td class="p-2 font-bold">${esc(m.name)}</td><td class="p-2">${esc(m.barcode)}</td><td class="p-2 ${m.qty<=5?'text-red-600 font-bold':''}">${m.qty}</td><td class="p-2"><span class="font-bold">${m.sell.toLocaleString()} SSP</span><br><span class="text-[10px] text-[#C8A951]">${usd(m.sell)} USD</span></td><td class="p-2"><span class="badge ${ex.cls}">${ex.text}</span><br><span class="text-[10px]">${esc(m.expiry)}</span></td><td class="p-2">${editBtn}</td></tr>`; }).join(''); };
+window.deleteMed=async(id)=>{ if(currentUser.shift!=='Admin'){ showModal('Admin Only','Only Admin can delete medicines - V15.6 Based on V15.5.'); return; } const med=meds.find(m=>m.id===id); showModal('Confirm Delete - Firebase',`<div class="alert-critical p-3 rounded-xl"><p class="font-bold">Delete ${esc(med?.name||'this medicine')}?</p><p class="text-[11px]">This will delete from Firebase + LocalStorage and show confirmation report with logo colors.</p></div>`,true,async()=>{ meds=meds.filter(m=>m.id!==id); localStorage.setItem('gp_meds', JSON.stringify(meds)); if(firebaseEnabled){ try{ await deleteDoc(doc(db,'meds',id)); }catch(e){} } await addAudit('DELETE_MEDICINE',`Deleted medicine: ${med?.name} - Firebase Linked - Same Shape V15.5`,0); renderStock(); checkExpiryAlerts(); }); };
+window.editMed=async(id)=>{ if(currentUser.shift!=='Admin'){ showModal('Admin Only','Only Admin can edit.'); return; } const med=meds.find(m=>m.id===id); const newQty=prompt(`Edit Quantity for ${med.name} - Current: ${med.qty} - Firebase Linked`, med.qty); if(newQty===null) return; const q=parseInt(newQty||'0'); if(isNaN(q)) return; med.qty=q; localStorage.setItem('gp_meds', JSON.stringify(meds)); if(firebaseEnabled){ try{ await setDoc(doc(db,'meds',med.id), {...med, ts:serverTimestamp()}); }catch(e){} } await addAudit('EDIT_MEDICINE',`Edited ${med.name} qty to ${q} - Firebase Linked`,0); renderStock(); };
+function renderReports(){
+  const today=new Date().toISOString().slice(0,10);
+  let filteredSales=sales; let filteredAudit=auditLog;
+  if(currentUser.shift!=='Admin'){ filteredSales=sales.filter(s=>s.jubaShift===currentUser.shift); filteredAudit=auditLog.filter(a=>a.jubaShift===currentUser.shift); }
+  const todaySales=filteredSales.filter(s=>s.date===today);
+  const todayTotal=todaySales.reduce((s,x)=>s+x.total,0);
+  const todayProfit=todaySales.reduce((s,x)=>s+(x.profit||0),0);
+  document.getElementById('repTotalMeds').textContent=meds.length.toLocaleString();
+  document.getElementById('repStockVal').textContent=meds.reduce((s,m)=>s+(m.buy*m.qty),0).toLocaleString()+' SSP';
+  document.getElementById('repLowStock').textContent=meds.filter(m=>m.qty<=5).length.toLocaleString();
+  document.getElementById('repExpired').textContent=meds.filter(m=>getExpiryStatus(m.expiry).days<0).length.toLocaleString();
+  document.getElementById('repTodaySSP').textContent=todayTotal.toLocaleString()+' SSP';
+  document.getElementById('repTodayUSD').textContent=usd(todayTotal)+' USD';
+  document.getElementById('repTodayCount').textContent=todaySales.length+' transactions today - '+getShiftTimeRange(currentUser.shift!=='Admin'?currentUser.shift:getCurrentShiftByTime())+' - Firebase';
+  document.getElementById('repTodayProfit').textContent=todayProfit.toLocaleString()+' SSP';
+  const currShift=getCurrentShiftByTime();
+  const currShiftSales=sales.filter(s=>s.jubaShift===currShift && s.date===today);
+  document.getElementById('repShiftSSP').textContent=currShiftSales.reduce((s,x)=>s+x.total,0).toLocaleString()+' SSP';
+  document.getElementById('repShiftInfo').textContent=currShift+' Shift - '+getShiftTimeRange(currShift)+' - '+formatJubaTime()+' - No cross view - Firebase';
+  const agg={}; filteredSales.forEach(sale=>{ sale.items.forEach(item=>{ if(!agg[item.name]) agg[item.name]={name:item.name, qty:0, total:0, profit:0}; agg[item.name].qty+=item.qty; agg[item.name].total+=item.sell*item.qty; agg[item.name].profit+=(item.sell-item.buy)*item.qty; }); });
+  const sorted=Object.values(agg).sort((a,b)=>b.qty-a.qty).slice(0,10);
+  document.getElementById('top10Table').innerHTML=sorted.length?sorted.map((m,i)=>`<tr class="border-b"><td class="p-2 font-bold">${i+1}</td><td class="p-2 font-bold">${esc(m.name)}</td><td class="p-2 text-center bg-[#FEF3C7]">${m.qty}</td><td class="p-2 font-bold">${m.total.toLocaleString()} SSP</td><td class="p-2 text-green-600 font-bold">${m.profit.toLocaleString()}</td></tr>`).join(''):'<tr><td colspan="5" class="p-4 text-center text-gray-400">No sales data yet - No cross shift view - Firebase Linked</td></tr>';
+  document.getElementById('auditTable').innerHTML=filteredAudit.slice(0,100).map(a=>`<tr class="border-b"><td class="p-2 text-[10px]">${new Date(a.time).toLocaleString()}</td><td class="p-2"><span class="font-bold">${esc(a.user)}</span><br><span class="text-[9px]">${esc(a.shift)} ${esc(a.jubaShift||'')}</span></td><td class="p-2"><span class="badge bg-[#0A5C36] text-white text-[9px]">${esc(a.action)}</span></td><td class="p-2 text-[11px]">${esc(a.details)}</td><td class="p-2 text-green-600">${a.profit?a.profit.toLocaleString()+' SSP':''}</td></tr>`).join('');
+  const totalSalesAll=filteredSales.reduce((s,x)=>s+x.total,0); const totalExp=expenses.filter(e=> currentUser.shift==='Admin' || e.shift===currentUser.shift).reduce((s,e)=>s+e.amount,0);
+  document.getElementById('repSalesVsExp_Sales').textContent=totalSalesAll.toLocaleString()+' SSP';
+  document.getElementById('repSalesVsExp_Exp').textContent=totalExp.toLocaleString()+' SSP';
+  document.getElementById('repSalesVsExp_Net').textContent=(totalSalesAll-totalExp).toLocaleString()+' SSP';
+  const breakdown={}; filteredSales.filter(s=>s.date===today).forEach(s=>{ const key=s.jubaShift; if(!breakdown[key]) breakdown[key]={total:0,count:0}; breakdown[key].total+=s.total; breakdown[key].count+=1; });
+  document.getElementById('shiftBreakdown').innerHTML=Object.entries(breakdown).map(([k,v])=>`<div class="flex justify-between bg-white border rounded-xl p-2"><span class="badge ${k==='Morning'?'badge-morning':'badge-evening'}">${k} ${k==='Morning'?'8AM-2PM':'2PM-9PM'}</span><span class="font-bold">${v.total.toLocaleString()} SSP (${v.count} trans)</span></div>`).join('')||'<p class="text-gray-400">No sales today - No cross shift view active - Firebase</p>';
+}
+window.renderReports=renderReports;
+window.exportReportsCSV=()=>{ let csv="Time,User,Shift,JubaShift,Action,Details,Profit\n"; let filtered=auditLog; if(currentUser.shift!=='Admin') filtered=auditLog.filter(a=>a.jubaShift===currentUser.shift); filtered.slice(0,500).forEach(a=>{ csv+=`"${a.time}","${a.user}","${a.shift}","${a.jubaShift||''}","${a.action}","${a.details}",${a.profit||0}\n`; }); const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`Grace_Reports_${new Date().toISOString().slice(0,10)}_V15_6_Firebase_NoCrossView.csv`; a.click(); };
+window.clearAudit=()=>{ if(currentUser.shift!=='Admin'){ showModal('Admin Only','Only Admin can clear audit logs.'); return; } showModal('Clear Audit? - Firebase','<div class="alert-critical p-3 rounded-xl">Clear all audit logs? This action will be logged and synced to Firebase.</div>',true,()=>{ auditLog=[]; localStorage.setItem('gp_audit', JSON.stringify(auditLog)); renderReports(); }); };
+function loadShiftReports(){
+  const today=new Date().toISOString().slice(0,10);
+  const morningSales=sales.filter(s=>s.jubaShift==='Morning' && s.date===today);
+  const eveningSales=sales.filter(s=>s.jubaShift==='Evening' && s.date===today);
+  document.getElementById('morningSales').textContent=morningSales.reduce((s,x)=>s+x.total,0).toLocaleString()+' SSP';
+  document.getElementById('morningTrans').textContent=morningSales.length.toLocaleString();
+  document.getElementById('morningProfit').textContent=morningSales.reduce((s,x)=>s+(x.profit||0),0).toLocaleString()+' SSP';
+  document.getElementById('eveningSales').textContent=eveningSales.reduce((s,x)=>s+x.total,0).toLocaleString()+' SSP';
+  document.getElementById('eveningTrans').textContent=eveningSales.length.toLocaleString();
+  document.getElementById('eveningProfit').textContent=eveningSales.reduce((s,x)=>s+(x.profit||0),0).toLocaleString()+' SSP';
+  const currShift=getCurrentShiftByTime();
+  const morningStatus=document.getElementById('morningStatus'); const eveningStatus=document.getElementById('eveningStatus');
+  morningStatus.textContent=currShift==='Morning'?'ACTIVE NOW 8AM-2PM':'Inactive 8AM-2PM'; morningStatus.className='badge '+(currShift==='Morning'?'badge-morning':'bg-gray-100');
+  eveningStatus.textContent=currShift==='Evening'?'ACTIVE NOW 2PM-9PM':'Inactive 2PM-9PM'; eveningStatus.className='badge '+(currShift==='Evening'?'badge-evening':'bg-gray-100');
+  const closeMorningBtn=document.getElementById('closeMorningBtn'); const closeEveningBtn=document.getElementById('closeEveningBtn');
+  if(currentUser.shift==='Morning' || currentUser.shift==='Admin') closeMorningBtn.classList.remove('hidden'); else closeMorningBtn.classList.add('hidden');
+  if(currentUser.shift==='Evening' || currentUser.shift==='Admin') closeEveningBtn.classList.remove('hidden'); else closeEveningBtn.classList.add('hidden');
+  const tbody=document.getElementById('shiftReportsTable');
+  let filteredReports=shiftReports;
+  if(currentUser.shift!=='Admin'){ filteredReports=shiftReports.filter(r=>r.shift===currentUser.shift); }
+  if(filteredReports.length===0) tbody.innerHTML=`<tr><td colspan="8" class="p-4 text-center text-gray-400">No closed shift reports yet - ${currentUser.shift!=='Admin'?currentUser.shift+' only - No cross view - Firebase':'Admin sees all - Firebase'}</td></tr>`;
+  else tbody.innerHTML=filteredReports.slice(0,50).map(r=>`<tr class="border-b"><td class="p-2 text-[10px]">${new Date(r.closedAt).toLocaleString()}<br>${r.date}</td><td class="p-2"><span class="badge ${r.shift==='Morning'?'badge-morning':'badge-evening'}">${r.shift} ${r.shift==='Morning'?'8AM-2PM':'2PM-9PM'}</span></td><td class="p-2 font-bold">${esc(r.closedBy)}</td><td class="p-2 font-bold">${r.totalSales.toLocaleString()} SSP</td><td class="p-2 text-green-600 font-bold">${r.totalProfit.toLocaleString()} SSP</td><td class="p-2 text-center">${r.transactions}</td><td class="p-2">${r.totalExpenses.toLocaleString()} SSP</td><td class="p-2"><span class="badge bg-green-100 text-green-700">Sent to Admin - Firebase</span></td></tr>`).join('');
+  let adminSales=sales; if(currentUser.shift!=='Admin') adminSales=sales.filter(s=>s.jubaShift===currentUser.shift);
+  document.getElementById('adminTotalSales').textContent=adminSales.reduce((s,x)=>s+x.total,0).toLocaleString()+' SSP - '+(currentUser.shift==='Admin'?'All Shifts - Firebase':'Own Shift Only - No Cross View');
+  document.getElementById('adminTotalProfit').textContent=adminSales.reduce((s,x)=>s+(x.profit||0),0).toLocaleString()+' SSP';
+  document.getElementById('adminTotalTrans').textContent=adminSales.length.toLocaleString();
+}
+window.loadShiftReports=loadShiftReports;
+window.closeShift=async(shift)=>{
+  const today=new Date().toISOString().slice(0,10);
+  const shiftSales=sales.filter(s=>s.jubaShift===shift && s.date===today);
+  const totalSales=shiftSales.reduce((s,x)=>s+x.total,0);
+  const totalProfit=shiftSales.reduce((s,x)=>s+(x.profit||0),0);
+  const transactions=shiftSales.length;
+  let filteredExpenses=expenses.filter(e=>e.date===today); if(currentUser.shift!=='Admin') filteredExpenses=filteredExpenses.filter(e=>e.shift===shift);
+  const totalExpenses=filteredExpenses.reduce((s,e)=>s+e.amount,0);
+  const report={id:safeId(), date:today, shift, timeRange:getShiftTimeRange(shift), totalSales, totalProfit, totalExpenses, transactions, closedBy:currentUser.username, closedAt:new Date().toISOString()};
+  shiftReports.unshift(report);
+  localStorage.setItem('gp_shift_reports', JSON.stringify(shiftReports.slice(0,200)));
+  if(firebaseEnabled){ try{ await addDoc(collection(db,'shiftReports'), {...report, ts:serverTimestamp()}); }catch(e){} }
+  await addAudit('CLOSE_SHIFT', `${shift} shift 8AM-2PM/2PM-9PM closed - Sales ${totalSales} SSP Profit ${totalProfit} SSP - No cross view - Sent to Admin - Firebase Linked`, totalProfit);
+  loadShiftReports(); renderReports();
+};
+window.closeCurrentShift=()=>{ closeShift(getCurrentShiftByTime()); };
+function renderExpenses(){ const tbody=document.getElementById('expTable'); if(!tbody) return; const today=new Date().toISOString().slice(0,10); let filtered=expenses; if(currentUser.shift!=='Admin') filtered=expenses.filter(e=>e.shift===currentUser.shift); const todaySum=filtered.filter(e=>e.date===today).reduce((s,e)=>s+e.amount,0); document.getElementById('expTodayTotal').textContent=todaySum.toLocaleString()+' SSP - '+(currentUser.shift==='Admin'?'All - Firebase':currentUser.shift+' only - No cross view'); document.getElementById('expCount').textContent=filtered.length.toLocaleString(); if(filtered.length===0){ tbody.innerHTML=`<tr><td colspan="6" class="p-4 text-center text-gray-400">No expenses - ${currentUser.shift!=='Admin'?currentUser.shift+' only - No cross view':'Admin sees all - Firebase'}</td></tr>`; return; } tbody.innerHTML=filtered.slice(0,100).map(e=>{ const canDelete=currentUser.shift==='Admin'; const delBtn=canDelete?`<button onclick="delExp('${e.id}')" class="text-red-500 text-[10px]">Delete - Firebase</button>`:`<span class="text-[10px] bg-gray-100 px-2 py-1 rounded-full">Admin only</span>`; return `<tr class="border-b"><td class="p-2 font-bold">${esc(e.title)}</td><td class="p-2 font-bold">${e.amount.toLocaleString()} SSP</td><td class="p-2 text-[11px]">${esc(e.date)}</td><td class="p-2"><span class="badge ${e.shift==='Morning'?'badge-morning':'badge-evening'}">${esc(e.shift||'-')} ${e.shift==='Morning'?'8AM-2PM':'2PM-9PM'}</span></td><td class="p-2 text-[10px]">${esc(e.by||'-')}</td><td class="p-2">${delBtn}</td></tr>`; }).join(''); }
+window.renderExpenses=renderExpenses;
+window.addExpense=async()=>{ const title=document.getElementById('expTitle').value.trim(); const amount=parseInt(document.getElementById('expAmount').value||0); const date=document.getElementById('expDate').value||new Date().toISOString().slice(0,10); if(!title||!amount){ showModal('Error','Title & Amount required'); return; } const exp={id:safeId(), title:sanitizeStr(title,100), amount, date, shift:getCurrentShiftByTime(), by:currentUser.username, time:new Date().toISOString()}; expenses.unshift(exp); localStorage.setItem('gp_expenses', JSON.stringify(expenses.slice(0,500))); if(firebaseEnabled){ try{ await setDoc(doc(db,'expenses',exp.id), {...exp, ts:serverTimestamp()}); }catch(e){} } await addAudit('EXPENSE', `${title} ${amount} SSP Shift ${exp.shift} 8AM-2PM/2PM-9PM - No cross view - Firebase Linked`,0); renderExpenses(); renderReports(); };
+window.delExp=async(id)=>{ if(currentUser.shift!=='Admin'){ showModal('Admin Only','Only Admin can delete expenses - Same Shape V15.5.'); return; } expenses=expenses.filter(e=>e.id!==id); localStorage.setItem('gp_expenses', JSON.stringify(expenses)); if(firebaseEnabled){ try{ await deleteDoc(doc(db,'expenses',id)); }catch(e){} } await addAudit('DELETE_EXPENSE',`Deleted expense ${id} - Firebase Linked`,0); renderExpenses(); };
+window.soAddRow=()=>{ const tbody=document.getElementById('soTableBody'); const tr=document.createElement('tr'); tr.innerHTML=`<td><input class="inp so-item" placeholder="Item"></td><td><input class="inp so-desc"></td><td><input type="number" class="inp so-qty" oninput="soCalc()"></td><td><input class="inp so-um" value="tabs"></td><td><input type="number" class="inp so-rate" oninput="soCalc()"></td><td><input type="number" class="inp so-amount bg-[#FFFBEB]" oninput="soCalc()"></td><td><input type="date" class="inp so-expiry"></td><td><button onclick="this.closest('tr').remove(); soCalc();" class="text-red-500">X</button></td>`; tbody.appendChild(tr); };
+window.soCalc=()=>{ let totalUSD=0; document.querySelectorAll('#soTableBody tr').forEach(tr=>{ const qty=parseFloat(tr.querySelector('.so-qty')?.value||0); const rateVal=parseFloat(tr.querySelector('.so-rate')?.value||0); if(qty>0&&rateVal>0){ tr.querySelector('.so-amount').value=(qty*rateVal).toFixed(2); } totalUSD+=parseFloat(tr.querySelector('.so-amount')?.value||0); }); document.getElementById('soTotalUSD').textContent='USD '+totalUSD.toFixed(2); document.getElementById('soTotalSSP').textContent=(totalUSD*rate).toLocaleString()+' SSP'; };
+window.clearSalesOrder=()=>{ document.getElementById('soTableBody').innerHTML=''; for(let i=0;i<3;i++) soAddRow(); soCalc(); };
+window.saveSalesOrder=async()=>{ const rows=document.querySelectorAll('#soTableBody tr'); let saved=0; const profit=parseFloat(document.getElementById('soProfit').value||30); for(const tr of rows){ const item=tr.querySelector('.so-item').value.trim(); const qty=parseInt(tr.querySelector('.so-qty').value||0); if(!item||!qty) continue; const rateVal=parseFloat(tr.querySelector('.so-rate').value||0); if(rateVal<=0) continue; const expiry=tr.querySelector('.so-expiry').value||'2027-12-31'; const buySSP=Math.round(rateVal*rate); const sellSSP=Math.round(buySSP*(1+profit/100)); const med={id:safeId(), barcode:'AUTO-'+safeId(), name:sanitizeStr(item,100), qty, buy:buySSP, sell:sellSSP, expiry, by:currentUser.username, date:new Date().toISOString()}; if(firebaseEnabled){ try{ await setDoc(doc(db,'meds',med.id), {...med, ts:serverTimestamp()}); }catch(e){} } meds.unshift(med); saved++; } localStorage.setItem('gp_meds', JSON.stringify(meds)); await addAudit('SALES_ORDER',`Saved ${saved} items to stock - 60-Day Alert Active - Firebase Linked - Same Shape V15.5`,0); renderStock(); checkExpiryAlerts(); };
+function updateLiveTime(){ const el=document.getElementById('liveTime'); if(el) el.textContent=formatJubaTime()+' | Shift: '+getCurrentShiftByTime()+' 8AM-2PM/2PM-9PM - Firebase'; const banner=document.getElementById('shiftBanner'); if(banner){ const curr=getCurrentShiftByTime(); banner.innerHTML=`<span>${curr==='Morning'?'Morning':'Evening'} Shift Active: ${getShiftTimeRange(curr)} | ${formatJubaTime()} | No Cross Shift View - 60-Day Alert ON - Firebase Linked</span><span class="badge ${curr==='Morning'?'badge-morning':'badge-evening'}">ACTIVE NOW ${curr==='Morning'?'8AM-2PM':'2PM-9PM'}</span>`; banner.classList.remove('hidden'); } const currentShiftDisplay=document.getElementById('currentShiftDisplay'); if(currentShiftDisplay){ const curr=getCurrentShiftByTime(); currentShiftDisplay.textContent=curr+' '+getShiftTimeRange(curr); currentShiftDisplay.className='text-[10px] px-2 py-1 rounded-full font-bold '+(curr==='Morning'?'badge-morning':'badge-evening'); } }
+setInterval(updateLiveTime, 60000);
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js').then(()=>console.log('SW V15.6 Based on V15.5 - Firebase+Manifest+SW Registered')).catch(()=>{}); }
+(async function init(){ if(!currentUser){ document.getElementById('login').classList.remove('hidden'); document.getElementById('app').classList.add('hidden'); updateLiveTime(); return; } document.getElementById('login').classList.add('hidden'); document.getElementById('app').classList.remove('hidden'); document.getElementById('userBadge').textContent=currentUser.username; document.getElementById('shiftBadge').textContent=currentUser.shift+' - '+getShiftTimeRange(currentUser.shift); document.getElementById('shiftBadge').className='badge '+(currentUser.shift==='Morning'?'badge-morning':currentUser.shift==='Evening'?'badge-evening':'badge-admin'); document.getElementById('rCashier').textContent=currentUser.username; document.getElementById('rShift').textContent=currentUser.shift; document.getElementById('rShiftTime').textContent=getShiftTimeRange(currentUser.shift); document.getElementById('posRate').textContent=rate.toLocaleString(); document.getElementById('rRate').textContent=rate.toLocaleString(); await loadMedsFB(); for(let i=0;i<3;i++) soAddRow(); renderStock(); renderReports(); renderExpenses(); loadShiftReports(); showTab('pos'); updateLiveTime(); checkExpiryAlerts(); })();
+</script>
+</body>
+</html>
