@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grace-pharmacy-v15-7-same-shape-rate-editable';
+const CACHE_NAME = 'grace-pharmacy-v15-7-1-pos-fixed-same-shape-rate-8000';
 const urlsToCache = [
   './',
   './index.html',
@@ -10,7 +10,7 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Opened cache V15.7 Same Shape as File - Rate Editable');
+        console.log('Opened cache V15.7.1 POS Fixed - Same Shape - Rate 8000 - Cart Bug Fixed - Auto shows 20 items');
         return cache.addAll(urlsToCache);
       })
   );
@@ -37,7 +37,7 @@ self.addEventListener('activate', event => {
       return Promise.all(
         cacheNames.map(cacheName => {
           if (cacheWhitelist.indexOf(cacheName) === -1) {
-            console.log('Deleting old cache:', cacheName);
+            console.log('Deleting old cache V15.6 / V15.7:', cacheName);
             return caches.delete(cacheName);
           }
         })
