@@ -1,21 +1,25 @@
 {
-  "name": "The Grace Pharmacy V15.7 - Same Shape as File",
+  "name": "The Grace Pharmacy V15.7.1 - POS Fixed - Same Shape",
   "short_name": "Grace Pharmacy",
-  "description": "The Grace Pharmacy - Juba - V15.7 Same Shape as All_Products.xlsx - Rate Editable by Admin - Firebase + Manifest + SW - 8AM-2PM 2PM-9PM",
+  "description": "The Grace Pharmacy - Juba - V15.7.1 POS Fixed - Same Shape as All_Products.xlsx - Rate 8000 SSP Editable by Admin - Firebase Sync",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0A5C36",
   "theme_color": "#0A5C36",
+  "orientation": "portrait-primary",
+  "scope": "./",
   "icons": [
     {
       "src": "logo.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "logo.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
