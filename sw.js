@@ -1,61 +1,48 @@
-const CACHE_NAME = 'grace-pharma-v15-6-based-on-v15-5-firebase-manifest-sw-8am-2pm';
-const ASSETS = [
+const CACHE_NAME = 'grace-pharmacy-v15-7-same-shape-rate-editable';
+const urlsToCache = [
   './',
   './index.html',
   './manifest.json',
-  './logo.png',
-  'https://cdn.tailwindcss.com',
-  'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'
+  './logo.png'
 ];
 
-self.addEventListener('install', (e) => {
-  console.log('SW Install V15.6 Based on V15.5 - Firebase+Manifest+SW - 8AM-2PM 2PM-9PM - 60-Day Alert - Expired Blocked');
-  e.waitUntil(
-    caches.open(CACHE_NAME).then(cache => 
-      cache.addAll(ASSETS).catch(err => console.log('Cache fail', err))
-    )
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        console.log('Opened cache V15.7 Same Shape as File - Rate Editable');
+        return cache.addAll(urlsToCache);
+      })
   );
   self.skipWaiting();
 });
 
-self.addEventListener('activate', (e) => {
-  e.waitUntil(
-    caches.keys().then(keys => 
-      Promise.all(keys.map(k => { 
-        if (k !== CACHE_NAME) return caches.delete(k); 
-      }))
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => {
+        if (response) {
+          return response;
+        }
+        return fetch(event.request);
+      }
     )
   );
-  self.clients.claim();
 });
 
-self.addEventListener('fetch', (e) => {
-  const url = e.request.url;
-  // Firebase requests - don't cache aggressively, always try network first
-  if (url.includes('firestore') || url.includes('firebase') || url.includes('googleapis') || url.includes('gstatic')) {
-    e.respondWith(
-      fetch(e.request)
-        .then(res => res)
-        .catch(() => caches.match(e.request))
-    );
-    return;
-  }
-  // App assets - cache first
-  e.respondWith(
-    caches.match(e.request).then(cached => {
-      if (cached) return cached;
-      return fetch(e.request).then(fetchRes => {
-        return caches.open(CACHE_NAME).then(cache => {
-          if (e.request.method === 'GET' && url.startsWith('http')) {
-            cache.put(e.request, fetchRes.clone());
+self.addEventListener('activate', event => {
+  const cacheWhitelist = [CACHE_NAME];
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheWhitelist.indexOf(cacheName) === -1) {
+            console.log('Deleting old cache:', cacheName);
+            return caches.delete(cacheName);
           }
-          return fetchRes;
-        });
-      });
-    }).catch(() => {
-      if (e.request.destination === 'document') {
-        return caches.match('./index.html');
-      }
+        })
+      );
     })
   );
+  self.clients.claim();
 });
