@@ -1,7 +1,7 @@
 {
-  "name": "The Grace Pharmacy V15.6 Professional English",
+  "name": "The Grace Pharmacy V15.6 - Based on V15.5 - Firebase Linked",
   "short_name": "Grace Pharma V15.6",
-  "description": "The Grace Pharmacy Juba - V15.6 Professional - Shifts 8AM-2PM 2PM-9PM - 60-Day Expiry Alert - Expired Blocked - Admin Edit/Delete - No Cross Shift View - Confirmation Reports with Logo Colors",
+  "description": "The Grace Pharmacy Juba - V15.6 Based on V15.5 - Shifts 8AM-2PM 2PM-9PM - 60-Day Expiry Alert - Expired Blocked - Admin Edit/Delete Only - No Cross Shift View - Same Shape #0A5C36 #C8A951 - Firebase+Manifest+SW",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -9,7 +9,17 @@
   "theme_color": "#0A5C36",
   "orientation": "any",
   "icons": [
-    {"src": "logo.png","sizes": "192x192","type": "image/png","purpose": "any maskable"},
-    {"src": "logo.png","sizes": "512x512","type": "image/png","purpose": "any maskable"}
+    {
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ]
 }
