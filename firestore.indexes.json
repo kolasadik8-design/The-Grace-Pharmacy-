@@ -1,0 +1,14 @@
+{
+  "indexes": [
+    {"collectionGroup": "meds","queryScope": "COLLECTION","fields": [{"fieldPath": "date","order": "DESCENDING"},{"fieldPath": "__name__","order": "DESCENDING"}]},
+    {"collectionGroup": "meds","queryScope": "COLLECTION","fields": [{"fieldPath": "expiry","order": "ASCENDING"},{"fieldPath": "qty","order": "ASCENDING"}]},
+    {"collectionGroup": "sales","queryScope": "COLLECTION","fields": [{"fieldPath": "date","order": "DESCENDING"},{"fieldPath": "jubaShift","order": "ASCENDING"},{"fieldPath": "time","order": "DESCENDING"}]},
+    {"collectionGroup": "sales","queryScope": "COLLECTION","fields": [{"fieldPath": "jubaShift","order": "ASCENDING"},{"fieldPath": "date","order": "DESCENDING"}]},
+    {"collectionGroup": "audit","queryScope": "COLLECTION","fields": [{"fieldPath": "time","order": "DESCENDING"}]},
+    {"collectionGroup": "audit","queryScope": "COLLECTION","fields": [{"fieldPath": "jubaShift","order": "ASCENDING"},{"fieldPath": "time","order": "DESCENDING"}]},
+    {"collectionGroup": "shiftReports","queryScope": "COLLECTION","fields": [{"fieldPath": "closedAt","order": "DESCENDING"}]},
+    {"collectionGroup": "shiftReports","queryScope": "COLLECTION","fields": [{"fieldPath": "date","order": "DESCENDING"},{"fieldPath": "shift","order": "ASCENDING"}]},
+    {"collectionGroup": "expenses","queryScope": "COLLECTION","fields": [{"fieldPath": "date","order": "DESCENDING"}]}
+  ],
+  "fieldOverrides": []
+}
