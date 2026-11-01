@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Grace Pharmacy - Clear Old Sales - V15.9 PRO English</title>
+<style>
+body{font-family:sans-serif;background:#F9FAFB;margin:0;padding:20px}
+.card{max-width:480px;margin:40px auto;background:#fff;border-radius:16px;border:1px solid #e5e7eb;box-shadow:0 4px 20px rgba(10,92,54,0.08);padding:24px;border-top:4px solid #0A5C36;text-align:center}
+.btn{background:#0A5C36;color:#fff;border-radius:12px;padding:14px 28px;font-size:16px;font-weight:700;border:2px solid #C8A951;cursor:pointer;width:100%}
+.btn-red{background:#991B1B;border-color:#FCA5A5}
+.badge{background:#F0FDF4;border:1px solid #86EFAC;color:#0A5C36;padding:6px 12px;border-radius:999px;font-size:11px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="card">
+<h2 style="color:#0A5C36;margin:0">The Grace Pharmacy</h2>
+<p style="font-size:10px;font-weight:700;letter-spacing:0.2em;color:#C8A951">V15.9 PRO ENGLISH - CLEAR OLD SALES</p>
+<span class="badge">Firebase: the-grace-78e6c - Online/Offline</span>
+
+<h3 style="margin-top:20px;color:#0A5C36">Clear Old Test Sales</h3>
+<p style="font-size:13px;color:#6b7280">This will delete ONLY sales data - Medicines will stay 100%<br>
+Top Selling, Daily/Weekly/Monthly, Shift Reports will become 0<br>
+Stock Qty will NOT change</p>
+
+<div style="background:#FFFBEB;border:1px dashed #C8A951;border-radius:12px;padding:12px;margin:16px 0;text-align:left;font-size:11px">
+<b>What will be deleted:</b><br>
+• gp_sales (All sales transactions)<br>
+• gp_shift_reports (Morning/Evening reports)<br>
+• gp_audit (Audit log)<br><br>
+<b>What will stay:</b><br>
+• gp_meds (All medicines + Qty On Hand + Same Shape)<br>
+• gp_rate (Dollar Rate 8000 SSP)<br>
+• gp_expenses (Expenses)
+</div>
+
+<button class="btn" onclick="clearSales()">🗑️ Clear All Old Sales Now</button>
+<button class="btn btn-red" style="margin-top:10px" onclick="clearFirebaseToo()">🗑️ Clear Sales + Firebase Also (All Devices)</button>
+
+<p id="msg" style="margin-top:18px;font-weight:700;font-size:13px"></p>
+<a href="index.html" style="display:inline-block;margin-top:16px;text-decoration:none;background:#C8A951;color:#000;padding:10px 20px;border-radius:999px;font-size:12px;font-weight:700">← Back to Pharmacy System</a>
+</div>
+
+<script>
+function clearSales(){
+ if(!confirm('Are you sure to delete ALL old test sales?\n\nTop 10 Most Sold = 0\nDaily/Weekly/Monthly = 0\nShift Reports = 0\n\nMedicines will STAY - Same Shape - Qty will NOT change')) return;
+ localStorage.removeItem('gp_sales');
+ localStorage.removeItem('gp_shift_reports');
+ localStorage.removeItem('gp_audit');
+ localStorage.setItem('gp_sales','[]');
+ localStorage.setItem('gp_shift_reports','[]');
+ localStorage.setItem('gp_audit','[]');
+ document.getElementById('msg').innerHTML='✅ Done - Local Sales Cleared<br>Sales Now = 0<br>Top Selling = 0<br>Daily/Weekly/Monthly = 0<br><br>Now open index.html and click Refresh button';
+}
+
+async function clearFirebaseToo(){
+ if(!confirm('Delete from Firebase also? This will delete sales from ALL devices (the-grace-78e6c)')) return;
+ clearSales();
+ try{
+  const { getFirestore, collection, getDocs, deleteDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+  const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
+  const firebaseConfig = { apiKey: "AIzaSyD14R3WMA_x_r5AaUQismNciaiLQFowgMc", authDomain: "the-grace-78e6c.firebaseapp.com", projectId: "the-grace-78e6c", storageBucket: "the-grace-78e6c.firebasestorage.app", messagingSenderId: "155088026492", appId: "1:155088026492:web:c4b08420f69e36145b42f9" };
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  document.getElementById('msg').innerHTML='⏳ Deleting from Firebase... Please wait...';
+  const salesSnap = await getDocs(collection(db,'sales'));
+  for(let d of salesSnap.docs){ await deleteDoc(doc(db,'sales',d.id)); }
+  const shiftSnap = await getDocs(collection(db,'shiftReports'));
+  for(let d of shiftSnap.docs){ await deleteDoc(doc(db,'shiftReports',d.id)); }
+  const auditSnap = await getDocs(collection(db,'audit'));
+  for(let d of auditSnap.docs){ await deleteDoc(doc(db,'audit',d.id)); }
+  document.getElementById('msg').innerHTML='✅ Done - Firebase Also Cleared<br>Sales in ALL devices Now = 0<br>Top Selling = 0<br>Open index.html and Refresh';
+ }catch(e){
+  document.getElementById('msg').innerHTML='Local cleared but Firebase error: '+e.message+'<br>Open index.html - Sales = 0 locally';
+ }
+}
+</script>
+</body>
+</html>
