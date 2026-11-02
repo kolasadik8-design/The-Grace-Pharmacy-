@@ -264,7 +264,7 @@
 <div class="flex justify-between items-center mb-3"><h4 class="font-bold text-[#0A5C36]">Audit Log - V16 PRO - Auto Rate Update + Monthly Chart + Daily Detail</h4><div class="flex gap-2"><button onclick="refreshAllData()" class="refresh-btn text-[10px]">Refresh Log</button><button onclick="clearAudit()" class="text-[11px] bg-red-50 text-red-600 border px-3 py-1 rounded-full">Clear Audit (Admin Only)</button></div></div>
 <div class="overflow-x-auto border rounded-xl max-h-[40vh] overflow-auto"><table class="w-full text-[11px]"><thead class="bg-[#0A5C36] text-white sticky top-0"><tr><th class="p-2 text-left">Time</th><th class="p-2">User / Shift</th><th class="p-2">Action Type</th><th class="p-2">Details - Same Shape</th><th class="p-2">Profit/Rate</th></tr></thead><tbody id="auditTable"></tbody></table></div>
 </div>
-                                                                                                                                                                                                                                           </div><div id="tab-shifts" class="tab-content hidden">
+                                                                                                                                                                                             </div><div id="tab-shifts" class="tab-content hidden">
 <div class="card p-5">
 <div class="flex justify-between items-center flex-wrap gap-2"><h3 class="font-bold text-[#0A5C36] text-[16px]">Shift Management - 8AM-2PM | 2PM-9PM - Rate: <span id="shiftRateDisplay">8000</span> SSP - V16 PRO - Firebase</h3><div class="flex gap-2"><button onclick="refreshAllData()" class="refresh-btn text-[11px]">Refresh All</button><button onclick="loadShiftReports()" class="text-[11px] bg-[#0A5C36] text-white px-3 py-1 rounded-full">Refresh Shifts</button></div></div>
 <div class="grid md:grid-cols-2 gap-4 mt-4">
@@ -313,7 +313,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import { getFirestore, collection, addDoc, setDoc, doc, getDocs, deleteDoc, query, orderBy, limit, serverTimestamp, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 const firebaseConfig = { apiKey: "AIzaSyD14R3WMA_x_r5AaUQismNciaiLQFowgMc", authDomain: "the-grace-78e6c.firebaseapp.com", projectId: "the-grace-78e6c", storageBucket: "the-grace-78e6c.firebasestorage.app", messagingSenderId: "155088026492", appId: "1:155088026492:web:c4b08420f69e36145b42f9" };
 let db, firebaseEnabled=false;
-try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); firebaseEnabled=true; document.getElementById('fbStatusBadge').textContent='Firebase: Online - V16 PRO Auto Rate + Monthly Chart'; }catch(e){ document.getElementById('fbStatusBadge').textContent='Firebase: Offline Mode - V16 PRO'; }
+try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); firebaseEnabled=true; document.getElementById('fbStatusBadge').textContent='Firebase: Online - V16 PRO'; }catch(e){ document.getElementById('fbStatusBadge').textContent='Firebase: Offline Mode - V16 PRO'; }
 function esc(s){ if(!s) return ''; const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
 function safeId(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,8).toUpperCase(); }
 function sanitizeStr(str,max=200){ if(!str) return ''; return String(str).slice(0,max).replace(/[<>]/g,'').trim(); }
@@ -335,56 +335,30 @@ window.doLogin=()=>{ const u=document.getElementById('u').value.trim().toLowerCa
 window.doLogout=()=>{ localStorage.removeItem('gp_user'); location.reload(); };
 window.showModal=(title,body,showCancel=false,onConfirm=null)=>{ document.getElementById('modalTitle').textContent=title; document.getElementById('modalBody').innerHTML=body; const cancel=document.getElementById('modalCancel'); if(showCancel) cancel.classList.remove('hidden'); else cancel.classList.add('hidden'); document.getElementById('customModal').classList.remove('hidden'); pendingConfirmAction=onConfirm; };
 window.closeModal=(confirmed)=>{ document.getElementById('customModal').classList.add('hidden'); if(confirmed && typeof pendingConfirmAction==='function') pendingConfirmAction(); pendingConfirmAction=null; };
-window.showConfirmationReport=(action,details,profit=0)=>{ const html=`<div class="space-y-2"><div class="flex justify-between"><span class="text-gray-500">Action:</span><span class="font-bold text-[#0A5C36]">${esc(action)}</span></div><div class="flex justify-between"><span class="text-gray-500">User:</span><span class="font-bold">${esc(currentUser.username)} (${esc(currentUser.shift)})</span></div><div class="flex justify-between"><span class="text-gray-500">Rate:</span><span class="font-bold text-[#C8A951]">1$ = ${rate.toLocaleString()} SSP - V16 PRO</span></div><div class="border-t pt-2 mt-2"><p class="text-gray-500 text-[11px]">Details - V16 Auto Rate Update:</p><p class="font-bold">${esc(details)}</p></div>${profit?`<div class="flex justify-between text-green-700 font-bold"><span>Profit/Rate:</span><span>${typeof profit==='number'?profit.toLocaleString()+' SSP':esc(String(profit))}</span></div>`:''}<div class="mt-2 p-2 bg-[#F0FDF4] border rounded-xl text-[10px] text-center">Firebase Linked: ${firebaseEnabled?'Online - V16 Synced':'Offline'} | V16 PRO</div></div>`; showModal('System Report - V16 PRO - Rate '+rate,html,false,null); };
+window.showConfirmationReport=(action,details,profit=0)=>{ const html=`<div class="space-y-2"><div class="flex justify-between"><span class="text-gray-500">Action:</span><span class="font-bold text-[#0A5C36]">${esc(action)}</span></div><div class="flex justify-between"><span class="text-gray-500">User:</span><span class="font-bold">${esc(currentUser.username)} (${esc(currentUser.shift)})</span></div><div class="flex justify-between"><span class="text-gray-500">Rate:</span><span class="font-bold text-[#C8A951]">1$ = ${rate.toLocaleString()} SSP - V16 PRO</span></div><div class="border-t pt-2 mt-2"><p class="text-gray-500 text-[11px]">Details:</p><p class="font-bold">${esc(details)}</p></div>${profit?`<div class="flex justify-between text-green-700 font-bold"><span>Profit/Rate:</span><span>${typeof profit==='number'?profit.toLocaleString()+' SSP':esc(String(profit))}</span></div>`:''}<div class="mt-2 p-2 bg-[#F0FDF4] border rounded-xl text-[10px] text-center">Firebase: ${firebaseEnabled?'Online':'Offline'} | V16 PRO</div></div>`; showModal('System Report - V16 PRO - Rate '+rate,html,false,null); };
 async function addAudit(a,d,profit=0){ const e={time:new Date().toISOString(),user:currentUser?.username||'system',shift:currentUser?.shift||'-',jubaShift:getCurrentShiftByTime(),action:a,details:d,profit,rate}; auditLog.unshift(e); localStorage.setItem('gp_audit',JSON.stringify(auditLog.slice(0,500))); if(firebaseEnabled){ try{ await addDoc(collection(db,'audit'),{...e,ts:serverTimestamp()}); }catch(e){} } showConfirmationReport(a,d,profit); }
-async function loadRateFromFirebase(){
-  try{
-    if(!firebaseEnabled) { updateRateUI(); return; }
-    const docRef=doc(db,'settings','dollarRate');
-    const snap=await getDoc(docRef);
-    if(snap.exists()){
-      const data=snap.data();
-      if(data.rate && data.rate>=1000){
-        rate=parseInt(data.rate);
-        localStorage.setItem('gp_rate', String(rate));
-        if(data.by) localStorage.setItem('gp_rate_by', data.by);
-        if(data.date) localStorage.setItem('gp_rate_date', data.date);
-      }
-    }
-  }catch(e){}
-  updateRateUI();
-}
+async function loadRateFromFirebase(){ try{ if(!firebaseEnabled){ updateRateUI(); return; } const docRef=doc(db,'settings','dollarRate'); const snap=await getDoc(docRef); if(snap.exists()){ const data=snap.data(); if(data.rate && data.rate>=1000){ rate=parseInt(data.rate); localStorage.setItem('gp_rate',String(rate)); } } }catch(e){} updateRateUI(); }
 function updateRateUI(){
-  const ids=['posRate','posRateDisplay','rRate','soRateDisplay','soRateFoot','soSaveRate','rateExplain','rateExplain2','prevRate','repRate','repRateUSD','reportRateDisplay','shiftRateDisplay','closedRateDisplay','expRateDisplay','rateBadgeHeader','importRateDisplay','importRateBtn'];
-  ids.forEach(id=>{ const el=document.getElementById(id); if(el){ if(id==='rateBadgeHeader') el.textContent=`Rate: ${rate.toLocaleString()} SSP - Auto Updates All Meds - V16 PRO`; else if(id.includes('Rate') && el.tagName==='INPUT') el.value=rate; else el.textContent=rate.toLocaleString(); } });
-  const rateInput=document.getElementById('rateInput');
-  if(rateInput) rateInput.value=rate;
+  const ids=['posRate','posRateDisplay','rRate','soRateDisplay','soRateFoot','soSaveRate','prevRate','repRate','repRateUSD','reportRateDisplay','shiftRateDisplay','closedRateDisplay','expRateDisplay','rateBadgeHeader','importRateDisplay'];
+  ids.forEach(id=>{ const el=document.getElementById(id); if(el){ if(id==='rateBadgeHeader') el.textContent=`Rate: ${rate.toLocaleString()} SSP - Auto Updates All Meds - V16 PRO`; else el.textContent=rate.toLocaleString(); } });
+  const rateInput=document.getElementById('rateInput'); if(rateInput) rateInput.value=rate;
   const rateBanner=document.getElementById('rateBanner');
-  if(rateBanner && currentUser?.shift==='Admin'){
-    rateBanner.classList.remove('hidden');
-    rateBanner.innerHTML=`V16 PRO - Auto Rate Update: Current Rate: 1$ = ${rate.toLocaleString()} SSP - When you change rate, ALL ${meds.length} medicines will be recalculated: Cost $ x Rate, Sales $ x Rate - Firebase Sync`;
-  }
-  const rateHistoryEl=document.getElementById('rateHistory');
-  if(rateHistoryEl){
-    rateHistoryEl.textContent=`V16 PRO FINAL: Rate Auto Updates All Meds + Monthly Chart + Daily Search + Top Selling + Dead Stock + Refresh Button - POS Fixed - Rate ${rate} SSP - 100% English`;
-  }
-  renderStock(document.getElementById('stockSearch')?.value||'');
-  renderCart();
-  if(typeof renderReports==='function') renderReports();
+  if(rateBanner && currentUser?.shift==='Admin'){ rateBanner.classList.remove('hidden'); rateBanner.innerHTML=`V16 PRO - Auto Rate Update: Current Rate: 1$ = ${rate.toLocaleString()} SSP - ALL ${meds.length} meds will be recalculated`; }
+  const rateHistoryEl=document.getElementById('rateHistory'); if(rateHistoryEl) rateHistoryEl.textContent=`V16 PRO: Rate Auto Updates All Meds + Monthly Chart + Daily Search - Rate ${rate} SSP`;
+  renderStock(document.getElementById('stockSearch')?.value||''); renderCart(); if(typeof renderReports==='function') renderReports();
 }
 window.editRate=()=>{
-  if(currentUser?.shift!=='Admin'){ showModal('Admin Only','Only Admin can edit dollar rate. Current Rate: 1$ = '+rate.toLocaleString()+' SSP - V16 PRO'); return; }
-  showModal('Edit Dollar Rate - V16 PRO - Auto Updates All Meds - Admin Only',`
+  if(currentUser?.shift!=='Admin'){ showModal('Admin Only','Only Admin can edit dollar rate.'); return; }
+  showModal('Edit Dollar Rate - V16 PRO - Auto Updates All Meds',`
     <div class="space-y-3">
       <div class="p-3 bg-[#F0FDF4] border rounded-xl">
-        <p class="text-[11px] text-gray-600">Current Rate - V16 PRO - Auto Updates All</p>
+        <p class="text-[11px] text-gray-600">Current Rate</p>
         <p class="font-bold text-[18px] text-[#0A5C36]">1$ = ${rate.toLocaleString()} SSP</p>
-        <p class="text-[10px] text-gray-500">All ${meds.length} medicines will be recalculated: Buy SSP = Cost $ x New Rate, Sell SSP = Sales $ x New Rate</p>
+        <p class="text-[10px] text-gray-500">All ${meds.length} medicines will be recalculated</p>
       </div>
       <div>
-        <label class="text-[12px] font-bold text-[#0A5C36]">New Dollar Rate - 1$ = ? SSP (Admin Only) - Auto Updates All Meds</label>
-        <input id="newRateInputModal" type="number" min="1000" step="100" value="${rate}" class="inp mt-1 text-[16px] font-bold text-[#0A5C36]" placeholder="8000">
-        <p class="text-[10px] text-gray-600 mt-1">V16 PRO: All meds will be auto updated + Firebase Sync + Reports updated</p>
+        <label class="text-[12px] font-bold text-[#0A5C36]">New Dollar Rate - 1$ = ? SSP</label>
+        <input id="newRateInputModal" type="number" min="1000" step="100" value="${rate}" class="inp mt-1 text-[16px] font-bold text-[#0A5C36]">
       </div>
     </div>
   `,true,async()=>{
@@ -395,11 +369,9 @@ window.editRate=()=>{
 };
 async function saveRateValue(newRate){
   const oldRate=rate;
-  if(!confirm(`Change Rate ${oldRate} -> ${newRate} SSP?\n\nALL ${meds.length} medicines will be recalculated automatically:\nSales Price $ * ${newRate} = New SSP\nCost $ * ${newRate} = New SSP\n\nContinue?`)) return;
+  if(!confirm(`Change Rate ${oldRate} -> ${newRate} SSP?\n\nALL ${meds.length} medicines will be recalculated:\nSales $ * ${newRate} = New SSP\nCost $ * ${newRate} = New SSP\n\nContinue?`)) return;
   rate=newRate;
   localStorage.setItem('gp_rate', String(rate));
-  localStorage.setItem('gp_rate_by', currentUser.username);
-  localStorage.setItem('gp_rate_date', new Date().toLocaleString());
   rateHistory.unshift({rate: newRate, by: currentUser.username, date: new Date().toISOString(), oldRate});
   localStorage.setItem('gp_rate_history', JSON.stringify(rateHistory.slice(0,20)));
   let updatedCount=0;
@@ -411,226 +383,102 @@ async function saveRateValue(newRate){
     if(firebaseEnabled){ try{ await setDoc(doc(db,'meds',m.id), {...m, ts:serverTimestamp()}); }catch(e){} }
   }
   localStorage.setItem('gp_meds', JSON.stringify(meds));
-  if(firebaseEnabled){
-    try{ await setDoc(doc(db,'settings','dollarRate'), {rate: newRate, by: currentUser.username, date: new Date().toISOString(), oldRate, updatedCount, ts:serverTimestamp()}); }catch(e){}
-  }
-  await addAudit('EDIT_DOLLAR_RATE_V16_AUTO_UPDATE',`Rate ${oldRate} -> ${newRate} SSP - Auto updated ${updatedCount} medicines - All Sales Price and Cost recalculated @ new rate`, `Rate ${oldRate}->${newRate}`);
+  if(firebaseEnabled){ try{ await setDoc(doc(db,'settings','dollarRate'), {rate: newRate, by: currentUser.username, date: new Date().toISOString(), oldRate, updatedCount, ts:serverTimestamp()}); }catch(e){} }
+  await addAudit('EDIT_DOLLAR_RATE_V16_AUTO_UPDATE',`Rate ${oldRate} -> ${newRate} - Auto updated ${updatedCount} medicines`, `Rate ${oldRate}->${newRate}`);
   updateRateUI();
-  showModal('Rate Updated - V16 PRO Auto Update',`<div class="p-3 bg-green-50 border rounded-xl"><p class="font-bold text-green-700">✅ Rate changed ${oldRate.toLocaleString()} -> ${newRate.toLocaleString()} SSP</p><p class="text-[12px]">${updatedCount} medicines auto recalculated:<br>New Buy = Cost $ x ${newRate.toLocaleString()}<br>New Sell = Sales $ x ${newRate.toLocaleString()}<br><br>POS + Stock + Reports updated + Firebase Synced</p></div>`);
+  showModal('Rate Updated - V16 PRO',`<div class="p-3 bg-green-50 border rounded-xl"><p class="font-bold text-green-700">✅ Rate changed ${oldRate} -> ${newRate}</p><p>${updatedCount} medicines recalculated</p></div>`);
 }
-window.saveRate=async()=>{
-  if(currentUser?.shift!=='Admin'){ showModal('Admin Only','Only Admin can edit dollar rate.'); return; }
-  const input=document.getElementById('rateInput');
-  const newRate=parseInt(input?.value||'0');
-  if(!newRate || newRate<1000){ showModal('Error','Please enter valid rate >= 1000'); return; }
-  await saveRateValue(newRate);
-};
-window.showTab=(t)=>{
-  document.querySelectorAll('.tab-content').forEach(x=>x.classList.add('hidden'));
-  document.getElementById('tab-'+t)?.classList.remove('hidden');
-  document.querySelectorAll('.tab-btn').forEach(b=>{ b.classList.remove('tabA'); b.classList.add('tabN'); });
-  const active=document.querySelector(`[data-tab="${t}"]`);
-  if(active){ active.classList.remove('tabN'); active.classList.add('tabA'); }
-  if(t==='pos'){ setTimeout(()=>{ searchMeds(''); }, 150); }
-  if(t==='reports') renderReports();
-  if(t==='shifts') loadShiftReports();
-  if(t==='expenses') renderExpenses();
-  if(t==='stock') renderStock();
-};
+window.saveRate=async()=>{ const input=document.getElementById('rateInput'); const newRate=parseInt(input?.value||'0'); if(!newRate || newRate<1000){ showModal('Error','Rate >= 1000'); return; } await saveRateValue(newRate); };
+window.showTab=(t)=>{ document.querySelectorAll('.tab-content').forEach(x=>x.classList.add('hidden')); document.getElementById('tab-'+t)?.classList.remove('hidden'); document.querySelectorAll('.tab-btn').forEach(b=>{ b.classList.remove('tabA'); b.classList.add('tabN'); }); const active=document.querySelector(`[data-tab="${t}"]`); if(active){ active.classList.remove('tabN'); active.classList.add('tabA'); } if(t==='pos'){ setTimeout(()=>{ searchMeds(''); },150); } if(t==='reports') renderReports(); if(t==='shifts') loadShiftReports(); if(t==='expenses') renderExpenses(); if(t==='stock') renderStock(); };
 function usd(s){ return (s/rate).toFixed(2); }
-function getExpiryStatus(d){ if(!d) return {text:'No Expiry Date',cls:'badge-expiry-yellow',days:9999,row:''}; const t=new Date(); t.setHours(0,0,0,0); const e=new Date(d); e.setHours(0,0,0,0); if(isNaN(e.getTime())) return {text:'No Expiry Date',cls:'badge-expiry-yellow',days:9999,row:''}; const diff=Math.ceil((e-t)/86400000); if(diff<0) return {text:`EXPIRED BLOCKED`,cls:'badge-expiry-red',days:diff,row:'row-expired'}; if(diff<=30) return {text:`CRITICAL ${diff} days`,cls:'badge-expiry-red',days:diff,row:'row-expired'}; if(diff<=60) return {text:`WARNING ${diff} days`,cls:'badge-expiry-orange',days:diff,row:'row-orange'}; return {text:`Safe - ${diff} days`,cls:'badge-expiry-green',days:diff,row:''}; }
-function checkExpiryAlerts(){ const critical=meds.filter(m=>{ const ex=getExpiryStatus(m.expiry); return ex.days<0 || ex.days<=30; }); const warning=meds.filter(m=>{ const ex=getExpiryStatus(m.expiry); return ex.days>30 && ex.days<=60; }); const critBanner=document.getElementById('expiryCriticalBanner'); const warnBanner=document.getElementById('expiryWarningBanner'); if(critical.length>0){ critBanner.classList.remove('hidden'); critBanner.innerHTML=`EXPIRED BLOCKED / CRITICAL: ${critical.length} items - <button onclick="viewExpired()" class="underline font-bold ml-2">View List</button> - V16 PRO`; } else critBanner.classList.add('hidden'); if(warning.length>0){ warnBanner.classList.remove('hidden'); warnBanner.innerHTML=`WARNING 60-DAY ALERT: ${warning.length} items - <button onclick="viewExpired()" class="underline font-bold ml-2">View List</button> - V16 PRO`; } else warnBanner.classList.add('hidden'); }
+function getExpiryStatus(d){ if(!d) return {text:'No Expiry Date',cls:'badge-expiry-green',days:9999,row:''}; const t=new Date(); t.setHours(0,0,0,0); const e=new Date(d); e.setHours(0,0,0,0); if(isNaN(e.getTime())) return {text:'No Expiry Date',cls:'badge-expiry-green',days:9999,row:''}; const diff=Math.ceil((e-t)/86400000); if(diff<0) return {text:`EXPIRED BLOCKED`,cls:'badge-expiry-red',days:diff,row:'row-expired'}; if(diff<=30) return {text:`CRITICAL ${diff} days`,cls:'badge-expiry-red',days:diff,row:'row-expired'}; if(diff<=60) return {text:`WARNING ${diff} days`,cls:'badge-expiry-orange',days:diff,row:'row-orange'}; return {text:`Safe - ${diff} days`,cls:'badge-expiry-green',days:diff,row:''}; }
+function checkExpiryAlerts(){ const critical=meds.filter(m=>{ const ex=getExpiryStatus(m.expiry); return ex.days<0 || ex.days<=30; }); const warning=meds.filter(m=>{ const ex=getExpiryStatus(m.expiry); return ex.days>30 && ex.days<=60; }); const critBanner=document.getElementById('expiryCriticalBanner'); const warnBanner=document.getElementById('expiryWarningBanner'); if(critical.length>0){ critBanner.classList.remove('hidden'); critBanner.innerHTML=`EXPIRED / CRITICAL: ${critical.length} items`; } else critBanner.classList.add('hidden'); if(warning.length>0){ warnBanner.classList.remove('hidden'); warnBanner.innerHTML=`WARNING 60-DAY: ${warning.length} items`; } else warnBanner.classList.add('hidden'); }
 async function loadMedsFB(){ if(!firebaseEnabled){ renderStock(); checkExpiryAlerts(); if(currentUser) searchMeds(''); return; } try{ const q=query(collection(db,'meds'), orderBy('date','desc'), limit(500)); const snap=await getDocs(q); if(snap.size>0){ meds=snap.docs.map(d=>d.data()); localStorage.setItem('gp_meds', JSON.stringify(meds)); } }catch(e){} renderStock(); checkExpiryAlerts(); if(currentUser) searchMeds(''); }
-function searchMeds(term){
-  term=(term||'').toLowerCase().trim();
-  const list=document.getElementById('medsList');
-  if(!list) return;
-  if(meds.length===0){
-    list.innerHTML='<div class="p-6 text-center"><p class="text-red-500 font-bold">No medicines found - V16 PRO</p><p class="text-[11px] text-gray-500 mt-2">Go to Stock tab -> Import Now -> Select All_Products.xlsx -> Then return to POS tab<br>Same Shape: Favorite | Name | Sales Price | Cost | Qty On Hand | Unit | Rate '+rate.toLocaleString()+' SSP - Auto Updates</p><button onclick="showTab(\'stock\')" class="btn mt-3">Go to Stock - Import File</button><button onclick="refreshAllData()" class="btn mt-2 bg-[#C8A951] text-black">Refresh Data</button></div>';
-    return;
-  }
-  let filtered;
-  if(term===''){
-    filtered=meds.slice(0,20);
-  }else{
-    filtered=meds.filter(m=> (m.name||'').toLowerCase().includes(term) || (m.internalRef||'').toLowerCase().includes(term) || (m.barcode||'').toLowerCase().includes(term) || (m.unit||'').toLowerCase().includes(term)).slice(0,20);
-  }
-  if(filtered.length===0){
-    list.innerHTML=`<div class="p-4 text-center text-gray-400">No results for "${esc(term)}" - Try different name<br><span class="text-[10px]">Current Rate ${rate} SSP - Auto Updates All - <button onclick="refreshAllData()" class="text-[#0A5C36] underline">Refresh</button></span></div>`;
-    return;
-  }
-  list.innerHTML=filtered.map(m=>{ const ex=getExpiryStatus(m.expiry); const blocked=ex.days<0; const opacity=blocked?'opacity:0.5':''; const btnLabel=blocked?'Sale Blocked - EXPIRED':'Add to Cart - '+m.qty+' '+esc(m.unit||''); const btnClass=blocked?'bg-gray-400 cursor-not-allowed':'btn'; const profit=m.sell-m.buy; const soldQty=getSoldQtyForMed(m.id); return `<div class="card p-3 border ${ex.row} ${opacity} hover:shadow-lg transition-all"><div class="flex justify-between"><span class="font-bold text-[12px]">${esc(m.name)}</span><span class="badge ${ex.cls}">${ex.text}</span></div><div class="text-[11px] mt-1">Favorite: ${esc(m.favorite||'Normal')} | Sales Price: $${m.salesPrice} (${m.sell.toLocaleString()} SSP) | Cost: $${m.cost} (${m.buy.toLocaleString()} SSP) | Profit: ${profit.toLocaleString()} SSP | Qty On Hand: <span class="font-bold ${m.qty<=5?'text-red-600':''}">${m.qty}</span> | Sold: ${soldQty} | Unit: ${esc(m.unit||'')}</div><button onclick="addToCart('${m.id}')" class="${btnClass} w-full mt-2 text-[11px] py-2" ${blocked?'disabled':''}>${btnLabel} - V16 PRO</button></div>`; }).join('');
-}
+function searchMeds(term){ term=(term||'').toLowerCase().trim(); const list=document.getElementById('medsList'); if(!list) return; if(meds.length===0){ list.innerHTML='<div class="p-6 text-center"><p class="text-red-500 font-bold">No medicines found</p><button onclick="showTab(\'stock\')" class="btn mt-3">Go to Stock</button></div>'; return; } let filtered=term==='' ? meds.slice(0,20) : meds.filter(m=> (m.name||'').toLowerCase().includes(term)).slice(0,20); if(filtered.length===0){ list.innerHTML=`<div class="p-4 text-center text-gray-400">No results for "${esc(term)}"</div>`; return; } list.innerHTML=filtered.map(m=>{ const ex=getExpiryStatus(m.expiry); const blocked=ex.days<0; const soldQty=getSoldQtyForMed(m.id); return `<div class="card p-3 border ${ex.row}"><div class="flex justify-between"><span class="font-bold text-[12px]">${esc(m.name)}</span><span class="badge ${ex.cls}">${ex.text}</span></div><div class="text-[11px] mt-1">Sales $${m.salesPrice} (${m.sell.toLocaleString()} SSP) | Cost $${m.cost} | Qty ${m.qty} | Sold ${soldQty}</div><button onclick="addToCart('${m.id}')" class="${blocked?'bg-gray-400':'btn'} w-full mt-2 text-[11px] py-2" ${blocked?'disabled':''}>Add to Cart</button></div>`; }).join(''); }
 window.searchMeds=searchMeds;
-function getSoldQtyForMed(medId){
-  let total=0;
-  for(let sale of sales){
-    for(let item of (sale.items||[])){
-      if(item.id===medId) total+=item.qty||0;
-    }
-  }
-  return total;
-}
-window.addToCart=(id)=>{ const med=meds.find(m=>m.id===id); if(!med || med.qty<=0){ showModal('Sale Blocked','<div class="alert-critical p-3 rounded-xl">Out of stock or expired blocked - V16 PRO.</div>'); return; } const ex=getExpiryStatus(med.expiry); if(ex.days<0){ showModal('Sale Blocked - EXPIRED','<div class="alert-critical p-3 rounded-xl font-bold">EXPIRED BLOCKED - Cannot be sold.</div>'); return; } if(ex.days<=60){ showModal('Warning - 60-Day Alert',`<div class="alert-warning p-3 rounded-xl"><p class="font-bold">WARNING: Expires in ${ex.days} days (${esc(med.expiry)}) - V16 PRO</p></div>`,true,()=>{ proceedAddToCart(med); }); return; } proceedAddToCart(med); };
-function proceedAddToCart(med){ let item=cart.find(c=>c.id===med.id); if(item){ if(item.qty < med.qty) item.qty++; else { showModal('Stock Limit','Only '+med.qty+' '+esc(med.unit||'Units')+' available'); return; } } else cart.push({id:med.id, name:med.name, sell:med.sell, buy:med.buy, qty:1, expiry:med.expiry, salesPrice:med.salesPrice, cost:med.cost, unit:med.unit, qtyOnHand: med.qty}); renderCart(); }
-function renderCart(){ const list=document.getElementById('cartList'); if(!list) return; if(cart.length===0) list.innerHTML='<div class="p-4 text-center text-gray-400">Cart is empty - V16 PRO - Rate '+rate.toLocaleString()+' SSP - Auto Updates All<br><span class="text-[10px]">Add medicines from left list - 20 items shown automatically - <button onclick="refreshAllData()" class="text-[#0A5C36] underline">Refresh</button></span></div>'; else { list.innerHTML=cart.map(c=>{ return `<div class="flex justify-between py-2 border-b text-[12px] hover:bg-gray-50"><span>${esc(c.name)} x${c.qty} ${esc(c.unit||'')} | Sales $${c.salesPrice} (${c.sell.toLocaleString()} SSP) | Cost $${c.cost}</span><span class="flex items-center gap-2">${(c.sell*c.qty).toLocaleString()} SSP <button onclick="removeFromCart('${c.id}')" class="text-red-500 ml-2 border px-2 py-0.5 rounded-full">X</button></span></div>`; }).join(''); } let t=cart.reduce((s,c)=>s+c.sell*c.qty,0); let p=cart.reduce((s,c)=>s+(c.sell-c.buy)*c.qty,0); const totalEl=document.getElementById('cartTotal'); if(totalEl) totalEl.textContent=t.toLocaleString()+' SSP'; const totalUSDEl=document.getElementById('cartTotalUSD'); if(totalUSDEl) totalUSDEl.textContent=usd(t)+' USD @ '+rate.toLocaleString()+' - V16 PRO'; const countEl=document.getElementById('cartCount'); if(countEl) countEl.textContent=cart.reduce((s,c)=>s+c.qty,0); const profitEl=document.getElementById('cartProfit'); if(profitEl) profitEl.textContent=p.toLocaleString()+' SSP ('+usd(p)+' USD @ '+rate.toLocaleString()+') - V16 PRO'; }
+function getSoldQtyForMed(medId){ let total=0; for(let sale of sales){ for(let item of (sale.items||[])){ if(item.id===medId) total+=item.qty||0; } } return total; }
+window.addToCart=(id)=>{ const med=meds.find(m=>m.id===id); if(!med || med.qty<=0){ showModal('Sale Blocked','Out of stock'); return; } const ex=getExpiryStatus(med.expiry); if(ex.days<0){ showModal('Sale Blocked','EXPIRED'); return; } proceedAddToCart(med); };
+function proceedAddToCart(med){ let item=cart.find(c=>c.id===med.id); if(item){ if(item.qty < med.qty) item.qty++; else { showModal('Stock Limit','Only '+med.qty+' available'); return; } } else cart.push({id:med.id, name:med.name, sell:med.sell, buy:med.buy, qty:1, salesPrice:med.salesPrice, cost:med.cost, unit:med.unit}); renderCart(); }
+function renderCart(){ const list=document.getElementById('cartList'); if(!list) return; if(cart.length===0) list.innerHTML='<div class="p-4 text-center text-gray-400">Cart is empty - V16 PRO</div>'; else { list.innerHTML=cart.map(c=>`<div class="flex justify-between py-2 border-b text-[12px]"><span>${esc(c.name)} x${c.qty}</span><span>${(c.sell*c.qty).toLocaleString()} SSP <button onclick="removeFromCart('${c.id}')" class="text-red-500 ml-2">X</button></span></div>`).join(''); } let t=cart.reduce((s,c)=>s+c.sell*c.qty,0); let p=cart.reduce((s,c)=>s+(c.sell-c.buy)*c.qty,0); document.getElementById('cartTotal').textContent=t.toLocaleString()+' SSP'; document.getElementById('cartTotalUSD').textContent=usd(t)+' USD'; document.getElementById('cartCount').textContent=cart.reduce((s,c)=>s+c.qty,0); document.getElementById('cartProfit').textContent=p.toLocaleString()+' SSP'; }
 window.removeFromCart=(id)=>{ cart=cart.filter(c=>c.id!==id); renderCart(); };
 window.clearCart=()=>{ cart=[]; renderCart(); };
-window.checkout=async()=>{ if(cart.length===0){ showModal('Empty Cart','<p>Cart is empty - V16 PRO.</p>'); return; } for(let c of cart){ const m=meds.find(mm=>mm.id===c.id); const ex=getExpiryStatus(m?.expiry); if(ex.days<0){ showModal('Sale Blocked','<div class="alert-critical p-3 rounded-xl">Cart contains expired: ${esc(c.name)}</div>'); return; } if(c.qty > m.qty){ showModal('Stock Limit','Not enough stock for ${esc(c.name)} - Available: '+m.qty); return; } } let total=cart.reduce((s,c)=>s+c.sell*c.qty,0); let totalBuy=cart.reduce((s,c)=>s+c.buy*c.qty,0); let profit=total-totalBuy; const currentShift=getCurrentShiftByTime(); for(let c of cart){ let m=meds.find(mm=>mm.id===c.id); if(m) m.qty=Math.max(0, m.qty-c.qty); } localStorage.setItem('gp_meds', JSON.stringify(meds)); const saleRecord={id:safeId(), items:cart, total, totalBuy, profit, totalUSD:parseFloat(usd(total)), by:currentUser.username, shift:currentUser.shift, jubaShift:currentShift, time:new Date().toISOString(), date:new Date().toISOString().slice(0,10), rate}; sales.unshift(saleRecord); localStorage.setItem('gp_sales', JSON.stringify(sales.slice(0,1000))); if(firebaseEnabled){ for(let c of cart){ let m=meds.find(mm=>mm.id===c.id); if(m){ try{ await setDoc(doc(db,'meds',m.id), {...m, ts:serverTimestamp()}); }catch(e){} } } try{ await addDoc(collection(db,'sales'), {...saleRecord, ts:serverTimestamp()}); }catch(e){} } await addAudit('SALE_V16_PRO', `Sold ${cart.length} types - V16 PRO - Top Selling + Monthly Updated - Total ${total} SSP @ Rate ${rate} - Profit ${profit} SSP - Shift ${currentShift}`, profit); cart=[]; renderCart(); renderStock(); renderReports(); loadShiftReports(); checkExpiryAlerts(); searchMeds(document.getElementById('searchMed')?.value||''); };
-window.updateProfitPreview=()=>{ const cost=parseFloat(document.getElementById('mCost').value||0); const sales=parseFloat(document.getElementById('mSales').value||0); const costEl=document.getElementById('prevCost'); if(costEl) costEl.textContent=cost.toFixed(2); const salesEl=document.getElementById('prevSales'); if(salesEl) salesEl.textContent=sales.toFixed(2); const profitUSD=sales-cost; const profitSSP=Math.round(profitUSD*rate); const margin=cost>0?((profitUSD/cost)*100).toFixed(1):0; const profitEl=document.getElementById('prevProfit'); if(profitEl) profitEl.textContent=profitSSP.toLocaleString()+' SSP'; const marginEl=document.getElementById('prevMargin'); if(marginEl) marginEl.textContent=margin+'%'; const prevRate=document.getElementById('prevRate'); if(prevRate) prevRate.textContent=rate.toLocaleString(); };
-window.addMed=async()=>{ const fav=document.getElementById('mFav').value||'Normal'; const name=document.getElementById('mName').value.trim(); const internal=document.getElementById('mInternal').value||''; const resp=document.getElementById('mResp').value||'Administrator'; const salesPrice=parseFloat(document.getElementById('mSales').value||0); const cost=parseFloat(document.getElementById('mCost').value||0); const qty=parseInt(document.getElementById('mQty').value||0); const forecast=parseInt(document.getElementById('mForecast').value||qty); const unit=document.getElementById('mUnit').value||'Units'; const expiry=document.getElementById('mExpiry').value||'2027-12-31'; if(!name){ showModal('Error','Name is required - V16 PRO.'); return; } const buy=Math.round(cost*rate); const sell=Math.round(salesPrice*rate); const med={id:safeId(), favorite:fav, name:sanitizeStr(name,100), internalRef:sanitizeStr(internal,50), responsible:resp, salesPrice, cost, buy, sell, qty, forecasted:forecast, unit:sanitizeStr(unit,20), barcode:'AUTO-'+safeId(), expiry, by:currentUser.username, date:new Date().toISOString(), rateAtAdd: rate}; if(firebaseEnabled){ try{ await setDoc(doc(db,'meds',med.id), {...med, ts:serverTimestamp()}); }catch(e){} } meds.unshift(med); localStorage.setItem('gp_meds', JSON.stringify(meds)); await addAudit('ADD_SINGLE_V16_PRO', `Added V16 PRO Same Shape: ${name} - Sales Price $${salesPrice} (${sell} SSP) - Cost $${cost} (${buy} SSP) - Qty ${qty} - Profit ${sell-buy} SSP @ Rate ${rate}`, sell-buy); renderStock(); checkExpiryAlerts(); searchMeds(''); renderReports(); };
-window.downloadTemplate=()=>{ const csv="Favorite,Name,Internal Reference,Responsible,Sales Price,Cost,Quantity On Hand,Forecasted Quantity,Unit of Measure,Expiry Date\nNormal,ADOLIN GEL (Adapalene 0.1%) 30g,,Administrator,9,4.5,5,5,Tube,2027-12-31\nNormal,ATOR (Atorvastatin 40mg) Tablets,,Administrator,5,2.5,10,10,Pkt,2027-12-31\nNormal,Abeer (esomeprazole 40mg),,Administrator,2.66,1.33,30,30,Strip,2027-12-31\n"; const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Grace_Template_Same_Shape_V16_PRO_Rate'+rate+'.csv'; a.click(); };
-window.importBulk=async()=>{
-  const file=document.getElementById('bulkFile').files[0]; if(!file){ showModal('Error','Please select a file - V16 PRO.'); return; }
-  try{
-    let rows=[]; const norm=(k)=> String(k||'').toLowerCase().replace(/[^a-z0-9]/g,''); const getVal=(obj,keys)=>{ for(let k of keys){ if(obj[k]!==undefined && obj[k]!=='' && String(obj[k]).trim()!=='') return obj[k]; for(let ok in obj){ if(norm(ok)===norm(k) && String(obj[ok]).trim()!=='') return obj[ok]; } } return ''; };
-    if(file.name.toLowerCase().endsWith('.csv')){ const text=await file.text(); const lines=text.split(/\r?\n/).filter(l=>l.trim()); const headers=lines[0].split(',').map(h=>h.trim()); for(let i=1;i<lines.length;i++){ const cols=lines[i].split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/); let obj={}; headers.forEach((h,idx)=>obj[h]=(cols[idx]||'').replace(/^"|"$/g,'').trim()); rows.push(obj); } }else{ const data=await file.arrayBuffer(); const wb=XLSX.read(data,{type:'array'}); const ws=wb.Sheets[wb.SheetNames[0]]; rows=XLSX.utils.sheet_to_json(ws,{defval:''}); }
-    let saved=0; 
-    for(let r of rows){
-      const fav=sanitizeStr(String(getVal(r,['Favorite'])||'Normal'),20);
-      const name=sanitizeStr(String(getVal(r,['Name','Medicine Name','Item'])||''),100); if(!name) continue;
-      const internal=sanitizeStr(String(getVal(r,['Internal Reference'])||''),50);
-      const resp=sanitizeStr(String(getVal(r,['Responsible'])||'Administrator'),50);
-      let salesPrice=parseFloat(String(getVal(r,['Sales Price'])||'0').replace(/[^0-9.]/g,''))||0;
-      let cost=parseFloat(String(getVal(r,['Cost'])||'0').replace(/[^0-9.]/g,''))||0;
-      let qty=parseInt(String(getVal(r,['Quantity On Hand','Quantity','Qty'])||'0').replace(/[^0-9]/g,''))||0;
-      let forecast=parseInt(String(getVal(r,['Forecasted Quantity','Forecasted'])||qty).replace(/[^0-9]/g,''))||qty;
-      let unit=sanitizeStr(String(getVal(r,['Unit of Measure','Unit'])||'Units'),20);
-      let expiryRaw=String(getVal(r,['Expiry Date','Expiry'])||'2027-12-31').trim().slice(0,10); let expiry=expiryRaw;
-      if(expiry.includes('/')){ const p=expiry.split('/'); if(p.length===3&&p[2].length===4) expiry=`${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`; }
-      if(!expiry||expiry.length<8||isNaN(new Date(expiry).getTime())) expiry='2027-12-31';
-      if(salesPrice===0 && cost>0) salesPrice=cost*1.3;
-      if(cost===0 && salesPrice>0) cost=salesPrice/1.3;
-      if(salesPrice>0 && salesPrice<0.05) salesPrice=0.05;
-      if(cost>0 && cost<0.02) cost=0.02;
-      const buy=Math.round(cost*rate);
-      const sell=Math.round(salesPrice*rate);
-      const med={id:safeId(), favorite:fav, name, internalRef:internal, responsible:resp, salesPrice, cost, buy, sell, qty, forecasted:forecast, unit, barcode:'AUTO-'+safeId(), expiry, by:currentUser.username, date:new Date().toISOString(), rateAtAdd: rate};
-      if(firebaseEnabled){ try{ await setDoc(doc(db,'meds',med.id), {...med, ts:serverTimestamp()}); }catch(e){} }
-      meds.unshift(med); saved++;
-    }
-    localStorage.setItem('gp_meds',JSON.stringify(meds)); await addAudit('BULK_IMPORT_V16_PRO',`Bulk imported ${saved} medicines - V16 PRO - Auto Rate + Monthly Chart - @ Rate ${rate} SSP - Firebase`,0);
-    document.getElementById('importMsg').textContent=`Import Completed: ${saved} medicines - V16 PRO - Auto Rate + Monthly Chart - @ Rate ${rate} SSP - Firebase Synced - Now go to POS tab, you will see 20 items automatically`;
-    document.getElementById('importMsg').className='mt-2 p-2 rounded bg-green-50 border text-green-700'; document.getElementById('importMsg').classList.remove('hidden');
-    renderStock(); checkExpiryAlerts(); searchMeds(''); renderReports();
-  }catch(e){ showModal('Import Error - V16 PRO',e.message); }
-};
-window.viewLowStock=()=>{ activeStockFilter='LowStock'; document.getElementById('expiryFilter').value='LowStock'; renderStock(); showTab('stock'); };
-window.viewExpired=()=>{ activeStockFilter='Expired'; document.getElementById('expiryFilter').value='Expired'; renderStock(); showTab('stock'); };
-window.clearStockFilter=()=>{ activeStockFilter='All'; document.getElementById('expiryFilter').value='All'; document.getElementById('stockSearch').value=''; document.getElementById('activeFilterBadge').classList.add('hidden'); document.getElementById('clearFilterBtn').classList.add('hidden'); renderStock(); };
-window.refreshAllData=async()=>{
-  showModal('Refreshing Data...','<div class="p-3 bg-[#F0FDF4] border rounded-xl"><p class="font-bold text-[#0A5C36]">Refreshing All Data - V16 PRO</p><p class="text-[11px]">Loading from Firebase + LocalStorage + Updating Reports + Monthly Chart + Top Selling + Dead Stock + POS + Stock...</p></div>');
-  try{
-    await loadRateFromFirebase();
-    await loadMedsFB();
-    renderStock();
-    renderCart();
-    renderReports();
-    renderExpenses();
-    loadShiftReports();
-    checkExpiryAlerts();
-    searchMeds(document.getElementById('searchMed')?.value||'');
-    updateLiveTime();
-    setTimeout(()=>{ closeModal(true); showModal('Refresh Complete','<div class="p-3 bg-green-50 border rounded-xl text-green-700"><p class="font-bold">Refresh Complete - V16 PRO</p><p class="text-[11px]">Firebase: '+(firebaseEnabled?'Online Synced':'Offline Local')+'<br>Meds: '+meds.length+' items<br>Sales: '+sales.length+' transactions<br>Rate: 1$ = '+rate.toLocaleString()+' SSP - Auto Updates All Meds<br>Monthly Chart + Daily Search Updated<br>POS Fixed - 20 items auto shown<br>Same Shape as File - 100% English</p></div>'); }, 800);
-  }catch(e){ showModal('Refresh Error',e.message); }
-};
+window.checkout=async()=>{ if(cart.length===0){ showModal('Empty Cart','Cart is empty'); return; } let total=cart.reduce((s,c)=>s+c.sell*c.qty,0); let totalBuy=cart.reduce((s,c)=>s+c.buy*c.qty,0); let profit=total-totalBuy; const currentShift=getCurrentShiftByTime(); for(let c of cart){ let m=meds.find(mm=>mm.id===c.id); if(m) m.qty=Math.max(0, m.qty-c.qty); } localStorage.setItem('gp_meds', JSON.stringify(meds)); const saleRecord={id:safeId(), items:cart, total, totalBuy, profit, totalUSD:parseFloat(usd(total)), by:currentUser.username, shift:currentUser.shift, jubaShift:currentShift, time:new Date().toISOString(), date:new Date().toISOString().slice(0,10), rate}; sales.unshift(saleRecord); localStorage.setItem('gp_sales', JSON.stringify(sales.slice(0,1000))); if(firebaseEnabled){ for(let c of cart){ let m=meds.find(mm=>mm.id===c.id); if(m){ try{ await setDoc(doc(db,'meds',m.id), {...m, ts:serverTimestamp()}); }catch(e){} } } try{ await addDoc(collection(db,'sales'), {...saleRecord, ts:serverTimestamp()}); }catch(e){} } await addAudit('SALE_V16_PRO', `Sold ${cart.length} types - Total ${total} SSP - Shift ${currentShift}`, profit); cart=[]; renderCart(); renderStock(); renderReports(); loadShiftReports(); checkExpiryAlerts(); searchMeds(''); };
+window.updateProfitPreview=()=>{};
+window.addMed=async()=>{ const name=document.getElementById('mName').value.trim(); if(!name){ showModal('Error','Name required'); return; } const salesPrice=parseFloat(document.getElementById('mSales').value||0); const cost=parseFloat(document.getElementById('mCost').value||0); const qty=parseInt(document.getElementById('mQty').value||0); const unit=document.getElementById('mUnit').value||'Units'; const expiry=document.getElementById('mExpiry').value||'2027-12-31'; const buy=Math.round(cost*rate); const sell=Math.round(salesPrice*rate); const med={id:safeId(), name:sanitizeStr(name,100), salesPrice, cost, buy, sell, qty, forecasted:qty, unit:sanitizeStr(unit,20), expiry, date:new Date().toISOString(), rateAtAdd: rate}; if(firebaseEnabled){ try{ await setDoc(doc(db,'meds',med.id), {...med, ts:serverTimestamp()}); }catch(e){} } meds.unshift(med); localStorage.setItem('gp_meds', JSON.stringify(meds)); await addAudit('ADD_SINGLE_V16_PRO', `Added ${name} - $${salesPrice}`, sell-buy); renderStock(); searchMeds(''); renderReports(); };
+window.downloadTemplate=()=>{ const csv="Name,Sales Price,Cost,Quantity On Hand,Unit of Measure,Expiry Date\nADOLIN GEL,9,4.5,5,Tube,2027-12-31\n"; const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Grace_Template_V16.csv'; a.click(); };
+window.importBulk=async()=>{ const file=document.getElementById('bulkFile').files[0]; if(!file){ showModal('Error','Select file'); return; } try{ let rows=[]; const data=await file.arrayBuffer(); const wb=XLSX.read(data,{type:'array'}); const ws=wb.Sheets[wb.SheetNames[0]]; rows=XLSX.utils.sheet_to_json(ws,{defval:''}); let saved=0; for(let r of rows){ const name=(r.Name||r.name||'').toString().trim(); if(!name) continue; let salesPrice=parseFloat(r['Sales Price']||0)||0; let cost=parseFloat(r.Cost||0)||0; let qty=parseInt(r['Quantity On Hand']||0)||0; const buy=Math.round(cost*rate); const sell=Math.round(salesPrice*rate); const med={id:safeId(), name:sanitizeStr(name,100), salesPrice, cost, buy, sell, qty, forecasted:qty, unit:'Units', expiry:'2027-12-31', date:new Date().toISOString(), rateAtAdd: rate}; if(firebaseEnabled){ try{ await setDoc(doc(db,'meds',med.id), {...med, ts:serverTimestamp()}); }catch(e){} } meds.unshift(med); saved++; } localStorage.setItem('gp_meds',JSON.stringify(meds)); document.getElementById('importMsg').textContent=`Imported ${saved} meds`; document.getElementById('importMsg').classList.remove('hidden'); renderStock(); searchMeds(''); renderReports(); }catch(e){ showModal('Import Error',e.message); } };
+window.viewLowStock=()=>{ document.getElementById('expiryFilter').value='LowStock'; renderStock(); showTab('stock'); };
+window.viewExpired=()=>{ document.getElementById('expiryFilter').value='Expired'; renderStock(); showTab('stock'); };
+window.clearStockFilter=()=>{ document.getElementById('expiryFilter').value='All'; document.getElementById('stockSearch').value=''; renderStock(); };
+window.refreshAllData=async()=>{ showModal('Refreshing...','Loading...'); await loadRateFromFirebase(); await loadMedsFB(); renderStock(); renderCart(); renderReports(); loadShiftReports(); checkExpiryAlerts(); searchMeds(''); updateLiveTime(); setTimeout(()=>{ closeModal(true); },500); };
 window.renderStock=(filter='')=>{
   const tbody=document.getElementById('stockTable'); if(!tbody) return;
   let list=[...meds];
   const filterType=document.getElementById('expiryFilter').value;
-  activeStockFilter=filterType;
-  const badge=document.getElementById('activeFilterBadge'); const clearBtn=document.getElementById('clearFilterBtn');
-  if(filterType!=='All'){ badge.textContent=`Filter: ${filterType} @ Rate ${rate} - V16 PRO Auto Updates`; badge.classList.remove('hidden'); clearBtn.classList.remove('hidden'); } else { badge.classList.add('hidden'); clearBtn.classList.add('hidden'); }
   if(filterType==='Expired') list=list.filter(m=>getExpiryStatus(m.expiry).days<0);
   else if(filterType==='LowStock') list=list.filter(m=>m.qty<=5);
-  else if(filterType==='DeadStock'){ const deadIds=getDeadStockIds(); list=list.filter(m=>deadIds.includes(m.id)); }
-  else if(filterType==='TopSelling'){ const topIds=getTopSellingIds(); list=list.filter(m=>topIds.includes(m.id)); }
-  else if(filterType==='Safe') list=list.filter(m=>getExpiryStatus(m.expiry).days>60);
-  if(filter){ const f=filter.toLowerCase(); list=list.filter(m=>(m.name||'').toLowerCase().includes(f) || (m.internalRef||'').toLowerCase().includes(f) || (m.barcode||'').toLowerCase().includes(f)); }
-  if(badge) badge.textContent=`Filter: ${filterType} - ${list.length} items @ Rate ${rate} SSP - V16 PRO Auto Updates - Same Shape`;
-  tbody.innerHTML=list.slice(0,200).map(m=>{ const ex=getExpiryStatus(m.expiry); const isAdmin=currentUser.shift==='Admin'; const profit=m.sell-m.buy; const margin=m.buy>0?((profit/m.buy)*100).toFixed(0):0; const soldQty=getSoldQtyForMed(m.id); const editBtn=isAdmin?`<button onclick="editMed('${m.id}')" class="text-[10px] bg-[#0A5C36] text-white px-2 py-1 rounded-full font-bold">Edit Qty/Sales/Cost/Expiry</button> <button onclick="deleteMed('${m.id}')" class="text-[10px] bg-red-50 text-red-600 border px-2 py-1 rounded-full">Delete</button>`:`<span class="text-[10px] bg-gray-100 border px-2 py-1 rounded-full">Admin only</span>`; return `<tr class="${ex.row} border-b hover:bg-gray-50"><td class="p-2 text-[11px]">${esc(m.favorite||'Normal')}</td><td class="p-2 font-bold text-[12px]">${esc(m.name)}</td><td class="p-2 text-[11px]">${esc(m.internalRef||'')}</td><td class="p-2 text-[11px]">${esc(m.responsible||'Administrator')}</td><td class="p-2 text-[11px]"><span class="font-bold">$${m.salesPrice}</span><br><span class="text-[#0A5C36] font-bold">${m.sell.toLocaleString()} SSP</span><br><span class="text-[10px] text-[#C8A951]">${usd(m.sell)}$ @ ${rate}</span></td><td class="p-2 text-[11px]"><span class="text-gray-500">$${m.cost}</span><br><span class="font-bold">${m.buy.toLocaleString()} SSP</span><br><span class="text-green-700 font-bold">Profit ${profit.toLocaleString()} SSP (${margin}%)</span></td><td class="p-2 font-bold ${m.qty<=5?'text-red-600':''}">${m.qty}</td><td class="p-2">${m.forecasted||m.qty}</td><td class="p-2">${esc(m.unit||'')}</td><td class="p-2 text-[11px]"><span class="badge ${ex.cls}">${ex.text}</span><br><span class="text-[10px]">${esc(m.expiry)}</span><br><span class="text-[9px] bg-blue-50 text-blue-700 px-1 py-0.5 rounded">Sold: ${soldQty}</span><br>${editBtn}</td></tr>`; }).join('');
+  if(filter){ const f=filter.toLowerCase(); list=list.filter(m=>(m.name||'').toLowerCase().includes(f)); }
+  tbody.innerHTML=list.slice(0,200).map(m=>{ const ex=getExpiryStatus(m.expiry); const profit=m.sell-m.buy; const soldQty=getSoldQtyForMed(m.id); return `<tr class="${ex.row} border-b"><td class="p-2 text-[11px]">Normal</td><td class="p-2 font-bold">${esc(m.name)}</td><td class="p-2"></td><td class="p-2">Administrator</td><td class="p-2"><b>$${m.salesPrice}</b><br>${m.sell.toLocaleString()} SSP</td><td class="p-2">${m.buy.toLocaleString()} SSP<br>Profit ${profit.toLocaleString()}</td><td class="p-2 font-bold">${m.qty}</td><td class="p-2">${m.forecasted||m.qty}</td><td class="p-2">${esc(m.unit||'')}</td><td class="p-2 text-[11px]"><span class="badge ${ex.cls}">${ex.text}</span><br>Sold ${soldQty}<br><button onclick="editMed('${m.id}')" class="text-[10px] bg-[#0A5C36] text-white px-2 py-1 rounded-full">Edit</button></td></tr>`; }).join('');
 };
-function getTopSellingIds(){
-  const map={};
-  for(let sale of sales){
-    for(let item of (sale.items||[])){
-      if(!map[item.id]) map[item.id]={qty:0, sales:0, profit:0, name:item.name};
-      map[item.id].qty+=item.qty||0;
-      map[item.id].sales+=item.sell*item.qty||0;
-      map[item.id].profit+=(item.sell-item.buy)*item.qty||0;
-    }
-  }
-  const sorted=Object.entries(map).sort((a,b)=>b[1].qty-a[1].qty).slice(0,10);
-  return sorted.map(([id])=>id);
-}
-function getDeadStockIds(){
-  const lastSoldMap={};
-  for(let sale of sales){
-    const saleTime=new Date(sale.time).getTime();
-    for(let item of (sale.items||[])){
-      if(!lastSoldMap[item.id] || saleTime>lastSoldMap[item.id]) lastSoldMap[item.id]=saleTime;
-    }
-  }
-  const now=Date.now();
-  const thirtyDays=30*24*60*60*1000;
-  const dead=[];
-  for(let m of meds){
-    const lastSold=lastSoldMap[m.id];
-    if(!lastSold) dead.push(m.id);
-    else if((now-lastSold)>thirtyDays) dead.push(m.id);
-  }
-  return dead;
-}
-window.deleteMed=async(id)=>{ if(currentUser.shift!=='Admin'){ showModal('Admin Only','Only Admin can delete - V16 PRO.'); return; } const med=meds.find(m=>m.id===id); showModal('Confirm Delete - V16 PRO',`<div class="alert-critical p-3 rounded-xl"><p class="font-bold">Delete ${esc(med?.name||'this')}? - V16 PRO</p><p class="text-[11px]">Favorite: ${esc(med?.favorite)} | Sales Price $${med?.salesPrice} | Cost $${med?.cost} | Qty On Hand ${med?.qty} | Unit ${esc(med?.unit)} | Sold: ${getSoldQtyForMed(med.id)}</p></div>`,true,async()=>{ meds=meds.filter(m=>m.id!==id); localStorage.setItem('gp_meds', JSON.stringify(meds)); if(firebaseEnabled){ try{ await deleteDoc(doc(db,'meds',id)); }catch(e){} } await addAudit('DELETE_MEDICINE_V16_PRO',`Deleted V16 PRO: ${med?.name} - Sales Price $${med?.salesPrice} Cost $${med?.cost} @ Rate ${rate} - Qty On Hand ${med?.qty} - Sold ${getSoldQtyForMed(med.id)}`,0); renderStock(); checkExpiryAlerts(); searchMeds(''); renderReports(); }); };
-window.editMed=async(id)=>{
-  if(currentUser.shift!=='Admin'){ showModal('Admin Only','Only Admin can edit - V16 PRO - Same Shape.'); return; }
-  const med=meds.find(m=>m.id===id); if(!med) return;
-  const newFav=prompt(`Edit Favorite for:\n${med.name}\nCurrent: ${med.favorite||'Normal'}\nSold: ${getSoldQtyForMed(med.id)}\n(Normal/Warning/Expired)`, med.favorite||'Normal'); if(newFav===null) return;
-  const newName=prompt(`Edit Name:\nCurrent: ${med.name}\nSold Qty: ${getSoldQtyForMed(med.id)}`, med.name); if(newName===null) return;
-  const newSales=prompt(`Edit Sales Price $:\n${med.name}\nCurrent: $${med.salesPrice} (${med.sell.toLocaleString()} SSP @ Rate ${rate})\nSold: ${getSoldQtyForMed(med.id)}\nEnter new Sales Price $:`, med.salesPrice); if(newSales===null) return;
-  const newCost=prompt(`Edit Cost $:\n${med.name}\nCurrent: $${med.cost} (${med.buy.toLocaleString()} SSP @ Rate ${rate})\nEnter new Cost $:`, med.cost); if(newCost===null) return;
-  const newQty=prompt(`Edit Quantity On Hand:\n${med.name}\nCurrent: ${med.qty}\nSold: ${getSoldQtyForMed(med.id)}\nEnter new Qty:`, med.qty); if(newQty===null) return;
-  const newForecast=prompt(`Edit Forecasted Quantity:\n${med.name}\nCurrent: ${med.forecasted||med.qty}\nEnter new Forecasted:`, med.forecasted||med.qty); if(newForecast===null) return;
-  const newUnit=prompt(`Edit Unit of Measure:\n${med.name}\nCurrent: ${med.unit}\n(e.g. Tube, Bottle, Pkt, Strip, Units)`, med.unit); if(newUnit===null) return;
-  const newExpiry=prompt(`Edit Expiry Date:\n${med.name}\nCurrent: ${med.expiry}\nYYYY-MM-DD:`, med.expiry); if(newExpiry===null) return;
-  const salesPrice=parseFloat(newSales||'0'); const cost=parseFloat(newCost||'0'); const qty=parseInt(newQty||'0'); const forecast=parseInt(newForecast||qty);
-  if(isNaN(salesPrice) || isNaN(cost) || isNaN(qty)){ showModal('Error','Invalid numbers - V16 PRO.'); return; }
-  const oldSales=med.salesPrice; const oldCost=med.cost;
-  med.favorite=newFav||'Normal'; med.name=sanitizeStr(newName,100); med.salesPrice=salesPrice; med.cost=cost; med.buy=Math.round(cost*rate); med.sell=Math.round(salesPrice*rate); med.qty=qty; med.forecasted=forecast; med.unit=sanitizeStr(newUnit,20); med.expiry=(newExpiry||'2027-12-31').slice(0,10); med.rateAtEdit=rate;
-  localStorage.setItem('gp_meds', JSON.stringify(meds));
-  if(firebaseEnabled){ try{ await setDoc(doc(db,'meds',med.id), {...med, ts:serverTimestamp()}); }catch(e){} }
-  await addAudit('EDIT_MEDICINE_V16_PRO',`Edited V16 PRO: ${med.name} - Favorite ${newFav} - Sales Price $${oldSales}-> $${salesPrice} (${(oldSales*rate).toLocaleString()}->${med.sell.toLocaleString()} SSP) - Cost $${oldCost}-> $${cost} @ Rate ${rate} - Qty ${qty} - Sold ${getSoldQtyForMed(med.id)} - Profit ${med.sell-med.buy} SSP`, med.sell-med.buy);
-  renderStock(); checkExpiryAlerts(); searchMeds(''); renderReports(); showConfirmationReport('V16 PRO Updated @ Rate '+rate,`${med.name}\nFavorite: ${newFav}\nSales Price: $${salesPrice} (${med.sell.toLocaleString()} SSP)\nCost: $${cost} (${med.buy.toLocaleString()} SSP)\nProfit: ${(med.sell-med.buy).toLocaleString()} SSP @ Rate ${rate}\nQty On Hand: ${qty}\nForecasted: ${forecast}\nUnit: ${newUnit}\nSold: ${getSoldQtyForMed(med.id)}\nExpiry: ${med.expiry}`, med.sell-med.buy);
-};
+function getTopSellingIds(){ const map={}; for(let sale of sales){ for(let item of (sale.items||[])){ if(!map[item.id]) map[item.id]={qty:0}; map[item.id].qty+=item.qty||0; } } const sorted=Object.entries(map).sort((a,b)=>b[1].qty-a[1].qty).slice(0,10); return sorted.map(([id])=>id); }
+function getDeadStockIds(){ const lastSoldMap={}; for(let sale of sales){ const saleTime=new Date(sale.time).getTime(); for(let item of (sale.items||[])){ if(!lastSoldMap[item.id] || saleTime>lastSoldMap[item.id]) lastSoldMap[item.id]=saleTime; } } const dead=[]; for(let m of meds){ const lastSold=lastSoldMap[m.id]; if(!lastSold) dead.push(m.id); else if((Date.now()-lastSold)>30*24*60*60*1000) dead.push(m.id); } return dead; }
+window.deleteMed=async(id)=>{ if(currentUser.shift!=='Admin'){ showModal('Admin Only','Only Admin can delete'); return; } meds=meds.filter(m=>m.id!==id); localStorage.setItem('gp_meds', JSON.stringify(meds)); if(firebaseEnabled){ try{ await deleteDoc(doc(db,'meds',id)); }catch(e){} } renderStock(); renderReports(); };
+window.editMed=async(id)=>{ const med=meds.find(m=>m.id===id); if(!med) return; const newSales=prompt(`Edit Sales Price $ for ${med.name}:`, med.salesPrice); if(newSales===null) return; const newCost=prompt(`Edit Cost $ for ${med.name}:`, med.cost); if(newCost===null) return; const newQty=prompt(`Edit Qty for ${med.name}:`, med.qty); if(newQty===null) return; med.salesPrice=parseFloat(newSales||0); med.cost=parseFloat(newCost||0); med.qty=parseInt(newQty||0); med.buy=Math.round(med.cost*rate); med.sell=Math.round(med.salesPrice*rate); localStorage.setItem('gp_meds', JSON.stringify(meds)); if(firebaseEnabled){ try{ await setDoc(doc(db,'meds',med.id), {...med, ts:serverTimestamp()}); }catch(e){} } renderStock(); renderReports(); };
 function renderReports(){
   const today=new Date().toISOString().slice(0,10);
   const now=new Date();
   const weekAgo=new Date(); weekAgo.setDate(now.getDate()-7);
   const monthStart=new Date(now.getFullYear(), now.getMonth(), 1);
-  let filteredSales=sales; let filteredAudit=auditLog;
-  if(currentUser.shift!=='Admin'){ filteredSales=sales.filter(s=>s.jubaShift===currentUser.shift); filteredAudit=auditLog.filter(a=>a.jubaShift===currentUser.shift); }
+  let filteredSales=sales;
+  if(currentUser.shift!=='Admin') filteredSales=sales.filter(s=>s.jubaShift===currentUser.shift);
   const todaySales=filteredSales.filter(s=>s.date===today);
   const weekSales=filteredSales.filter(s=>{ const d=new Date(s.time); return d>=weekAgo; });
   const monthSales=filteredSales.filter(s=>{ const d=new Date(s.time); return d>=monthStart; });
   const todayTotal=todaySales.reduce((s,x)=>s+x.total,0);
-  const todayProfit=todaySales.reduce((s,x)=>s+(x.profit||0),0);
   const weekTotal=weekSales.reduce((s,x)=>s+x.total,0);
-  const weekProfit=weekSales.reduce((s,x)=>s+(x.profit||0),0);
   const monthTotal=monthSales.reduce((s,x)=>s+x.total,0);
-  const monthProfit=monthSales.reduce((s,x)=>s+(x.profit||0),0);
   const allTotal=filteredSales.reduce((s,x)=>s+x.total,0);
   const allProfit=filteredSales.reduce((s,x)=>s+(x.profit||0),0);
-  const totalMedsCount=meds.length;
-  const totalQty=meds.reduce((s,m)=>s+m.qty,0);
-  const totalStockBuy=meds.reduce((s,m)=>s+(m.buy*m.qty),0);
-  const totalStockSell=meds.reduce((s,m)=>s+(m.sell*m.qty),0);
-  const totalStockProfit=totalStockSell-totalStockBuy;
-  const salesMap={};
-  const lastSoldMap={};
+  const setText=(id,txt)=>{ const el=document.getElementById(id); if(el) el.textContent=txt; };
+  setText('repTotalMeds', meds.length.toString());
+  setText('repTotalMedsQty', meds.reduce((s,m)=>s+m.qty,0).toString()+' Units');
+  setText('repStockBuy', meds.reduce((s,m)=>s+m.buy*m.qty,0).toLocaleString()+' SSP');
+  setText('repStockSell', meds.reduce((s,m)=>s+m.sell*m.qty,0).toLocaleString()+' SSP');
+  setText('repStockProfit', (meds.reduce((s,m)=>s+m.sell*m.qty,0)-meds.reduce((s,m)=>s+m.buy*m.qty,0)).toLocaleString()+' SSP');
+  setText('repLowStock', meds.filter(m=>m.qty<=5).length.toString());
+  setText('repExpired', meds.filter(m=>getExpiryStatus(m.expiry).days<0).length.toString());
+  setText('repLowStock2', meds.filter(m=>m.qty<=5).length.toString());
+  setText('repExpired2', meds.filter(m=>getExpiryStatus(m.expiry).days<0).length.toString());
+  setText('repTotalItems2', meds.length.toString());
+  setText('repTotalQty2', meds.reduce((s,m)=>s+m.qty,0).toString());
+  setText('repTotalSalesAll', allTotal.toLocaleString()+' SSP');
+  setText('repTotalSalesAllUSD', usd(allTotal)+' USD');
+  setText('repTotalSalesAll2', allTotal.toLocaleString()+' SSP');
+  setText('repTotalSalesAllUSD2', usd(allTotal)+' USD');
+  setText('repTotalTransAll', filteredSales.length+' Transactions');
+  setText('repTotalProfitAll', `Profit ${allProfit.toLocaleString()} SSP`);
+  setText('repTodaySSP', todayTotal.toLocaleString()+' SSP');
+  setText('repTodayUSD', usd(todayTotal)+' USD');
+  setText('repTodayCount', todaySales.length+' trans');
+  setText('repTodayProfit', todaySales.reduce((s,x)=>s+(x.profit||0),0).toLocaleString()+' SSP');
+  setText('repWeekSSP', weekTotal.toLocaleString()+' SSP');
+  setText('repWeekUSD', usd(weekTotal)+' USD');
+  setText('repWeekCount', weekSales.length+' trans');
+  setText('repWeekProfit', weekSales.reduce((s,x)=>s+(x.profit||0),0).toLocaleString()+' SSP');
+  setText('repMonthSSP', monthTotal.toLocaleString()+' SSP');
+  setText('repMonthUSD', usd(monthTotal)+' USD');
+  setText('repMonthCount', monthSales.length+' trans');
+  setText('repMonthProfit', monthSales.reduce((s,x)=>s+(x.profit||0),0).toLocaleString()+' SSP');
+  setText('repRate', rate.toLocaleString()+' SSP');
+  setText('repRateUSD', rate.toString());
+  const reportRateDisplay=document.getElementById('reportRateDisplay'); if(reportRateDisplay) reportRateDisplay.textContent=rate.toLocaleString();
+
+  // Sales maps for top/dead
+  const salesMap={}; const lastSoldMap={};
   for(let sale of filteredSales){
     const saleTime=new Date(sale.time).getTime();
     for(let item of (sale.items||[])){
-      if(!salesMap[item.id]) salesMap[item.id]={id:item.id, name:item.name, qty:0, totalSales:0, totalProfit:0, unit:item.unit||''};
+      if(!salesMap[item.id]) salesMap[item.id]={id:item.id, name:item.name, qty:0, totalSales:0, totalProfit:0};
       salesMap[item.id].qty+=item.qty||0;
       salesMap[item.id].totalSales+=(item.sell*item.qty)||0;
       salesMap[item.id].totalProfit+=((item.sell-item.buy)*item.qty)||0;
@@ -638,219 +486,95 @@ function renderReports(){
     }
   }
   const topSellingSorted=Object.values(salesMap).sort((a,b)=>b.qty-a.qty).slice(0,10);
-  const deadStock=[];
-  for(let m of meds){
-    const lastSold=lastSoldMap[m.id];
-    const nowTime=Date.now();
-    const thirtyDays=30*24*60*60*1000;
-    let daysIdle=9999;
-    let lastSoldText='Never Sold';
-    if(lastSold){
-      daysIdle=Math.floor((nowTime-lastSold)/(24*60*60*1000));
-      lastSoldText=new Date(lastSold).toLocaleDateString();
-    }
-    if(!lastSold || (nowTime-lastSold)>thirtyDays){
-      deadStock.push({med:m, daysIdle, lastSoldText});
-    }
-  }
-  deadStock.sort((a,b)=>b.daysIdle-a.daysIdle);
-  const deadStockTop10=deadStock.slice(0,10);
-  const setText=(id,txt)=>{ const el=document.getElementById(id); if(el) el.textContent=txt; };
-  setText('repTotalMeds', totalMedsCount.toLocaleString()+' - V16 PRO');
-  setText('repTotalMedsQty', totalQty.toLocaleString()+' Units - Same Shape');
-  setText('repStockBuy', totalStockBuy.toLocaleString()+' SSP');
-  setText('repStockBuyUSD', usd(totalStockBuy)+' USD @ '+rate);
-  setText('repStockSell', totalStockSell.toLocaleString()+' SSP');
-  setText('repStockSellUSD', usd(totalStockSell)+' USD @ '+rate);
-  setText('repStockProfit', totalStockProfit.toLocaleString()+' SSP');
-  setText('repStockProfitUSD', usd(totalStockProfit)+' USD - Expected Profit');
-  setText('repLowStock', meds.filter(m=>m.qty<=5).length.toLocaleString());
-  setText('repExpired', meds.filter(m=>getExpiryStatus(m.expiry).days<0).length.toLocaleString());
-  setText('repLowStock2', meds.filter(m=>m.qty<=5).length.toLocaleString());
-  setText('repExpired2', meds.filter(m=>getExpiryStatus(m.expiry).days<0).length.toLocaleString());
-  setText('repTotalItems2', totalMedsCount.toLocaleString());
-  setText('repTotalQty2', totalQty.toLocaleString()+' Units');
-  setText('repTopSellingCount', topSellingSorted.length.toLocaleString()+' items');
-  setText('repDeadStockCount', deadStock.length.toLocaleString()+' items');
-  setText('repTotalSalesAll', allTotal.toLocaleString()+' SSP @ '+rate+' - Total All Time');
-  setText('repTotalSalesAllUSD', usd(allTotal)+' USD @ Rate '+rate);
-  setText('repTotalSalesAll2', allTotal.toLocaleString()+' SSP');
-  setText('repTotalSalesAllUSD2', usd(allTotal)+' USD @ Rate '+rate);
-  setText('repTotalTransAll', filteredSales.length+' Transactions - All Time');
-  setText('repTotalProfitAll', `Total Profit: ${allProfit.toLocaleString()} SSP (${usd(allProfit)} USD) - All Time`);
-  setText('repTodaySSP', todayTotal.toLocaleString()+' SSP @ '+rate+' - Today');
-  setText('repTodayUSD', usd(todayTotal)+' USD @ Rate '+rate);
-  setText('repTodayCount', todaySales.length+' transactions Today');
-  setText('repTodayProfit', todayProfit.toLocaleString()+' SSP');
-  setText('repTodayProfitUSD', usd(todayProfit)+' USD');
-  setText('repWeekSSP', weekTotal.toLocaleString()+' SSP @ '+rate+' - Week');
-  setText('repWeekUSD', usd(weekTotal)+' USD @ Rate '+rate);
-  setText('repWeekCount', weekSales.length+' transactions - Last 7 Days');
-  setText('repWeekProfit', weekProfit.toLocaleString()+' SSP');
-  setText('repWeekProfitUSD', usd(weekProfit)+' USD');
-  setText('repMonthSSP', monthTotal.toLocaleString()+' SSP @ '+rate+' - Month');
-  setText('repMonthUSD', usd(monthTotal)+' USD @ Rate '+rate);
-  setText('repMonthCount', monthSales.length+' transactions - This Month');
-  setText('repMonthProfit', monthProfit.toLocaleString()+' SSP');
-  setText('repMonthProfitUSD', usd(monthProfit)+' USD');
   const topTable=document.getElementById('topSellingTable');
   if(topTable){
-    if(topSellingSorted.length===0){
-      topTable.innerHTML='<tr><td colspan="6" class="p-4 text-center text-gray-400">No sales yet - Start selling to see Top 10 Most Sold - V16 PRO</td></tr>';
-    }else{
-      topTable.innerHTML=topSellingSorted.map((item,idx)=>{
-        const med=meds.find(m=>m.id===item.id);
-        const stockLeft=med?med.qty:0;
-        return `<tr class="border-b hover:bg-green-50"><td class="p-2 font-bold">${idx+1}</td><td class="p-2 font-bold text-[11px]">${esc(item.name)}<br><span class="text-[9px] text-gray-500">${esc(item.unit||'')}</span></td><td class="p-2 text-center font-bold text-green-700">${item.qty}</td><td class="p-2 text-center">${item.totalSales.toLocaleString()} SSP</td><td class="p-2 text-center text-green-600 font-bold">${item.totalProfit.toLocaleString()} SSP</td><td class="p-2 text-center ${stockLeft<=5?'text-red-600 font-bold':''}">${stockLeft}</td></tr>`;
-      }).join('');
-    }
+    if(topSellingSorted.length===0) topTable.innerHTML='<tr><td colspan="6" class="p-4 text-center text-gray-400">No sales yet</td></tr>';
+    else topTable.innerHTML=topSellingSorted.map((item,idx)=>`<tr class="border-b"><td class="p-2">${idx+1}</td><td class="p-2">${esc(item.name)}</td><td class="p-2 text-center font-bold">${item.qty}</td><td class="p-2 text-center">${item.totalSales.toLocaleString()}</td><td class="p-2 text-center">${item.totalProfit.toLocaleString()}</td><td class="p-2 text-center">${meds.find(m=>m.id===item.id)?.qty||0}</td></tr>`).join('');
   }
+  const deadStock=[]; for(let m of meds){ const lastSold=lastSoldMap[m.id]; let daysIdle=9999; let lastSoldText='Never Sold'; if(lastSold){ daysIdle=Math.floor((Date.now()-lastSold)/86400000); lastSoldText=new Date(lastSold).toLocaleDateString(); } if(!lastSold || (Date.now()-lastSold)>30*24*60*60*1000){ deadStock.push({med:m, daysIdle, lastSoldText}); } } deadStock.sort((a,b)=>b.daysIdle-a.daysIdle); const deadTop10=deadStock.slice(0,10);
   const deadTable=document.getElementById('deadStockTable');
   if(deadTable){
-    if(deadStockTop10.length===0){
-      deadTable.innerHTML='<tr><td colspan="6" class="p-4 text-center text-gray-400">No dead stock - All medicines sold within 30 days - Excellent! - V16 PRO</td></tr>';
-    }else{
-      deadTable.innerHTML=deadStockTop10.map((entry,idx)=>{
-        const m=entry.med;
-        const value=m.sell*m.qty;
-        const daysText=entry.daysIdle>=9999?'Never Sold':entry.daysIdle+' days';
-        return `<tr class="border-b hover:bg-red-50"><td class="p-2 font-bold">${idx+1}</td><td class="p-2 font-bold text-[11px]">${esc(m.name)}<br><span class="text-[9px] text-gray-500">${esc(m.unit||'')} | $${m.salesPrice} | ${m.qty} left</span></td><td class="p-2 text-center font-bold">${m.qty}</td><td class="p-2 text-center">${value.toLocaleString()} SSP<br><span class="text-[9px]">${usd(value)} USD</span></td><td class="p-2 text-center text-[10px]">${entry.lastSoldText}</td><td class="p-2 text-center ${entry.daysIdle>=9999?'text-red-700 font-bold':'text-orange-600'}">${daysText}</td></tr>`;
-      }).join('');
-    }
+    if(deadTop10.length===0) deadTable.innerHTML='<tr><td colspan="6" class="p-4 text-center text-gray-400">No dead stock</td></tr>';
+    else deadTable.innerHTML=deadTop10.map((e,idx)=>`<tr class="border-b"><td class="p-2">${idx+1}</td><td class="p-2">${esc(e.med.name)}</td><td class="p-2 text-center">${e.med.qty}</td><td class="p-2 text-center">${(e.med.sell*e.med.qty).toLocaleString()}</td><td class="p-2 text-center">${e.lastSoldText}</td><td class="p-2 text-center">${e.daysIdle>=9999?'Never':e.daysIdle+' days'}</td></tr>`).join('');
   }
-  const auditEl=document.getElementById('auditTable');
-  if(auditEl) auditEl.innerHTML=filteredAudit.slice(0,100).map(a=>`<tr class="border-b"><td class="p-2 text-[10px]">${new Date(a.time).toLocaleString()}</td><td class="p-2"><span class="font-bold">${esc(a.user)}</span><br><span class="text-[9px]">${esc(a.shift)} ${esc(a.jubaShift||'')} | Rate ${a.rate||rate}</span></td><td class="p-2"><span class="badge bg-[#0A5C36] text-white text-[9px]">${esc(a.action)}</span></td><td class="p-2 text-[11px]">${esc(a.details)}</td><td class="p-2 text-green-600 text-[10px]">${a.profit?typeof a.profit==='number'?a.profit.toLocaleString()+' SSP':esc(String(a.profit)):''} @ ${a.rate||rate}</td></tr>`).join('');
-  setText('repRate', rate.toLocaleString()+' SSP');
-  setText('repRateUSD', rate.toLocaleString());
-  const reportRateDisplay=document.getElementById('reportRateDisplay'); if(reportRateDisplay) reportRateDisplay.textContent=rate.toLocaleString();
+  setText('repTopSellingCount', topSellingSorted.length.toString());
+  setText('repDeadStockCount', deadStock.length.toString());
 
-  // V16 NEW: Monthly Calendar + Chart
+  // Monthly Calendar + Chart
   const year=now.getFullYear(), month=now.getMonth();
   const monthEnd=new Date(year, month+1, 0);
-  const curMonthEl=document.getElementById('currentMonthLabel');
-  if(curMonthEl) curMonthEl.textContent=now.toLocaleDateString('en-US',{month:'long', year:'numeric'});
-  const dailyMap={};
-  for(let d=1; d<=monthEnd.getDate(); d++){
-    const dateStr=new Date(year, month, d).toISOString().slice(0,10);
-    dailyMap[dateStr]={morning:0, evening:0, total:0, profit:0, count:0};
-  }
-  for(let s of filteredSales){
-    const d=new Date(s.time);
-    if(d.getFullYear()===year && d.getMonth()===month){
-      const key=s.date;
-      if(!dailyMap[key]) dailyMap[key]={morning:0, evening:0, total:0, profit:0, count:0};
-      dailyMap[key].total+=s.total;
-      dailyMap[key].profit+=(s.profit||0);
-      dailyMap[key].count++;
-      if(s.jubaShift==='Morning') dailyMap[key].morning+=s.total;
-      else if(s.jubaShift==='Evening') dailyMap[key].evening+=s.total;
-    }
-  }
+  const curMonthEl=document.getElementById('currentMonthLabel'); if(curMonthEl) curMonthEl.textContent=now.toLocaleDateString('en-US',{month:'long', year:'numeric'});
+  const dailyMap={}; for(let d=1; d<=monthEnd.getDate(); d++){ const dateStr=new Date(year, month, d).toISOString().slice(0,10); dailyMap[dateStr]={morning:0, evening:0, total:0, profit:0, count:0}; }
+  for(let s of filteredSales){ const d=new Date(s.time); if(d.getFullYear()===year && d.getMonth()===month){ const key=s.date; if(!dailyMap[key]) dailyMap[key]={morning:0, evening:0, total:0, profit:0, count:0}; dailyMap[key].total+=s.total; dailyMap[key].profit+=(s.profit||0); dailyMap[key].count++; if(s.jubaShift==='Morning') dailyMap[key].morning+=s.total; else if(s.jubaShift==='Evening') dailyMap[key].evening+=s.total; } }
   const mTbody=document.getElementById('monthlyTable');
-  if(mTbody){
-    mTbody.innerHTML=Object.entries(dailyMap).reverse().map(([date, v])=>{
-      const isToday=date===today;
-      return `<tr class="border-b ${isToday?'bg-[#F0FDF4] font-bold':''} hover:bg-gray-50 cursor-pointer" onclick="renderDailyDetail('${date}')">
-        <td class="p-2">${date} ${isToday?'<span class="text-[9px] bg-green-600 text-white px-1 rounded">TODAY</span>':''}</td>
-        <td class="p-2 text-center">${v.morning.toLocaleString()}</td>
-        <td class="p-2 text-center">${v.evening.toLocaleString()}</td>
-        <td class="p-2 text-center font-bold">${v.total.toLocaleString()} SSP</td>
-        <td class="p-2 text-center text-green-600">${v.profit.toLocaleString()}</td>
-        <td class="p-2 text-center">${v.count}</td>
-      </tr>`;
-    }).join('');
-  }
-  const labels=Object.keys(dailyMap).map(d=>d.slice(8));
-  const totals=Object.values(dailyMap).map(v=>v.total);
-  const ctx=document.getElementById('monthlyChart');
-  if(ctx){
-    if(monthlyChartInstance) monthlyChartInstance.destroy();
-    monthlyChartInstance=new Chart(ctx, {
-      type:'bar',
-      data:{labels, datasets:[{label:'Daily Sales SSP', data:totals, backgroundColor:'#0A5C36', borderColor:'#C8A951', borderWidth:1}]},
-      options:{responsive:true, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}}}
-    });
-  }
+  if(mTbody){ mTbody.innerHTML=Object.entries(dailyMap).reverse().map(([date, v])=>{ const isToday=date===today; return `<tr class="border-b ${isToday?'bg-[#F0FDF4] font-bold':''} hover:bg-gray-50 cursor-pointer" onclick="renderDailyDetail('${date}')"><td class="p-2">${date}</td><td class="p-2 text-center">${v.morning.toLocaleString()}</td><td class="p-2 text-center">${v.evening.toLocaleString()}</td><td class="p-2 text-center font-bold">${v.total.toLocaleString()}</td><td class="p-2 text-center">${v.profit.toLocaleString()}</td><td class="p-2 text-center">${v.count}</td></tr>`; }).join(''); }
+  const labels=Object.keys(dailyMap).map(d=>d.slice(8)); const totals=Object.values(dailyMap).map(v=>v.total); const ctx=document.getElementById('monthlyChart');
+  if(ctx){ if(monthlyChartInstance) monthlyChartInstance.destroy(); monthlyChartInstance=new Chart(ctx, {type:'bar', data:{labels, datasets:[{label:'Daily Sales SSP', data:totals, backgroundColor:'#0A5C36'}]}, options:{responsive:true, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}}}}); }
+  const auditEl=document.getElementById('auditTable'); if(auditEl) auditEl.innerHTML=auditLog.slice(0,100).map(a=>`<tr class="border-b"><td class="p-2 text-[10px]">${new Date(a.time).toLocaleString()}</td><td class="p-2">${esc(a.user)}</td><td class="p-2">${esc(a.action)}</td><td class="p-2">${esc(a.details)}</td><td class="p-2">${a.profit||''}</td></tr>`).join('');
 }
 window.renderReports=renderReports;
 window.renderDailyDetail=(dateStr)=>{
   if(!dateStr) return;
-  const box=document.getElementById('dailyDetailBox');
-  if(!box) return;
-  box.classList.remove('hidden');
-  document.getElementById('detailDate').textContent=dateStr;
-  document.getElementById('detailRate').textContent=rate.toLocaleString();
-  let filtered=sales.filter(s=>s.date===dateStr);
-  if(currentUser.shift!=='Admin') filtered=filtered.filter(s=>s.jubaShift===currentUser.shift);
-  const morning=filtered.filter(s=>s.jubaShift==='Morning');
-  const evening=filtered.filter(s=>s.jubaShift==='Evening');
-  const morningTotal=morning.reduce((a,b)=>a+b.total,0);
-  const eveningTotal=evening.reduce((a,b)=>a+b.total,0);
-  const total=morningTotal+eveningTotal;
-  const profit=filtered.reduce((a,b)=>a+(b.profit||0),0);
-  document.getElementById('detailMorning').textContent=morningTotal.toLocaleString()+' SSP';
-  document.getElementById('detailMorningTrans').textContent=morning.length+' transactions - 8AM-2PM';
-  document.getElementById('detailEvening').textContent=eveningTotal.toLocaleString()+' SSP';
-  document.getElementById('detailEveningTrans').textContent=evening.length+' transactions - 2PM-9PM';
+  const box=document.getElementById('dailyDetailBox'); if(!box) return; box.classList.remove('hidden');
+  document.getElementById('detailDate').textContent=dateStr; document.getElementById('detailRate').textContent=rate.toLocaleString();
+  let filtered=sales.filter(s=>s.date===dateStr); if(currentUser.shift!=='Admin') filtered=filtered.filter(s=>s.jubaShift===currentUser.shift);
+  const morning=filtered.filter(s=>s.jubaShift==='Morning'); const evening=filtered.filter(s=>s.jubaShift==='Evening');
+  document.getElementById('detailMorning').textContent=morning.reduce((a,b)=>a+b.total,0).toLocaleString()+' SSP';
+  document.getElementById('detailMorningTrans').textContent=morning.length+' trans';
+  document.getElementById('detailEvening').textContent=evening.reduce((a,b)=>a+b.total,0).toLocaleString()+' SSP';
+  document.getElementById('detailEveningTrans').textContent=evening.length+' trans';
+  const total=filtered.reduce((a,b)=>a+b.total,0); const profit=filtered.reduce((a,b)=>a+(b.profit||0),0);
   document.getElementById('detailTotal').textContent=total.toLocaleString()+' SSP';
-  document.getElementById('detailProfit').textContent=`Profit ${profit.toLocaleString()} SSP | ${filtered.length} trans | USD ${(total/rate).toFixed(2)} $`;
+  document.getElementById('detailProfit').textContent=`Profit ${profit.toLocaleString()} | ${filtered.length} trans`;
   const list=document.getElementById('dailySalesList');
-  if(filtered.length===0) list.innerHTML='<tr><td colspan="5" class="p-4 text-center text-gray-400">No sales on this date - V16 PRO</td></tr>';
-  else list.innerHTML=filtered.map(s=>`<tr class="border-b"><td class="p-2 text-[10px]">${new Date(s.time).toLocaleTimeString()}</td><td class="p-2"><b>${esc(s.by)}</b><br><span class="badge ${s.jubaShift==='Morning'?'badge-morning':'badge-evening'} text-[9px]">${esc(s.jubaShift)}</span></td><td class="p-2 text-[10px]">${s.items.map(i=>`${esc(i.name)} x${i.qty}`).join('<br>')}</td><td class="p-2 font-bold">${s.total.toLocaleString()} SSP</td><td class="p-2 text-green-600">${(s.profit||0).toLocaleString()}</td></tr>`).join('');
+  if(filtered.length===0) list.innerHTML='<tr><td colspan="5" class="p-4 text-center">No sales</td></tr>';
+  else list.innerHTML=filtered.map(s=>`<tr class="border-b"><td class="p-2">${new Date(s.time).toLocaleTimeString()}</td><td class="p-2">${esc(s.by)}<br>${esc(s.jubaShift)}</td><td class="p-2">${s.items.map(i=>`${esc(i.name)} x${i.qty}`).join('<br>')}</td><td class="p-2 font-bold">${s.total.toLocaleString()}</td><td class="p-2">${(s.profit||0).toLocaleString()}</td></tr>`).join('');
 };
-window.exportReportsCSV=()=>{ let csv="Time,User,Shift,JubaShift,Action,Details,Profit,Rate,Favorite,Name,Internal Reference,Responsible,Sales Price,Cost,Quantity On Hand,Forecasted Quantity,Unit of Measure\n"; let filtered=auditLog; if(currentUser.shift!=='Admin') filtered=auditLog.filter(a=>a.jubaShift===currentUser.shift); filtered.slice(0,500).forEach(a=>{ csv+=`"${a.time}","${a.user}","${a.shift}","${a.jubaShift||''}","${a.action}","${a.details}",${a.profit||0},${a.rate||rate},,,,,,,,\n`; }); const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`Grace_Reports_V16_PRO_Rate${rate}_${new Date().toISOString().slice(0,10)}.csv`; a.click(); };
-window.clearAudit=()=>{ if(currentUser.shift!=='Admin'){ showModal('Admin Only','Only Admin can clear audit logs.'); return; } showModal('Clear Audit? - V16 PRO','<div class="alert-critical p-3 rounded-xl">Clear all audit logs? - V16 PRO - Auto Rate + Monthly Chart</div>',true,()=>{ auditLog=[]; localStorage.setItem('gp_audit', JSON.stringify(auditLog)); renderReports(); }); };
-function loadShiftReports(){
-  const today=new Date().toISOString().slice(0,10);
-  const morningSales=sales.filter(s=>s.jubaShift==='Morning' && s.date===today);
-  const eveningSales=sales.filter(s=>s.jubaShift==='Evening' && s.date===today);
-  const mSales=document.getElementById('morningSales'); if(mSales) mSales.textContent=morningSales.reduce((s,x)=>s+x.total,0).toLocaleString()+' SSP @ '+rate+' V16 PRO';
-  const mTrans=document.getElementById('morningTrans'); if(mTrans) mTrans.textContent=morningSales.length.toLocaleString();
-  const mProfit=document.getElementById('morningProfit'); if(mProfit) mProfit.textContent=morningSales.reduce((s,x)=>s+(x.profit||0),0).toLocaleString()+' SSP V16 PRO';
-  const eSales=document.getElementById('eveningSales'); if(eSales) eSales.textContent=eveningSales.reduce((s,x)=>s+x.total,0).toLocaleString()+' SSP @ '+rate+' V16 PRO';
-  const eTrans=document.getElementById('eveningTrans'); if(eTrans) eTrans.textContent=eveningSales.length.toLocaleString();
-  const eProfit=document.getElementById('eveningProfit'); if(eProfit) eProfit.textContent=eveningSales.reduce((s,x)=>s+(x.profit||0),0).toLocaleString()+' SSP V16 PRO';
-  const currShift=getCurrentShiftByTime();
-  const morningStatus=document.getElementById('morningStatus'); const eveningStatus=document.getElementById('eveningStatus');
-  if(morningStatus){ morningStatus.textContent=currShift==='Morning'?'ACTIVE NOW 8AM-2PM':'Inactive 8AM-2PM'; morningStatus.className='badge '+(currShift==='Morning'?'badge-morning':'bg-gray-100'); }
-  if(eveningStatus){ eveningStatus.textContent=currShift==='Evening'?'ACTIVE NOW 2PM-9PM':'Inactive 2PM-9PM'; eveningStatus.className='badge '+(currShift==='Evening'?'badge-evening':'bg-gray-100'); }
-  const tbody=document.getElementById('shiftReportsTable'); if(!tbody) return;
-  let filteredReports=shiftReports; if(currentUser.shift!=='Admin'){ filteredReports=shiftReports.filter(r=>r.shift===currentUser.shift); }
-  if(filteredReports.length===0) tbody.innerHTML=`<tr><td colspan="8" class="p-4 text-center text-gray-400">No closed shift reports yet - Rate ${rate} SSP - V16 PRO - Same Shape - ${currentUser.shift!=='Admin'?currentUser.shift+' only - No cross view':'Admin sees all'}</td></tr>`;
-  else tbody.innerHTML=filteredReports.slice(0,50).map(r=>`<tr class="border-b"><td class="p-2 text-[10px]">${new Date(r.closedAt).toLocaleString()}<br>${r.date}</td><td class="p-2"><span class="badge ${r.shift==='Morning'?'badge-morning':'badge-evening'}">${r.shift} ${r.shift==='Morning'?'8AM-2PM':'2PM-9PM'}</span></td><td class="p-2 font-bold">${esc(r.closedBy)}</td><td class="p-2 font-bold">${r.totalSales.toLocaleString()} SSP @ ${r.rate||rate}<br><span class="text-[10px] text-[#C8A951]">${(r.totalSales/(r.rate||rate)).toFixed(2)} $ V16 PRO</span></td><td class="p-2 text-green-600 font-bold">${r.totalProfit.toLocaleString()} SSP V16 PRO</td><td class="p-2 text-center">${r.transactions}</td><td class="p-2">${r.totalExpenses.toLocaleString()} SSP</td><td class="p-2"><span class="badge bg-green-100 text-green-700">Sent to Admin - Rate ${r.rate||rate} - V16 PRO</span></td></tr>`).join('');
-}
+window.exportReportsCSV=()=>{ let csv="Time,User,Action,Details,Profit\n"; auditLog.slice(0,500).forEach(a=>{ csv+=`"${a.time}","${a.user}","${a.action}","${a.details}",${a.profit||0}\n`; }); const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`Grace_Reports_V16_${new Date().toISOString().slice(0,10)}.csv`; a.click(); };
+window.clearAudit=()=>{ if(currentUser.shift!=='Admin'){ showModal('Admin Only','Only Admin'); return; } auditLog=[]; localStorage.setItem('gp_audit', JSON.stringify(auditLog)); renderReports(); };
+function loadShiftReports(){ const today=new Date().toISOString().slice(0,10); const morningSales=sales.filter(s=>s.jubaShift==='Morning' && s.date===today); const eveningSales=sales.filter(s=>s.jubaShift==='Evening' && s.date===today); const mSales=document.getElementById('morningSales'); if(mSales) mSales.textContent=morningSales.reduce((s,x)=>s+x.total,0).toLocaleString()+' SSP'; const mTrans=document.getElementById('morningTrans'); if(mTrans) mTrans.textContent=morningSales.length.toString(); const mProfit=document.getElementById('morningProfit'); if(mProfit) mProfit.textContent=morningSales.reduce((s,x)=>s+(x.profit||0),0).toLocaleString()+' SSP'; const eSales=document.getElementById('eveningSales'); if(eSales) eSales.textContent=eveningSales.reduce((s,x)=>s+x.total,0).toLocaleString()+' SSP'; const eTrans=document.getElementById('eveningTrans'); if(eTrans) eTrans.textContent=eveningSales.length.toString(); const eProfit=document.getElementById('eveningProfit'); if(eProfit) eProfit.textContent=eveningSales.reduce((s,x)=>s+(x.profit||0),0).toLocaleString()+' SSP'; const tbody=document.getElementById('shiftReportsTable'); if(!tbody) return; let filteredReports=shiftReports; if(currentUser.shift!=='Admin') filteredReports=shiftReports.filter(r=>r.shift===currentUser.shift); if(filteredReports.length===0) tbody.innerHTML=`<tr><td colspan="8" class="p-4 text-center text-gray-400">No reports</td></tr>`; else tbody.innerHTML=filteredReports.slice(0,50).map(r=>`<tr class="border-b"><td class="p-2">${new Date(r.closedAt).toLocaleString()}</td><td class="p-2">${r.shift}</td><td class="p-2">${esc(r.closedBy)}</td><td class="p-2">${r.totalSales.toLocaleString()} SSP</td><td class="p-2">${r.totalProfit.toLocaleString()}</td><td class="p-2">${r.transactions}</td><td class="p-2">${r.totalExpenses.toLocaleString()}</td><td class="p-2">Sent</td></tr>`).join(''); }
 window.loadShiftReports=loadShiftReports;
-window.closeShift=async(shift)=>{
-  const today=new Date().toISOString().slice(0,10);
-  const shiftSales=sales.filter(s=>s.jubaShift===shift && s.date===today);
-  const totalSales=shiftSales.reduce((s,x)=>s+x.total,0);
-  const totalProfit=shiftSales.reduce((s,x)=>s+(x.profit||0),0);
-  const transactions=shiftSales.length;
-  let filteredExpenses=expenses.filter(e=>e.date===today); if(currentUser.shift!=='Admin') filteredExpenses=filteredExpenses.filter(e=>e.shift===shift);
-  const totalExpenses=filteredExpenses.reduce((s,e)=>s+e.amount,0);
-  const report={id:safeId(), date:today, shift, timeRange:getShiftTimeRange(shift), totalSales, totalProfit, totalExpenses, transactions, closedBy:currentUser.username, closedAt:new Date().toISOString(), rate};
-  shiftReports.unshift(report);
-  localStorage.setItem('gp_shift_reports', JSON.stringify(shiftReports.slice(0,200)));
-  if(firebaseEnabled){ try{ await addDoc(collection(db,'shiftReports'), {...report, ts:serverTimestamp()}); }catch(e){} }
-  await addAudit('CLOSE_SHIFT_V16_PRO', `${shift} shift closed - V16 PRO - Auto Rate + Monthly Chart - Sales ${totalSales} SSP @ Rate ${rate} Profit ${totalProfit} SSP - Sent to Admin`, totalProfit);
-  loadShiftReports(); renderReports();
-};
+window.closeShift=async(shift)=>{ const today=new Date().toISOString().slice(0,10); const shiftSales=sales.filter(s=>s.jubaShift===shift && s.date===today); const totalSales=shiftSales.reduce((s,x)=>s+x.total,0); const totalProfit=shiftSales.reduce((s,x)=>s+(x.profit||0),0); const transactions=shiftSales.length; const report={id:safeId(), date:today, shift, totalSales, totalProfit, totalExpenses:0, transactions, closedBy:currentUser.username, closedAt:new Date().toISOString(), rate}; shiftReports.unshift(report); localStorage.setItem('gp_shift_reports', JSON.stringify(shiftReports.slice(0,200))); if(firebaseEnabled){ try{ await addDoc(collection(db,'shiftReports'), {...report, ts:serverTimestamp()}); }catch(e){} } await addAudit('CLOSE_SHIFT_V16_PRO', `${shift} shift closed - Sales ${totalSales}`, totalProfit); loadShiftReports(); renderReports(); };
 window.closeCurrentShift=()=>{ closeShift(getCurrentShiftByTime()); };
-function renderExpenses(){ const tbody=document.getElementById('expTable'); if(!tbody) return; let filtered=expenses; if(currentUser.shift!=='Admin') filtered=expenses.filter(e=>e.shift===currentUser.shift); if(filtered.length===0){ tbody.innerHTML=`<tr><td colspan="6" class="p-4 text-center text-gray-400">No expenses @ Rate ${rate} - V16 PRO - <button onclick="refreshAllData()" class="text-[#0A5C36] underline">Refresh</button></td></tr>`; return; } tbody.innerHTML=filtered.slice(0,100).map(e=>{ const canDelete=currentUser.shift==='Admin'; const delBtn=canDelete?`<button onclick="delExp('${e.id}')" class="text-red-500 text-[10px]">Delete - V16 PRO</button>`:`<span class="text-[10px] bg-gray-100 px-2 py-1 rounded-full">Admin only</span>`; return `<tr class="border-b"><td class="p-2 font-bold">${esc(e.title)}</td><td class="p-2 font-bold">${e.amount.toLocaleString()} SSP @ ${rate} V16 PRO</td><td class="p-2 text-[11px]">${esc(e.date)}</td><td class="p-2"><span class="badge ${e.shift==='Morning'?'badge-morning':'badge-evening'}">${esc(e.shift||'-')}</span></td><td class="p-2 text-[10px]">${esc(e.by||'-')}</td><td class="p-2">${delBtn}</td></tr>`; }).join(''); }
+function renderExpenses(){ const tbody=document.getElementById('expTable'); if(!tbody) return; if(expenses.length===0){ tbody.innerHTML=`<tr><td colspan="6" class="p-4 text-center text-gray-400">No expenses</td></tr>`; return; } tbody.innerHTML=expenses.slice(0,100).map(e=>`<tr class="border-b"><td class="p-2">${esc(e.title)}</td><td class="p-2">${e.amount.toLocaleString()} SSP</td><td class="p-2">${esc(e.date)}</td><td class="p-2">${esc(e.shift||'-')}</td><td class="p-2">${esc(e.by||'-')}</td><td class="p-2"><button onclick="delExp('${e.id}')" class="text-red-500">Delete</button></td></tr>`).join(''); }
 window.renderExpenses=renderExpenses;
-window.addExpense=async()=>{ const title=document.getElementById('expTitle').value.trim(); const amount=parseInt(document.getElementById('expAmount').value||0); const date=document.getElementById('expDate').value||new Date().toISOString().slice(0,10); if(!title||!amount){ showModal('Error','Title & Amount required - V16 PRO.'); return; } const exp={id:safeId(), title:sanitizeStr(title,100), amount, date, shift:getCurrentShiftByTime(), by:currentUser.username, time:new Date().toISOString(), rate}; expenses.unshift(exp); localStorage.setItem('gp_expenses', JSON.stringify(expenses.slice(0,500))); if(firebaseEnabled){ try{ await setDoc(doc(db,'expenses',exp.id), {...exp, ts:serverTimestamp()}); }catch(e){} } await addAudit('EXPENSE_V16_PRO', `${title} ${amount} SSP @ Rate ${rate} Shift ${exp.shift} - V16 PRO`,0); renderExpenses(); renderReports(); };
-window.delExp=async(id)=>{ if(currentUser.shift!=='Admin'){ showModal('Admin Only','Only Admin can delete expenses - V16 PRO.'); return; } expenses=expenses.filter(e=>e.id!==id); localStorage.setItem('gp_expenses', JSON.stringify(expenses)); if(firebaseEnabled){ try{ await deleteDoc(doc(db,'expenses',id)); }catch(e){} } await addAudit('DELETE_EXPENSE_V16_PRO',`Deleted expense ${id} @ Rate ${rate} - V16 PRO`,0); renderExpenses(); renderReports(); };
-window.soAddRow=()=>{ const tbody=document.getElementById('soTableBody'); const tr=document.createElement('tr'); tr.innerHTML=`<td><input class="inp so-item" placeholder="Name - Same Shape"></td><td><input class="inp so-desc" placeholder="Internal Reference"></td><td><input type="number" class="inp so-qty" placeholder="Qty On Hand" oninput="soCalc()"></td><td><input class="inp so-um" placeholder="Unit of Measure" value="Units"></td><td><input type="number" step="0.01" class="inp so-rate" placeholder="Cost $" oninput="soCalc()"></td><td><input type="number" step="0.01" class="inp so-amount bg-[#FFFBEB]" placeholder="Sales Price $" oninput="soCalc()"></td><td><input type="date" class="inp so-expiry"></td><td><button onclick="this.closest('tr').remove(); soCalc();" class="text-red-500">X</button></td>`; tbody.appendChild(tr); };
-window.soCalc=()=>{ let totalUSD=0; let totalCostUSD=0; document.querySelectorAll('#soTableBody tr').forEach(tr=>{ const qty=parseFloat(tr.querySelector('.so-qty')?.value||0); const costVal=parseFloat(tr.querySelector('.so-rate')?.value||0); const salesVal=parseFloat(tr.querySelector('.so-amount')?.value||0); if(qty>0&&costVal>0&&salesVal===0){ tr.querySelector('.so-amount').value=(costVal*1.3).toFixed(2); } totalCostUSD+=qty*costVal; totalUSD+=qty*(parseFloat(tr.querySelector('.so-amount')?.value||0)); }); document.getElementById('soTotalUSD').textContent='USD '+totalUSD.toFixed(2)+' - Sales Price Total - V16 PRO'; document.getElementById('soTotalSSP').textContent=(totalUSD*rate).toLocaleString()+' SSP @ '+rate.toLocaleString()+' - Cost $'+totalCostUSD.toFixed(2)+' = '+(totalCostUSD*rate).toLocaleString()+' SSP'; };
-window.clearSalesOrder=()=>{ document.getElementById('soTableBody').innerHTML=''; for(let i=0;i<3;i++) soAddRow(); soCalc(); };
-window.saveSalesOrder=async()=>{ const rows=document.querySelectorAll('#soTableBody tr'); let saved=0; const profit=parseFloat(document.getElementById('soProfit').value||30); for(const tr of rows){ const item=tr.querySelector('.so-item').value.trim(); const qty=parseInt(tr.querySelector('.so-qty').value||0); if(!item||!qty) continue; const costVal=parseFloat(tr.querySelector('.so-rate').value||0); const salesVal=parseFloat(tr.querySelector('.so-amount').value||0); if(costVal<=0 && salesVal<=0) continue; const expiry=tr.querySelector('.so-expiry').value||'2027-12-31'; const internal=tr.querySelector('.so-desc').value||''; const unit=tr.querySelector('.so-um').value||'Units'; const finalCost=costVal>0?costVal:(salesVal>0?salesVal/1.3:0); const finalSales=salesVal>0?salesVal:(costVal>0?costVal*1.3:0); const buySSP=Math.round(finalCost*rate); const sellSSP=Math.round(finalSales*rate); const med={id:safeId(), favorite:'Normal', name:sanitizeStr(item,100), internalRef:sanitizeStr(internal,50), responsible:'Administrator', salesPrice:finalSales, cost:finalCost, buy:buySSP, sell:sellSSP, qty, forecasted:qty, unit:sanitizeStr(unit,20), barcode:'AUTO-'+safeId(), expiry, by:currentUser.username, date:new Date().toISOString(), rateAtAdd: rate}; if(firebaseEnabled){ try{ await setDoc(doc(db,'meds',med.id), {...med, ts:serverTimestamp()}); }catch(e){} } meds.unshift(med); saved++; } localStorage.setItem('gp_meds', JSON.stringify(meds)); await addAudit('SALES_ORDER_V16_PRO',`Saved ${saved} items @ Rate ${rate} SSP - V16 PRO - Auto Rate Update - Same Shape: Name | Internal Ref | Qty On Hand | Unit | Cost $ | Sales Price $ | Profit ${profit}% - Firebase`,0); renderStock(); checkExpiryAlerts(); searchMeds(''); renderReports(); };
-function updateLiveTime(){ const el=document.getElementById('liveTime'); if(el) el.textContent=formatJubaTime()+' | Shift: '+getCurrentShiftByTime()+' 8AM-2PM/2PM-9PM | Rate '+rate.toLocaleString()+' V16 PRO Auto UpdateContinue Part 4/4 - paste this right after where it stopped to complete V16:
-
-```html
- | V16 PRO Auto Update All Meds</span><span class="badge ${curr==='Morning'?'badge-morning':'badge-evening'}">ACTIVE NOW ${curr==='Morning'?'8AM-2PM':'2PM-9PM'}</span>`; banner.classList.remove('hidden'); } const currentShiftDisplay=document.getElementById('currentShiftDisplay'); if(currentShiftDisplay){ const curr=getCurrentShiftByTime(); currentShiftDisplay.textContent=curr+' '+getShiftTimeRange(curr); currentShiftDisplay.className='text-[10px] px-2 py-1 rounded-full font-bold '+(curr==='Morning'?'badge-morning':'badge-evening'); } }
+window.addExpense=async()=>{ const title=document.getElementById('expTitle').value.trim(); const amount=parseInt(document.getElementById('expAmount').value||0); const date=document.getElementById('expDate').value||new Date().toISOString().slice(0,10); if(!title||!amount){ showModal('Error','Title & Amount required'); return; } const exp={id:safeId(), title:sanitizeStr(title,100), amount, date, shift:getCurrentShiftByTime(), by:currentUser.username, time:new Date().toISOString(), rate}; expenses.unshift(exp); localStorage.setItem('gp_expenses', JSON.stringify(expenses.slice(0,500))); if(firebaseEnabled){ try{ await setDoc(doc(db,'expenses',exp.id), {...exp, ts:serverTimestamp()}); }catch(e){} } await addAudit('EXPENSE_V16_PRO', `${title} ${amount} SSP`,0); renderExpenses(); renderReports(); };
+window.delExp=async(id)=>{ expenses=expenses.filter(e=>e.id!==id); localStorage.setItem('gp_expenses', JSON.stringify(expenses)); if(firebaseEnabled){ try{ await deleteDoc(doc(db,'expenses',id)); }catch(e){} } renderExpenses(); renderReports(); };
+window.soAddRow=()=>{ const tbody=document.getElementById('soTableBody'); const tr=document.createElement('tr'); tr.innerHTML=`<td><input class="inp so-item"></td><td><input class="inp so-desc"></td><td><input type="number" class="inp so-qty"></td><td><input class="inp so-um" value="Units"></td><td><input type="number" step="0.01" class="inp so-rate"></td><td><input type="number" step="0.01" class="inp so-amount"></td><td><input type="date" class="inp so-expiry"></td><td><button onclick="this.closest('tr').remove()">X</button></td>`; tbody.appendChild(tr); };
+window.soCalc=()=>{ let totalUSD=0; document.querySelectorAll('#soTableBody tr').forEach(tr=>{ const qty=parseFloat(tr.querySelector('.so-qty')?.value||0); const salesVal=parseFloat(tr.querySelector('.so-amount')?.value||0); totalUSD+=qty*salesVal; }); document.getElementById('soTotalUSD').textContent='USD '+totalUSD.toFixed(2); document.getElementById('soTotalSSP').textContent=(totalUSD*rate).toLocaleString()+' SSP'; };
+window.clearSalesOrder=()=>{ document.getElementById('soTableBody').innerHTML=''; for(let i=0;i<3;i++) soAddRow(); };
+window.saveSalesOrder=async()=>{ const rows=document.querySelectorAll('#soTableBody tr'); let saved=0; for(const tr of rows){ const item=tr.querySelector('.so-item').value.trim(); const qty=parseInt(tr.querySelector('.so-qty').value||0); if(!item||!qty) continue; const costVal=parseFloat(tr.querySelector('.so-rate').value||0); const salesVal=parseFloat(tr.querySelector('.so-amount').value||0); const buySSP=Math.round(costVal*rate); const sellSSP=Math.round(salesVal*rate); const med={id:safeId(), name:sanitizeStr(item,100), salesPrice:salesVal, cost:costVal, buy:buySSP, sell:sellSSP, qty, forecasted:qty, unit:'Units', expiry:'2027-12-31', date:new Date().toISOString(), rateAtAdd: rate}; if(firebaseEnabled){ try{ await setDoc(doc(db,'meds',med.id), {...med, ts:serverTimestamp()}); }catch(e){} } meds.unshift(med); saved++; } localStorage.setItem('gp_meds', JSON.stringify(meds)); renderStock(); renderReports(); };
+function updateLiveTime(){
+  const el=document.getElementById('liveTime');
+  if(el) el.textContent=formatJubaTime()+' | Shift: '+getCurrentShiftByTime()+' | Rate '+rate.toLocaleString()+' SSP | V16 PRO';
+  const banner=document.getElementById('shiftBanner');
+  if(banner){
+    const curr=getCurrentShiftByTime();
+    banner.innerHTML=`<span>${curr} Shift Active: ${getShiftTimeRange(curr)} | ${formatJubaTime()} | Rate ${rate.toLocaleString()} SSP | V16 PRO - Auto Rate + Monthly Chart</span><span class="badge ${curr==='Morning'?'badge-morning':'badge-evening'}">ACTIVE NOW</span>`;
+    banner.classList.remove('hidden');
+  }
+  const currentShiftDisplay=document.getElementById('currentShiftDisplay');
+  if(currentShiftDisplay){
+    const curr=getCurrentShiftByTime();
+    currentShiftDisplay.textContent=curr+' '+getShiftTimeRange(curr);
+    currentShiftDisplay.className='text-[10px] px-2 py-1 rounded-full font-bold '+(curr==='Morning'?'badge-morning':'badge-evening');
+  }
+}
 setInterval(updateLiveTime, 60000);
-if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js').then(()=>console.log('SW V16 PRO Auto Rate + Monthly Chart Registered')).catch(()=>{}); }
-(async function init(){ if(!currentUser){ document.getElementById('login').classList.remove('hidden'); document.getElementById('app').classList.add('hidden'); updateLiveTime(); await loadRateFromFirebase(); return; } document.getElementById('login').classList.add('hidden'); document.getElementById('app').classList.remove('hidden'); document.getElementById('userBadge').textContent=currentUser.username; document.getElementById('shiftBadge').textContent=currentUser.shift+' - '+getShiftTimeRange(currentUser.shift); document.getElementById('shiftBadge').className='badge '+(currentUser.shift==='Morning'?'badge-morning':currentUser.shift==='Evening'?'badge-evening':'badge-admin'); document.getElementById('rCashier').textContent=currentUser.username; document.getElementById('rShift').textContent=currentUser.shift; document.getElementById('rShiftTime').textContent=getShiftTimeRange(currentUser.shift); await loadRateFromFirebase(); await loadMedsFB(); for(let i=0;i<3;i++) soAddRow(); renderStock(); renderReports(); renderExpenses(); loadShiftReports(); showTab('pos'); updateLiveTime(); checkExpiryAlerts(); searchMeds(''); })();
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js').then(()=>console.log('SW V16 PRO Registered')).catch(()=>{}); }
+(async function init(){
+  if(!currentUser){ document.getElementById('login').classList.remove('hidden'); document.getElementById('app').classList.add('hidden'); updateLiveTime(); await loadRateFromFirebase(); return; }
+  document.getElementById('login').classList.add('hidden'); document.getElementById('app').classList.remove('hidden');
+  document.getElementById('userBadge').textContent=currentUser.username;
+  document.getElementById('shiftBadge').textContent=currentUser.shift+' - '+getShiftTimeRange(currentUser.shift);
+  document.getElementById('shiftBadge').className='badge '+(currentUser.shift==='Morning'?'badge-morning':currentUser.shift==='Evening'?'badge-evening':'badge-admin');
+  document.getElementById('rCashier').textContent=currentUser.username;
+  document.getElementById('rShift').textContent=currentUser.shift;
+  document.getElementById('rShiftTime').textContent=getShiftTimeRange(currentUser.shift);
+  await loadRateFromFirebase(); await loadMedsFB();
+  for(let i=0;i<3;i++) soAddRow();
+  renderStock(); renderReports(); renderExpenses(); loadShiftReports(); showTab('pos'); updateLiveTime(); checkExpiryAlerts(); searchMeds('');
+})();
 </script>
 </body>
 </html>
