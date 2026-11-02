@@ -1,7 +1,7 @@
 {
-  "name": "The Grace Pharmacy V15.9 PRO English - Top Selling + Dead Stock + Refresh + POS Fixed",
-  "short_name": "Grace Pharmacy",
-  "description": "The Grace Pharmacy - Juba - V15.9 PRO FINAL English - Top 10 Most Sold + Dead Stock 30 Days + Daily/Weekly/Monthly Reports + Total Sales + Total Meds + Refresh Button + POS Fixed 20 items auto + Same Shape as All_Products.xlsx - Rate 8000 SSP - Firebase Sync - 100% English",
+  "name": "The Grace Pharmacy V16 PRO - Auto Rate Update All Meds + Monthly Chart + Daily Search",
+  "short_name": "Grace Pharmacy V16",
+  "description": "The Grace Pharmacy - Juba - V16 PRO - Auto Rate Update: When rate changes, ALL medicines Buy SSP and Sell SSP auto recalculated + Monthly Sales Calendar per day Morning/Evening + Bar Chart + Daily Detail by date + Top 10 Most Sold + Dead Stock 30 Days + Daily/Weekly/Monthly Reports + Total Sales + POS Fixed 20 items auto + Same Shape as All_Products.xlsx - Rate 8000 SSP - Firebase Sync - 100% English",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0A5C36",
