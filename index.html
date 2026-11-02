@@ -3,12 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>The Grace Pharmacy V15.9 PRO - Top Selling + Dead Stock + Refresh + POS Fixed - English</title>
+<title>The Grace Pharmacy V16 PRO - Auto Rate Update + Monthly Chart + Daily Detail</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0A5C36">
 <link rel="icon" href="logo.png">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 :root{ --green:#0A5C36; --gold:#C8A951; }
 .card{background:#fff;border-radius:16px;border:1px solid #e5e7eb;box-shadow:0 4px 20px rgba(10,92,54,0.06)}
@@ -50,7 +51,7 @@
 <div class="modal-card p-6">
 <div class="flex items-center gap-3 mb-4">
 <img src="logo.png" class="w-10 h-10 rounded-lg border p-1" onerror="this.style.display='none'">
-<div><h3 id="modalTitle" class="font-bold text-[#0A5C36] text-[16px]">System Report</h3><p class="text-[11px] text-[#C8A951] font-bold">The Grace Pharmacy - V15.9 PRO - English - Top Selling + Dead Stock</p></div>
+<div><h3 id="modalTitle" class="font-bold text-[#0A5C36] text-[16px]">System Report</h3><p class="text-[11px] text-[#C8A951] font-bold">The Grace Pharmacy - V16 PRO - Auto Rate + Monthly Chart</p></div>
 </div>
 <div id="modalBody" class="bg-[#F9FAFB] border rounded-xl p-4 text-[13px] mb-4"></div>
 <div class="flex justify-end gap-2">
@@ -64,9 +65,9 @@
 <div class="flex flex-col items-center">
 <img src="logo.png" class="w-[90px] h-[90px] rounded-[18px] object-contain bg-white border-2 border-[#0A5C36]/20 p-2" onerror="this.style.display='none'">
 <h1 class="font-extrabold text-[#0A5C36] text-[20px] mt-3">The Grace Pharmacy</h1>
-<p class="text-[10px] font-bold tracking-[0.2em] text-[#C8A951]">JUBA - V15.9 PRO ENGLISH - TOP SELLING + DEAD STOCK + REFRESH</p>
+<p class="text-[10px] font-bold tracking-[0.2em] text-[#C8A951]">JUBA - V16 PRO - AUTO RATE UPDATE + MONTHLY CHART</p>
 <div class="mt-2 px-3 py-1 rounded-full bg-[#F0FDF4] border text-[10px] text-[#0A5C36] font-bold" id="fbStatusBadge">Firebase: Connecting...</div>
-<div class="mt-2 text-[11px] text-gray-600 text-center">Top 10 Most Sold + Dead Stock 30 Days + Daily/Weekly/Monthly + Total<br><span class="text-[10px] text-[#C8A951]">POS Fixed 20 items auto - Same Shape as File - Rate 8000 SSP</span></div>
+<div class="mt-2 text-[11px] text-gray-600 text-center">V16: Rate Auto Updates All Meds + Monthly Table + Chart + Daily Search<br><span class="text-[10px] text-[#C8A951]">Top Selling + Dead Stock + Refresh + POS Fixed - Rate 8000 SSP</span></div>
 </div>
 <div class="mt-6 space-y-3">
 <input id="u" placeholder="Username" class="inp">
@@ -85,11 +86,11 @@
 <span id="liveTime" class="text-[11px] bg-gray-50 border px-2 py-1 rounded-full font-mono"></span>
 </div>
 <div class="flex gap-1 flex-wrap items-center">
-<button onclick="editRate()" id="rateBadgeHeader" class="badge-rate-admin px-3 py-1.5 rounded-full text-[11px]">Rate: 8000 SSP - Click to Edit</button>
+<button onclick="editRate()" id="rateBadgeHeader" class="badge-rate-admin px-3 py-1.5 rounded-full text-[11px]">Rate: 8000 SSP - Click to Edit - Auto Updates All Meds</button>
 <button onclick="refreshAllData()" class="refresh-btn" title="Refresh All Data from Firebase + LocalStorage">Refresh</button>
 <button data-tab="pos" onclick="showTab('pos')" class="tab-btn px-3 py-2 rounded-full text-[12px] tabA">POS - FIXED</button>
 <button data-tab="stock" onclick="showTab('stock')" class="tab-btn px-3 py-2 rounded-full text-[12px] tabN">Stock - Same Shape</button>
-<button data-tab="reports" onclick="showTab('reports')" class="tab-btn px-3 py-2 rounded-full text-[12px] tabN">Reports - PRO</button>
+<button data-tab="reports" onclick="showTab('reports')" class="tab-btn px-3 py-2 rounded-full text-[12px] tabN">Reports - V16 PRO</button>
 <button data-tab="expenses" onclick="showTab('expenses')" class="tab-btn px-3 py-2 rounded-full text-[12px] tabN">Expenses</button>
 <button data-tab="shifts" onclick="showTab('shifts')" class="tab-btn px-3 py-2 rounded-full text-[12px] tabN bg-[#EDE9FE]">Shifts</button>
 <button data-tab="purchases" onclick="showTab('purchases')" class="tab-btn px-3 py-2 rounded-full text-[12px] tabSales">Sales Order</button>
@@ -103,58 +104,58 @@
 <div id="tab-pos" class="tab-content">
 <div class="grid lg:grid-cols-[1.6fr_.9fr] gap-4">
 <div class="card p-4">
-<div class="flex justify-between items-center mb-3 flex-wrap gap-2"><h3 class="font-bold text-[#0A5C36]">Search Medicine - V15.9 PRO ENGLISH - Auto Shows 20 - Rate <span id="posRateDisplay">8000</span> SSP</h3><div class="flex gap-2"><span id="posRate" class="badge-rate-admin px-2 py-1 rounded-full">8000</span><span id="currentShiftDisplay" class="text-[10px] px-2 py-1 rounded-full font-bold"></span><button onclick="refreshAllData()" class="refresh-btn text-[10px]">Refresh POS</button></div></div>
+<div class="flex justify-between items-center mb-3 flex-wrap gap-2"><h3 class="font-bold text-[#0A5C36]">Search Medicine - V16 PRO - Auto Shows 20 - Rate <span id="posRateDisplay">8000</span> SSP - Auto Updates</h3><div class="flex gap-2"><span id="posRate" class="badge-rate-admin px-2 py-1 rounded-full">8000</span><span id="currentShiftDisplay" class="text-[10px] px-2 py-1 rounded-full font-bold"></span><button onclick="refreshAllData()" class="refresh-btn text-[10px]">Refresh POS</button></div></div>
 <input id="searchMed" oninput="searchMeds(this.value)" placeholder="Leave empty to show 20 items - Type Name e.g. ADOLIN GEL, ATOR..." class="inp mb-3 py-3 border-2 border-[#0A5C36]">
 <div id="medsList" class="grid md:grid-cols-2 gap-2 max-h-[60vh] overflow-auto border-2 border-dashed border-[#0A5C36]/20 rounded-xl p-2 min-h-[200px]"></div>
-<p class="text-[10px] text-gray-500 mt-2">V15.9 PRO ENGLISH: Top Selling + Dead Stock + Refresh Button + POS Fixed - Same Shape as File</p>
+<p class="text-[10px] text-gray-500 mt-2">V16 PRO: Rate auto updates all meds - Top Selling + Dead Stock + Monthly Chart + Daily Search</p>
 </div>
 <div class="card p-4 border-t-4 border-[#C8A951]">
 <h3 class="font-bold text-[#0A5C36] flex justify-between">Shopping Cart <span id="cartCount" class="bg-[#0A5C36] text-white px-2.5 py-0.5 rounded-full text-[11px]">0</span></h3>
-<div id="cartList" class="mt-3 min-h-[20vh] text-[13px] text-gray-500 text-center py-8">Cart is empty - V15.9 PRO English</div>
+<div id="cartList" class="mt-3 min-h-[20vh] text-[13px] text-gray-500 text-center py-8">Cart is empty - V16 PRO</div>
 <div class="border-t-2 border-dashed mt-3 pt-3">
 <div class="flex justify-between font-bold text-[16px]"><span>Total SSP</span><span id="cartTotal">0 SSP</span></div>
 <div class="flex justify-between text-[13px] font-bold text-[#C8A951]"><span>Total USD</span><span id="cartTotalUSD">0 $</span></div>
 <div class="flex justify-between text-[11px] text-green-700 mt-1"><span>Profit (Sales Price - Cost) @ Rate</span><span id="cartProfit">0 SSP</span></div>
 <div class="grid grid-cols-2 gap-2 mt-3"><button onclick="clearCart()" class="border bg-red-50 text-red-600 rounded-xl py-2.5 text-[13px] font-bold">Clear Cart</button><button onclick="checkout()" class="btn py-2.5">Checkout - Receipt</button></div>
-<div class="mt-3 p-2 bg-[#F0FDF4] border rounded-xl text-[10px] text-center"><span id="rCashier">-</span> | <span id="rShift">-</span> | <span id="rShiftTime">-</span> | 1$=<span id="rRate">8000</span> SSP | V15.9 PRO English | Firebase</div>
+<div class="mt-3 p-2 bg-[#F0FDF4] border rounded-xl text-[10px] text-center"><span id="rCashier">-</span> | <span id="rShift">-</span> | <span id="rShiftTime">-</span> | 1$=<span id="rRate">8000</span> SSP | V16 PRO | Firebase</div>
 </div></div></div></div><div id="tab-stock" class="tab-content hidden">
 <div class="card p-4 mb-4 border-2 border-[#0A5C36] bg-[#F0FDF4]">
-<h3 class="font-bold text-[#0A5C36] text-[14px]">Admin Control V15.9 PRO English - Top Selling + Dead Stock + Refresh + Same Shape - Rate Editable</h3>
+<h3 class="font-bold text-[#0A5C36] text-[14px]">Admin Control V16 PRO - Rate Auto Updates All Meds + Top Selling + Dead Stock + Refresh</h3>
 <div class="grid md:grid-cols-[1fr_auto_auto_auto] gap-2 mt-3 items-end">
-<div><label class="text-[11px] font-bold text-[#0A5C36]">Current Dollar Rate (1$ = ? SSP) - Admin Only</label><input id="rateInput" type="number" min="1000" step="100" class="inp bg-white font-bold text-[16px] text-[#0A5C36]" placeholder="8000"><p class="text-[10px] text-gray-600 mt-1">File Columns: Favorite | Name | Internal Reference | Responsible | Sales Price ($) | Cost ($) | Quantity On Hand | Forecasted Quantity | Unit of Measure</p></div>
-<button onclick="saveRate()" class="btn bg-[#C8A951] text-black py-3 px-6 font-bold">Save Rate - Firebase Sync All Devices</button>
+<div><label class="text-[11px] font-bold text-[#0A5C36]">Current Dollar Rate (1$ = ? SSP) - Auto Updates ALL Meds - Admin Only</label><input id="rateInput" type="number" min="1000" step="100" class="inp bg-white font-bold text-[16px] text-[#0A5C36]" placeholder="8000"><p class="text-[10px] text-gray-600 mt-1">When you change rate, ALL medicines Buy SSP and Sell SSP will be recalculated: Cost $ x Rate, Sales $ x Rate</p></div>
+<button onclick="saveRate()" class="btn bg-[#C8A951] text-black py-3 px-6 font-bold">Save Rate - Auto Update All + Firebase Sync</button>
 <button onclick="editRate()" class="btn py-3 px-4">Quick Edit Rate</button>
 <button onclick="refreshAllData()" class="refresh-btn py-3 px-4">Refresh All Data</button>
 </div>
 <div class="mt-3 p-3 bg-white border rounded-xl">
-<p class="text-[12px] font-bold text-[#0A5C36]">V15.9 PRO English: Top 10 Most Sold + Dead Stock 30 Days + Daily/Weekly/Monthly Reports + Total Sales + Total Inventory + POS Fixed + Refresh Button - Same Shape as File</p>
+<p class="text-[12px] font-bold text-[#0A5C36]">V16 PRO: Rate Auto Updates - Top 10 Most Sold + Dead Stock 30 Days + Monthly Chart + Daily Detail + Total Sales - Same Shape as File</p>
 <p id="rateHistory" class="text-[10px] text-[#C8A951] font-bold mt-2">Rate History: Loaded from Firebase</p>
 </div>
 </div>
 <div class="card p-4 mb-4 border-2 border-dashed border-[#0A5C36] bg-[#FFFBEB]">
-<h3 class="font-bold text-[#0A5C36] text-[14px]">Bulk Import - Same Shape as Your File - All_Products.xlsx Compatible - Rate <span id="importRateDisplay">8000</span> SSP - V15.9 PRO English</h3>
+<h3 class="font-bold text-[#0A5C36] text-[14px]">Bulk Import - Same Shape as Your File - All_Products.xlsx Compatible - Rate <span id="importRateDisplay">8000</span> SSP - V16 PRO</h3>
 <p class="text-[11px] text-gray-600">Supported Columns: Name, Sales Price, Cost, Quantity On Hand, Forecasted Quantity, Unit of Measure, Internal Reference, Favorite, Responsible</p>
-<div class="grid md:grid-cols-[1fr_auto] gap-2 mt-3"><input type="file" id="bulkFile" accept=".csv,.xlsx,.xls" class="inp bg-white text-[12px]"><button onclick="importBulk()" class="btn bg-[#C8A951] text-black text-[13px] px-6">Import Now - Same Shape - V15.9 PRO</button></div>
+<div class="grid md:grid-cols-[1fr_auto] gap-2 mt-3"><input type="file" id="bulkFile" accept=".csv,.xlsx,.xls" class="inp bg-white text-[12px]"><button onclick="importBulk()" class="btn bg-[#C8A951] text-black text-[13px] px-6">Import Now - Same Shape - V16 PRO</button></div>
 <div class="flex gap-2 mt-2"><button onclick="downloadTemplate()" class="text-[11px] border bg-white px-3 py-1 rounded-full font-bold">Download Template - Same Shape</button><span id="activeFilterBadge" class="hidden text-[11px] bg-[#0A5C36] text-white px-3 py-1 rounded-full"></span><button id="clearFilterBtn" onclick="clearStockFilter()" class="hidden text-[11px] bg-red-50 text-red-600 border px-3 py-1 rounded-full">Clear Filter X</button><button onclick="refreshAllData()" class="text-[11px] bg-[#0A5C36] text-white px-3 py-1 rounded-full font-bold">Refresh Stock List</button></div>
 <p id="importMsg" class="hidden mt-2 p-2 rounded text-[12px]"></p>
 </div>
 <div class="card p-5 border-l-4 border-[#0A5C36]">
-<h3 class="font-bold text-[#0A5C36]">Add Single Medicine - Same Columns as Your File - V15.9 PRO English - Firebase</h3>
+<h3 class="font-bold text-[#0A5C36]">Add Single Medicine - Same Columns as Your File - V16 PRO - Firebase</h3>
 <div class="grid md:grid-cols-5 gap-2 mt-3">
 <input id="mFav" placeholder="Favorite (Normal/Warning)" class="inp" value="Normal"><input id="mName" placeholder="Name * (e.g. ADOLIN GEL)" class="inp"><input id="mInternal" placeholder="Internal Reference" class="inp"><input id="mResp" placeholder="Responsible (Administrator)" class="inp" value="Administrator"><input id="mSales" type="number" step="0.01" placeholder="Sales Price $ (e.g. 9)" class="inp">
 <input id="mCost" type="number" step="0.01" placeholder="Cost $ (e.g. 4.5)" class="inp"><input id="mQty" type="number" min="0" placeholder="Quantity On Hand" class="inp"><input id="mForecast" type="number" min="0" placeholder="Forecasted Quantity" class="inp"><input id="mUnit" placeholder="Unit of Measure (Tube/Bottle/Pkt)" class="inp"><input id="mExpiry" type="date" class="inp">
-<div class="md:col-span-5 p-2 bg-[#F0FDF4] border rounded-xl text-[11px] flex justify-between"><span>Profit Preview: Cost $<span id="prevCost">0</span> -> Sales $<span id="prevSales">0</span> = Profit <span id="prevProfit" class="font-bold text-green-700">0 SSP</span> (<span id="prevMargin">0%</span>) @ Rate <span id="prevRate">8000</span> SSP</span><span class="text-[10px] text-[#C8A951]">V15.9 PRO English Top Selling + Dead Stock</span></div>
-<button onclick="addMed()" class="btn md:col-span-5 py-3">Save to Firebase - Same Shape - V15.9 PRO English</button>
+<div class="md:col-span-5 p-2 bg-[#F0FDF4] border rounded-xl text-[11px] flex justify-between"><span>Profit Preview: Cost $<span id="prevCost">0</span> -> Sales $<span id="prevSales">0</span> = Profit <span id="prevProfit" class="font-bold text-green-700">0 SSP</span> (<span id="prevMargin">0%</span>) @ Rate <span id="prevRate">8000</span> SSP</span><span class="text-[10px] text-[#C8A951]">V16 PRO Auto Rate Update</span></div>
+<button onclick="addMed()" class="btn md:col-span-5 py-3">Save to Firebase - Same Shape - V16 PRO</button>
 </div>
 </div>
 <div class="card p-5 mt-4">
-<div class="flex justify-between items-center mb-3 flex-wrap gap-2"><h3 class="font-bold text-[#0A5C36]">Stock List - Same Shape as All_Products.xlsx - V15.9 PRO English - POS Fixed - Top Selling + Dead Stock</h3><div class="flex gap-2"><select id="expiryFilter" onchange="renderStock(document.getElementById('stockSearch').value)" class="inp w-auto text-[12px]"><option value="All">All Stock</option><option value="LowStock">Low Stock Less Than 5</option><option value="Expired">Expired</option><option value="DeadStock">Dead Stock (No Sales 30 Days)</option><option value="TopSelling">Top Selling</option></select><input id="stockSearch" oninput="renderStock(this.value)" placeholder="Search Name..." class="inp w-[140px] text-[12px]"><button onclick="refreshAllData()" class="refresh-btn text-[10px]">Refresh</button></div></div>
+<div class="flex justify-between items-center mb-3 flex-wrap gap-2"><h3 class="font-bold text-[#0A5C36]">Stock List - Same Shape as All_Products.xlsx - V16 PRO - Auto Rate Update</h3><div class="flex gap-2"><select id="expiryFilter" onchange="renderStock(document.getElementById('stockSearch').value)" class="inp w-auto text-[12px]"><option value="All">All Stock</option><option value="LowStock">Low Stock Less Than 5</option><option value="Expired">Expired</option><option value="DeadStock">Dead Stock (No Sales 30 Days)</option><option value="TopSelling">Top Selling</option></select><input id="stockSearch" oninput="renderStock(this.value)" placeholder="Search Name..." class="inp w-[140px] text-[12px]"><button onclick="refreshAllData()" class="refresh-btn text-[10px]">Refresh</button></div></div>
 <div class="overflow-x-auto border rounded-xl"><table class="w-full file-shape"><thead><tr><th>Favorite</th><th>Name</th><th>Internal Ref</th><th>Responsible</th><th>Sales Price $ | SSP</th><th>Cost $ | SSP | Profit</th><th>Qty On Hand</th><th>Forecasted</th><th>Unit</th><th>Expiry | Sold Qty | Edit</th></tr></thead><tbody id="stockTable"></tbody></table></div>
 </div></div>
 
 <div id="tab-reports" class="tab-content hidden">
 <div class="card p-5 border-l-4 border-[#0A5C36] bg-[#F0FDF4]">
-<div class="flex justify-between items-center flex-wrap gap-2"><h3 class="font-bold text-[#0A5C36]">Admin Dashboard V15.9 PRO English - Full Reports + Top Selling + Dead Stock - Rate: <span id="reportRateDisplay" class="text-[#C8A951] text-[20px]">8000</span> SSP</h3><button onclick="refreshAllData()" class="refresh-btn">Refresh All Reports - Firebase + Local</button></div>
+<div class="flex justify-between items-center flex-wrap gap-2"><h3 class="font-bold text-[#0A5C36]">Admin Dashboard V16 PRO - Auto Rate + Full Reports + Monthly Chart - Rate: <span id="reportRateDisplay" class="text-[#C8A951] text-[20px]">8000</span> SSP</h3><button onclick="refreshAllData()" class="refresh-btn">Refresh All Reports</button></div>
 <div class="grid md:grid-cols-4 gap-3 mt-3">
 <div class="bg-white p-3 rounded-xl border text-center border-2 border-[#0A5C36]"><p class="text-[10px] font-bold">Total Medicines in System</p><p id="repTotalMeds" class="font-bold text-[22px] text-[#0A5C36]">0</p><p class="text-[10px] text-gray-500">Total Items - Same Shape</p><p id="repTotalMedsQty" class="text-[11px] font-bold text-[#C8A951]">0 Units</p></div>
 <div class="bg-white p-3 rounded-xl border text-center"><p class="text-[10px]">Total Stock Value (Buy)</p><p id="repStockBuy" class="font-bold text-[16px] text-red-600">0 SSP</p><p id="repStockBuyUSD" class="text-[10px] text-gray-500">0 USD</p></div>
@@ -165,13 +166,13 @@
 <div id="lowStockCard" onclick="viewLowStock()" class="card p-4 bg-[#FEF3C7] border-l-4 border-[#FCD34D] card-click"><p class="text-[11px]">Low Stock Less Than 5</p><p id="repLowStock" class="font-bold text-[18px] text-red-600">0</p><p class="text-[10px] font-bold text-[#0A5C36]">Click to view list</p></div>
 <div id="expiredCard" onclick="viewExpired()" class="card p-4 bg-[#FEE2E2] border-l-4 border-red-500 card-click"><p class="text-[11px]">Expired Items</p><p id="repExpired" class="font-bold text-[18px] text-red-700">0</p></div>
 <div class="bg-white p-3 rounded-xl border text-center"><p class="text-[10px]">Total Sales All Time (All Periods)</p><p id="repTotalSalesAll" class="font-bold text-[16px] text-[#0A5C36]">0 SSP</p><p id="repTotalSalesAllUSD" class="text-[10px] text-[#C8A951]">0 USD</p><p id="repTotalTransAll" class="text-[10px] text-gray-500">0 Transactions</p></div>
-<div class="bg-white p-3 rounded-xl border text-center"><p class="text-[10px]">Current Rate - Same Shape</p><p id="repRate" class="font-bold text-[16px] text-[#0A5C36]">8000 SSP</p><p class="text-[10px] text-[#C8A951]">1$ = <span id="repRateUSD">8000</span> SSP</p></div>
+<div class="bg-white p-3 rounded-xl border text-center"><p class="text-[10px]">Current Rate - Auto Updates All</p><p id="repRate" class="font-bold text-[16px] text-[#0A5C36]">8000 SSP</p><p class="text-[10px] text-[#C8A951]">1$ = <span id="repRateUSD">8000</span> SSP</p></div>
 </div>
-<button onclick="editRate()" class="btn mt-3 w-full py-3 bg-[#C8A951] text-black font-bold">Edit Dollar Rate - Admin Only - V15.9 PRO English</button>
+<button onclick="editRate()" class="btn mt-3 w-full py-3 bg-[#C8A951] text-black font-bold">Edit Dollar Rate - Auto Updates All Meds - V16 PRO</button>
 </div>
 
 <div class="card p-5 mt-4 border-2 border-[#0A5C36]">
-<div class="flex justify-between items-center flex-wrap gap-2"><h3 class="font-bold text-[#0A5C36] text-[16px]">Sales Reports - Daily / Weekly / Monthly + Top Selling + Dead Stock - V15.9 PRO English</h3><div class="flex gap-2"><button onclick="refreshAllData()" class="refresh-btn text-[11px]">Refresh Reports</button><button onclick="exportReportsCSV()" class="text-[11px] bg-[#0A5C36] text-white px-3 py-1 rounded-full">Export CSV - Full Reports</button></div></div>
+<div class="flex justify-between items-center flex-wrap gap-2"><h3 class="font-bold text-[#0A5C36] text-[16px]">Sales Reports - Daily / Weekly / Monthly + Top Selling + Dead Stock - V16 PRO</h3><div class="flex gap-2"><button onclick="refreshAllData()" class="refresh-btn text-[11px]">Refresh Reports</button><button onclick="exportReportsCSV()" class="text-[11px] bg-[#0A5C36] text-white px-3 py-1 rounded-full">Export CSV - Full Reports</button></div></div>
 <div class="grid md:grid-cols-3 gap-3 mt-4">
 <div class="card p-4 bg-gradient-to-br from-[#0A5C36] to-[#084a2b] text-white border-2 border-[#0A5C36]">
 <p class="text-[11px] opacity-80 font-bold">Daily Report - Today</p>
@@ -200,12 +201,10 @@
 <div class="card p-4 border-2 border-green-600 bg-[#F0FDF4]">
 <div class="flex justify-between items-center mb-2"><h4 class="font-bold text-[#0A5C36] text-[14px]">Top 10 Most Sold Medicines - Best Sellers</h4><span class="text-[10px] bg-green-600 text-white px-2 py-1 rounded-full">From All Sales</span></div>
 <div class="overflow-x-auto"><table class="w-full text-[11px]"><thead class="bg-[#0A5C36] text-white"><tr><th class="p-2 text-left">#</th><th class="p-2 text-left">Name</th><th class="p-2">Sold Qty</th><th class="p-2">Sales SSP</th><th class="p-2">Profit SSP</th><th class="p-2">Stock Left</th></tr></thead><tbody id="topSellingTable"></tbody></table></div>
-<p class="text-[10px] text-gray-500 mt-2">Calculated from all sales - Same Shape as File + Rate 8000 SSP - Click Refresh to update</p>
 </div>
 <div class="card p-4 border-2 border-red-600 bg-[#FEF2F2]">
 <div class="flex justify-between items-center mb-2"><h4 class="font-bold text-red-700 text-[14px]">Top 10 Dead Stock - No Sales for 30 Days</h4><span class="text-[10px] bg-red-600 text-white px-2 py-1 rounded-full">Idle 30 Days+</span></div>
 <div class="overflow-x-auto"><table class="w-full text-[11px]"><thead class="bg-red-600 text-white"><tr><th class="p-2 text-left">#</th><th class="p-2 text-left">Name</th><th class="p-2">Qty On Hand</th><th class="p-2">Value SSP</th><th class="p-2">Last Sold</th><th class="p-2">Days Idle</th></tr></thead><tbody id="deadStockTable"></tbody></table></div>
-<p class="text-[10px] text-gray-500 mt-2">Medicines not sold for 30 days or never sold - Needs review - Rate 8000 SSP</p>
 </div>
 </div>
 
@@ -218,7 +217,6 @@
 </div>
 <div class="card p-4 bg-white border-2 border-[#0A5C36]">
 <p class="text-[11px] font-bold text-[#0A5C36]">Total Inventory - Same Shape as File</p>
-<p class="text-[10px] text-gray-600">Favorite | Name | Sales Price | Cost | Qty On Hand | Unit - Same as File</p>
 <div class="grid grid-cols-2 gap-2 mt-2 text-[11px]">
 <div><span class="text-gray-500">Total Items:</span> <span id="repTotalItems2" class="font-bold">0</span></div>
 <div><span class="text-gray-500">Total Qty:</span> <span id="repTotalQty2" class="font-bold text-[#0A5C36]">0 Units</span></div>
@@ -230,13 +228,45 @@
 </div>
 </div>
 </div>
+
+<div class="card p-5 mt-4 border-2 border-[#0A5C36]">
+<div class="flex justify-between items-center flex-wrap gap-2">
+<h3 class="font-bold text-[#0A5C36] text-[16px]">Monthly Sales Calendar + Chart + Search by Date - V16 PRO - NEW</h3>
+<div class="flex gap-2 items-center">
+<input id="reportDateSearch" type="date" class="inp w-auto text-[12px]" onchange="renderDailyDetail(this.value)">
+<button onclick="renderReports()" class="refresh-btn text-[11px]">Refresh Calendar</button>
+</div>
+</div>
+<div class="grid md:grid-cols-2 gap-4 mt-4">
+<div>
+<h4 class="font-bold text-[13px] mb-2">Sales Per Day This Month - <span id="currentMonthLabel"></span> - Click row to view detail</h4>
+<div class="overflow-x-auto border rounded-xl max-h-[45vh] overflow-auto">
+<table class="w-full text-[11px]"><thead class="bg-[#0A5C36] text-white sticky top-0"><tr><th class="p-2 text-left">Date</th><th>Morning 8AM-2PM</th><th>Evening 2PM-9PM</th><th>Total SSP</th><th>Profit</th><th>Trans</th></tr></thead><tbody id="monthlyTable"></tbody></table>
+</div>
+</div>
+<div>
+<h4 class="font-bold text-[13px] mb-2">Chart - Daily Sales This Month (SSP) - V16 PRO</h4>
+<canvas id="monthlyChart" style="max-height:320px"></canvas>
+</div>
+</div>
+<div id="dailyDetailBox" class="hidden mt-4 p-4 bg-[#FFFBEB] border-2 border-dashed border-[#C8A951] rounded-xl">
+<h4 class="font-bold text-[#0A5C36]">Sales Detail for: <span id="detailDate"></span> - Rate <span id="detailRate"></span> SSP</h4>
+<div class="grid md:grid-cols-3 gap-2 mt-3 text-[11px]">
+<div class="bg-white p-3 rounded-xl border text-center"><p class="text-[10px]">Morning 8AM-2PM</p><p id="detailMorning" class="font-bold text-[14px]">0 SSP</p><p id="detailMorningTrans" class="text-[10px]"></p></div>
+<div class="bg-white p-3 rounded-xl border text-center"><p class="text-[10px]">Evening 2PM-9PM</p><p id="detailEvening" class="font-bold text-[14px]">0 SSP</p><p id="detailEveningTrans" class="text-[10px]"></p></div>
+<div class="bg-[#0A5C36] p-3 rounded-xl border text-center text-white"><p class="text-[10px]">Total Day</p><p id="detailTotal" class="font-bold text-[16px] text-[#C8A951]">0 SSP</p><p id="detailProfit" class="text-[10px]"></p></div>
+</div>
+<div class="overflow-x-auto border rounded-xl mt-3 bg-white"><table class="w-full text-[11px]"><thead class="bg-[#0A5C36] text-white"><tr><th class="p-2 text-left">Time</th><th>Cashier/Shift</th><th>Items</th><th>Total</th><th>Profit</th></tr></thead><tbody id="dailySalesList"></tbody></table></div>
+</div>
+</div>
+
 <div class="card p-4 mt-4">
-<div class="flex justify-between items-center mb-3"><h4 class="font-bold text-[#0A5C36]">Audit Log - V15.9 PRO English - Top Selling + Dead Stock + Daily/Weekly/Monthly + Refresh</h4><div class="flex gap-2"><button onclick="refreshAllData()" class="refresh-btn text-[10px]">Refresh Log</button><button onclick="clearAudit()" class="text-[11px] bg-red-50 text-red-600 border px-3 py-1 rounded-full">Clear Audit (Admin Only)</button></div></div>
+<div class="flex justify-between items-center mb-3"><h4 class="font-bold text-[#0A5C36]">Audit Log - V16 PRO - Auto Rate Update + Monthly Chart + Daily Detail</h4><div class="flex gap-2"><button onclick="refreshAllData()" class="refresh-btn text-[10px]">Refresh Log</button><button onclick="clearAudit()" class="text-[11px] bg-red-50 text-red-600 border px-3 py-1 rounded-full">Clear Audit (Admin Only)</button></div></div>
 <div class="overflow-x-auto border rounded-xl max-h-[40vh] overflow-auto"><table class="w-full text-[11px]"><thead class="bg-[#0A5C36] text-white sticky top-0"><tr><th class="p-2 text-left">Time</th><th class="p-2">User / Shift</th><th class="p-2">Action Type</th><th class="p-2">Details - Same Shape</th><th class="p-2">Profit/Rate</th></tr></thead><tbody id="auditTable"></tbody></table></div>
 </div>
-                                                                                                                                                                                                                                  </div><div id="tab-shifts" class="tab-content hidden">
+                                                                                                                                                                                                                                           </div><div id="tab-shifts" class="tab-content hidden">
 <div class="card p-5">
-<div class="flex justify-between items-center flex-wrap gap-2"><h3 class="font-bold text-[#0A5C36] text-[16px]">Shift Management - 8AM-2PM | 2PM-9PM - Rate: <span id="shiftRateDisplay">8000</span> SSP - V15.9 PRO English - Firebase</h3><div class="flex gap-2"><button onclick="refreshAllData()" class="refresh-btn text-[11px]">Refresh All</button><button onclick="loadShiftReports()" class="text-[11px] bg-[#0A5C36] text-white px-3 py-1 rounded-full">Refresh Shifts</button></div></div>
+<div class="flex justify-between items-center flex-wrap gap-2"><h3 class="font-bold text-[#0A5C36] text-[16px]">Shift Management - 8AM-2PM | 2PM-9PM - Rate: <span id="shiftRateDisplay">8000</span> SSP - V16 PRO - Firebase</h3><div class="flex gap-2"><button onclick="refreshAllData()" class="refresh-btn text-[11px]">Refresh All</button><button onclick="loadShiftReports()" class="text-[11px] bg-[#0A5C36] text-white px-3 py-1 rounded-full">Refresh Shifts</button></div></div>
 <div class="grid md:grid-cols-2 gap-4 mt-4">
 <div id="morningShiftCard" class="card p-4 border-l-4 border-[#FCD34D] bg-[#FFFBEB]">
 <div class="flex justify-between"><h4 class="font-bold">Morning Shift - 8:00 AM to 2:00 PM</h4><span id="morningStatus" class="badge">Inactive</span></div>
@@ -258,13 +288,13 @@
 </div>
 </div>
 <div class="card p-4 mt-4">
-<h4 class="font-bold text-[#0A5C36]">Closed Shift Reports - Rate <span id="closedRateDisplay">8000</span> SSP - V15.9 PRO English</h4>
+<h4 class="font-bold text-[#0A5C36]">Closed Shift Reports - Rate <span id="closedRateDisplay">8000</span> SSP - V16 PRO</h4>
 <div class="overflow-x-auto border rounded-xl mt-3"><table class="w-full text-[11px]"><thead class="bg-[#0A5C36] text-white"><tr><th class="p-2 text-left">Date Closed</th><th class="p-2">Shift Type</th><th class="p-2">Cashier</th><th class="p-2">Sales SSP / USD @ Rate</th><th class="p-2">Profit</th><th class="p-2">Transactions</th><th class="p-2">Expenses</th><th class="p-2">Status</th></tr></thead><tbody id="shiftReportsTable"></tbody></table></div>
 </div>
 </div></div>
 <div id="tab-expenses" class="tab-content hidden">
 <div class="card p-5 border-l-4 border-[#C8A951]">
-<div class="flex justify-between items-center"><h3 class="font-bold text-[#0A5C36]">Expenses Management - Rate: <span id="expRateDisplay">8000</span> SSP - V15.9 PRO English - Firebase</h3><button onclick="refreshAllData()" class="refresh-btn text-[11px]">Refresh</button></div>
+<div class="flex justify-between items-center"><h3 class="font-bold text-[#0A5C36]">Expenses Management - Rate: <span id="expRateDisplay">8000</span> SSP - V16 PRO - Firebase</h3><button onclick="refreshAllData()" class="refresh-btn text-[11px]">Refresh</button></div>
 <div class="grid md:grid-cols-5 gap-2 mt-4">
 <input id="expTitle" placeholder="Expense Title *" class="inp"><input id="expAmount" type="number" placeholder="Amount SSP *" class="inp"><input id="expDate" type="date" class="inp"><select id="expCat" class="inp"><option>General</option><option>Rent</option><option>Transport</option><option>Salaries</option><option>Utilities</option><option>Purchase</option></select><button onclick="addExpense()" class="btn">Save Expense + Report - Firebase</button>
 </div>
@@ -272,29 +302,30 @@
 </div></div>
 <div id="tab-purchases" class="tab-content hidden">
 <div class="card p-4 border-t-4 border-[#0A5C36]">
-<div class="flex justify-between items-center mb-3 flex-wrap gap-2"><h3 class="font-bold text-[#0A5C36]">Sales Order - Purchase Order - Same Shape - Rate: <span id="soRateDisplay">8000</span> SSP - V15.9 PRO English - Firebase</h3><div class="flex gap-2"><input id="soSupplier" placeholder="Supplier Name" class="inp w-[150px] text-[12px]"><input id="soInvoice" placeholder="S.O. Number" class="inp w-[100px] text-[12px]"><button onclick="soAddRow()" class="btn text-[12px] bg-[#C8A951] text-black">+ Add New Row</button><button onclick="refreshAllData()" class="refresh-btn text-[11px]">Refresh</button></div></div>
+<div class="flex justify-between items-center mb-3 flex-wrap gap-2"><h3 class="font-bold text-[#0A5C36]">Sales Order - Purchase Order - Same Shape - Rate: <span id="soRateDisplay">8000</span> SSP - V16 PRO - Firebase</h3><div class="flex gap-2"><input id="soSupplier" placeholder="Supplier Name" class="inp w-[150px] text-[12px]"><input id="soInvoice" placeholder="S.O. Number" class="inp w-[100px] text-[12px]"><button onclick="soAddRow()" class="btn text-[12px] bg-[#C8A951] text-black">+ Add New Row</button><button onclick="refreshAllData()" class="refresh-btn text-[11px]">Refresh</button></div></div>
 <div class="overflow-x-auto border-2 border-gray-400 rounded"><table class="w-full so-table bg-white"><thead><tr><th>Item Name (Name)</th><th>Description (Internal Ref)</th><th>Quantity (Qty On Hand)</th><th>Unit Measure</th><th>Rate USD (Cost)</th><th>Amount USD (Sales Price)</th><th>Expiry Date</th><th>Remove</th></tr></thead><tbody id="soTableBody"></tbody><tfoot><tr class="bg-gray-100 font-bold"><td colspan="5" class="p-3 text-right">Grand Total @ Rate <span id="soRateFoot">8000</span> - Same Shape</td><td class="p-3 bg-[#FFFBEB]"><span id="soTotalUSD">USD 0.00</span><br><span id="soTotalSSP" class="text-[10px]">0 SSP</span></td><td colspan="2"></td></tr></tfoot></table></div>
-<div class="grid md:grid-cols-3 gap-3 mt-4"><div class="flex items-center gap-2"><span class="text-[12px] font-bold">Profit %:</span><input id="soProfit" type="number" value="30" class="inp w-[80px]"></div><div class="flex gap-2 col-span-2"><button onclick="saveSalesOrder()" class="btn w-full py-3">SAVE ALL TO STOCK @ Rate <span id="soSaveRate">8000</span> SSP - Same Shape - V15.9 PRO English - FIREBASE</button><button onclick="clearSalesOrder()" class="border bg-red-50 text-red-600 rounded-xl px-4 py-3 font-bold">Clear All</button></div></div>
+<div class="grid md:grid-cols-3 gap-3 mt-4"><div class="flex items-center gap-2"><span class="text-[12px] font-bold">Profit %:</span><input id="soProfit" type="number" value="30" class="inp w-[80px]"></div><div class="flex gap-2 col-span-2"><button onclick="saveSalesOrder()" class="btn w-full py-3">SAVE ALL TO STOCK @ Rate <span id="soSaveRate">8000</span> SSP - Same Shape - V16 PRO - FIREBASE</button><button onclick="clearSalesOrder()" class="border bg-red-50 text-red-600 rounded-xl px-4 py-3 font-bold">Clear All</button></div></div>
 </div></div>
 </main>
-<footer class="foot mt-8"><div class="max-w-[1450px] mx-auto px-4 py-4 flex justify-between items-center text-[12px]"><span>© 2026 The Grace Pharmacy - V15.9 PRO English - Top 10 Selling + Dead Stock 30 Days + Daily/Weekly/Monthly + Total Sales + Total Meds + Refresh Button + POS Fixed + Same Shape - Rate Editable - Firebase Sync</span><span>Developed by <b class="text-[#C8A951]">E-Mutwokil Sadik</b></span></div></footer>
+<footer class="foot mt-8"><div class="max-w-[1450px] mx-auto px-4 py-4 flex justify-between items-center text-[12px]"><span>© 2026 The Grace Pharmacy - V16 PRO - Auto Rate Update All Meds + Monthly Table + Chart + Daily Search + Top Selling + Dead Stock + Refresh - Firebase Sync</span><span>Developed by <b class="text-[#C8A951]">E-Mutwokil Sadik</b></span></div></footer>
 </div><script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, setDoc, doc, getDocs, deleteDoc, query, orderBy, limit, serverTimestamp, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 const firebaseConfig = { apiKey: "AIzaSyD14R3WMA_x_r5AaUQismNciaiLQFowgMc", authDomain: "the-grace-78e6c.firebaseapp.com", projectId: "the-grace-78e6c", storageBucket: "the-grace-78e6c.firebasestorage.app", messagingSenderId: "155088026492", appId: "1:155088026492:web:c4b08420f69e36145b42f9" };
 let db, firebaseEnabled=false;
-try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); firebaseEnabled=true; document.getElementById('fbStatusBadge').textContent='Firebase: Online - V15.9 PRO English - Top Selling + Dead Stock + Refresh'; }catch(e){ document.getElementById('fbStatusBadge').textContent='Firebase: Offline Mode - V15.9 PRO English'; }
+try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); firebaseEnabled=true; document.getElementById('fbStatusBadge').textContent='Firebase: Online - V16 PRO Auto Rate + Monthly Chart'; }catch(e){ document.getElementById('fbStatusBadge').textContent='Firebase: Offline Mode - V16 PRO'; }
 function esc(s){ if(!s) return ''; const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
 function safeId(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,8).toUpperCase(); }
 function sanitizeStr(str,max=200){ if(!str) return ''; return String(str).slice(0,max).replace(/[<>]/g,'').trim(); }
 let currentUser=JSON.parse(localStorage.getItem('gp_user')||'null');
 const USERS_HASH={'admin':{hash:'GraceAdmin@2026!',shift:'Admin'},'cashier.morning':{hash:'GraceMorning2026',shift:'Morning'},'cashier.evening':{hash:'GraceEvening2026',shift:'Evening'}};
 let meds=JSON.parse(localStorage.getItem('gp_meds')||'[]'); 
-let cart=[]; // FIXED: This was missing in V15.7 causing empty POS - Now fixed - English version
+let cart=[];
 let rate=parseInt(localStorage.getItem('gp_rate')||'8000');
 let rateHistory=JSON.parse(localStorage.getItem('gp_rate_history')||'[]');
 let auditLog=JSON.parse(localStorage.getItem('gp_audit')||'[]'); let expenses=JSON.parse(localStorage.getItem('gp_expenses')||'[]'); let sales=JSON.parse(localStorage.getItem('gp_sales')||'[]'); let shiftReports=JSON.parse(localStorage.getItem('gp_shift_reports')||'[]');
 let pendingConfirmAction=null; let activeStockFilter='All';
+let monthlyChartInstance=null;
 function getJubaTime(){ const now=new Date(); const utc=now.getTime()+(now.getTimezoneOffset()*60000); return new Date(utc+(2*3600000)); }
 function getCurrentShiftByTime(){ const juba=getJubaTime(); const h=juba.getHours(); const m=juba.getMinutes(); const totalMin=h*60+m; if(totalMin>=480 && totalMin<840) return 'Morning'; if(totalMin>=840 && totalMin<1260) return 'Evening'; if(totalMin<480) return 'Morning'; return 'Evening'; }
 function getShiftTimeRange(s){ if(s==='Morning') return '8:00 AM - 2:00 PM'; if(s==='Evening') return '2:00 PM - 9:00 PM'; return 'All Day (Admin)'; }
@@ -304,7 +335,7 @@ window.doLogin=()=>{ const u=document.getElementById('u').value.trim().toLowerCa
 window.doLogout=()=>{ localStorage.removeItem('gp_user'); location.reload(); };
 window.showModal=(title,body,showCancel=false,onConfirm=null)=>{ document.getElementById('modalTitle').textContent=title; document.getElementById('modalBody').innerHTML=body; const cancel=document.getElementById('modalCancel'); if(showCancel) cancel.classList.remove('hidden'); else cancel.classList.add('hidden'); document.getElementById('customModal').classList.remove('hidden'); pendingConfirmAction=onConfirm; };
 window.closeModal=(confirmed)=>{ document.getElementById('customModal').classList.add('hidden'); if(confirmed && typeof pendingConfirmAction==='function') pendingConfirmAction(); pendingConfirmAction=null; };
-window.showConfirmationReport=(action,details,profit=0)=>{ const html=`<div class="space-y-2"><div class="flex justify-between"><span class="text-gray-500">Action:</span><span class="font-bold text-[#0A5C36]">${esc(action)}</span></div><div class="flex justify-between"><span class="text-gray-500">User:</span><span class="font-bold">${esc(currentUser.username)} (${esc(currentUser.shift)})</span></div><div class="flex justify-between"><span class="text-gray-500">Rate:</span><span class="font-bold text-[#C8A951]">1$ = ${rate.toLocaleString()} SSP - V15.9 PRO English</span></div><div class="border-t pt-2 mt-2"><p class="text-gray-500 text-[11px]">Details - Same Shape - Top Selling + Dead Stock + Refresh - English:</p><p class="font-bold">${esc(details)}</p></div>${profit?`<div class="flex justify-between text-green-700 font-bold"><span>Profit/Rate:</span><span>${typeof profit==='number'?profit.toLocaleString()+' SSP':esc(String(profit))}</span></div>`:''}<div class="mt-2 p-2 bg-[#F0FDF4] border rounded-xl text-[10px] text-center">Firebase Linked: ${firebaseEnabled?'Online - V15.9 PRO English Synced':'Offline'} | V15.9 PRO English</div></div>`; showModal('System Report - V15.9 PRO English - Rate '+rate,html,false,null); };
+window.showConfirmationReport=(action,details,profit=0)=>{ const html=`<div class="space-y-2"><div class="flex justify-between"><span class="text-gray-500">Action:</span><span class="font-bold text-[#0A5C36]">${esc(action)}</span></div><div class="flex justify-between"><span class="text-gray-500">User:</span><span class="font-bold">${esc(currentUser.username)} (${esc(currentUser.shift)})</span></div><div class="flex justify-between"><span class="text-gray-500">Rate:</span><span class="font-bold text-[#C8A951]">1$ = ${rate.toLocaleString()} SSP - V16 PRO</span></div><div class="border-t pt-2 mt-2"><p class="text-gray-500 text-[11px]">Details - V16 Auto Rate Update:</p><p class="font-bold">${esc(details)}</p></div>${profit?`<div class="flex justify-between text-green-700 font-bold"><span>Profit/Rate:</span><span>${typeof profit==='number'?profit.toLocaleString()+' SSP':esc(String(profit))}</span></div>`:''}<div class="mt-2 p-2 bg-[#F0FDF4] border rounded-xl text-[10px] text-center">Firebase Linked: ${firebaseEnabled?'Online - V16 Synced':'Offline'} | V16 PRO</div></div>`; showModal('System Report - V16 PRO - Rate '+rate,html,false,null); };
 async function addAudit(a,d,profit=0){ const e={time:new Date().toISOString(),user:currentUser?.username||'system',shift:currentUser?.shift||'-',jubaShift:getCurrentShiftByTime(),action:a,details:d,profit,rate}; auditLog.unshift(e); localStorage.setItem('gp_audit',JSON.stringify(auditLog.slice(0,500))); if(firebaseEnabled){ try{ await addDoc(collection(db,'audit'),{...e,ts:serverTimestamp()}); }catch(e){} } showConfirmationReport(a,d,profit); }
 async function loadRateFromFirebase(){
   try{
@@ -325,35 +356,35 @@ async function loadRateFromFirebase(){
 }
 function updateRateUI(){
   const ids=['posRate','posRateDisplay','rRate','soRateDisplay','soRateFoot','soSaveRate','rateExplain','rateExplain2','prevRate','repRate','repRateUSD','reportRateDisplay','shiftRateDisplay','closedRateDisplay','expRateDisplay','rateBadgeHeader','importRateDisplay','importRateBtn'];
-  ids.forEach(id=>{ const el=document.getElementById(id); if(el){ if(id==='rateBadgeHeader') el.textContent=`Rate: ${rate.toLocaleString()} SSP - Click to Edit (Admin) - V15.9 PRO English - Refresh`; else if(id.includes('Rate') && el.tagName==='INPUT') el.value=rate; else el.textContent=rate.toLocaleString(); } });
+  ids.forEach(id=>{ const el=document.getElementById(id); if(el){ if(id==='rateBadgeHeader') el.textContent=`Rate: ${rate.toLocaleString()} SSP - Auto Updates All Meds - V16 PRO`; else if(id.includes('Rate') && el.tagName==='INPUT') el.value=rate; else el.textContent=rate.toLocaleString(); } });
   const rateInput=document.getElementById('rateInput');
   if(rateInput) rateInput.value=rate;
   const rateBanner=document.getElementById('rateBanner');
   if(rateBanner && currentUser?.shift==='Admin'){
     rateBanner.classList.remove('hidden');
-    rateBanner.innerHTML=`V15.9 PRO English - Same Shape as File: All_Products.xlsx - Current Rate: 1$ = ${rate.toLocaleString()} SSP - Top 10 Best Sellers + Dead Stock 30 Days + Daily/Weekly/Monthly Reports + Total Sales + Total Meds + POS Fixed (Cart added + Auto 20 items) + Refresh Button - Firebase Sync`;
+    rateBanner.innerHTML=`V16 PRO - Auto Rate Update: Current Rate: 1$ = ${rate.toLocaleString()} SSP - When you change rate, ALL ${meds.length} medicines will be recalculated: Cost $ x Rate, Sales $ x Rate - Firebase Sync`;
   }
   const rateHistoryEl=document.getElementById('rateHistory');
   if(rateHistoryEl){
-    rateHistoryEl.textContent=`V15.9 PRO English FINAL: Top Selling + Dead Stock + Refresh Button - POS Fixed - Cart variable added - Auto shows 20 items - Rate ${rate} SSP - Reports: Daily/Weekly/Monthly + Total Sales + Total Inventory Value - Same Shape - 100% English`;
+    rateHistoryEl.textContent=`V16 PRO FINAL: Rate Auto Updates All Meds + Monthly Chart + Daily Search + Top Selling + Dead Stock + Refresh Button - POS Fixed - Rate ${rate} SSP - 100% English`;
   }
   renderStock(document.getElementById('stockSearch')?.value||'');
   renderCart();
   if(typeof renderReports==='function') renderReports();
 }
 window.editRate=()=>{
-  if(currentUser?.shift!=='Admin'){ showModal('Admin Only','Only Admin can edit dollar rate. Current Rate: 1$ = '+rate.toLocaleString()+' SSP - V15.9 PRO English'); return; }
-  showModal('Edit Dollar Rate - V15.9 PRO English - Admin Only - Firebase Sync',`
+  if(currentUser?.shift!=='Admin'){ showModal('Admin Only','Only Admin can edit dollar rate. Current Rate: 1$ = '+rate.toLocaleString()+' SSP - V16 PRO'); return; }
+  showModal('Edit Dollar Rate - V16 PRO - Auto Updates All Meds - Admin Only',`
     <div class="space-y-3">
       <div class="p-3 bg-[#F0FDF4] border rounded-xl">
-        <p class="text-[11px] text-gray-600">Current Rate - V15.9 PRO English - Top Selling + Dead Stock + Refresh</p>
+        <p class="text-[11px] text-gray-600">Current Rate - V16 PRO - Auto Updates All</p>
         <p class="font-bold text-[18px] text-[#0A5C36]">1$ = ${rate.toLocaleString()} SSP</p>
-        <p class="text-[10px] text-gray-500">File Shape: Sales Price ($) x Rate = Sell SSP, Cost ($) x Rate = Buy SSP - Reports: Daily/Weekly/Monthly + Top Selling + Dead Stock + Total Sales + Refresh</p>
+        <p class="text-[10px] text-gray-500">All ${meds.length} medicines will be recalculated: Buy SSP = Cost $ x New Rate, Sell SSP = Sales $ x New Rate</p>
       </div>
       <div>
-        <label class="text-[12px] font-bold text-[#0A5C36]">New Dollar Rate - 1$ = ? SSP (Admin Only)</label>
+        <label class="text-[12px] font-bold text-[#0A5C36]">New Dollar Rate - 1$ = ? SSP (Admin Only) - Auto Updates All Meds</label>
         <input id="newRateInputModal" type="number" min="1000" step="100" value="${rate}" class="inp mt-1 text-[16px] font-bold text-[#0A5C36]" placeholder="8000">
-        <p class="text-[10px] text-gray-600 mt-1">V15.9 PRO English: Top 10 Most Sold + Dead Stock 30 Days + Daily/Weekly/Monthly + Total Sales + Refresh Button - 100% English</p>
+        <p class="text-[10px] text-gray-600 mt-1">V16 PRO: All meds will be auto updated + Firebase Sync + Reports updated</p>
       </div>
     </div>
   `,true,async()=>{
@@ -364,19 +395,28 @@ window.editRate=()=>{
 };
 async function saveRateValue(newRate){
   const oldRate=rate;
+  if(!confirm(`Change Rate ${oldRate} -> ${newRate} SSP?\n\nALL ${meds.length} medicines will be recalculated automatically:\nSales Price $ * ${newRate} = New SSP\nCost $ * ${newRate} = New SSP\n\nContinue?`)) return;
   rate=newRate;
   localStorage.setItem('gp_rate', String(rate));
   localStorage.setItem('gp_rate_by', currentUser.username);
   localStorage.setItem('gp_rate_date', new Date().toLocaleString());
   rateHistory.unshift({rate: newRate, by: currentUser.username, date: new Date().toISOString(), oldRate});
   localStorage.setItem('gp_rate_history', JSON.stringify(rateHistory.slice(0,20)));
-  if(firebaseEnabled){
-    try{
-      await setDoc(doc(db,'settings','dollarRate'), {rate: newRate, by: currentUser.username, date: new Date().toISOString(), oldRate, ts: serverTimestamp()});
-    }catch(e){}
+  let updatedCount=0;
+  for(let m of meds){
+    m.buy=Math.round(m.cost * rate);
+    m.sell=Math.round(m.salesPrice * rate);
+    m.rateAtEdit=rate;
+    updatedCount++;
+    if(firebaseEnabled){ try{ await setDoc(doc(db,'meds',m.id), {...m, ts:serverTimestamp()}); }catch(e){} }
   }
-  await addAudit('EDIT_DOLLAR_RATE_V15_9_PRO_ENGLISH',`Dollar Rate Changed: ${oldRate.toLocaleString()} -> ${newRate.toLocaleString()} SSP - V15.9 PRO English - Top Selling + Dead Stock + Refresh - By ${currentUser.username}`, `Rate ${oldRate}->${newRate}`);
+  localStorage.setItem('gp_meds', JSON.stringify(meds));
+  if(firebaseEnabled){
+    try{ await setDoc(doc(db,'settings','dollarRate'), {rate: newRate, by: currentUser.username, date: new Date().toISOString(), oldRate, updatedCount, ts:serverTimestamp()}); }catch(e){}
+  }
+  await addAudit('EDIT_DOLLAR_RATE_V16_AUTO_UPDATE',`Rate ${oldRate} -> ${newRate} SSP - Auto updated ${updatedCount} medicines - All Sales Price and Cost recalculated @ new rate`, `Rate ${oldRate}->${newRate}`);
   updateRateUI();
+  showModal('Rate Updated - V16 PRO Auto Update',`<div class="p-3 bg-green-50 border rounded-xl"><p class="font-bold text-green-700">✅ Rate changed ${oldRate.toLocaleString()} -> ${newRate.toLocaleString()} SSP</p><p class="text-[12px]">${updatedCount} medicines auto recalculated:<br>New Buy = Cost $ x ${newRate.toLocaleString()}<br>New Sell = Sales $ x ${newRate.toLocaleString()}<br><br>POS + Stock + Reports updated + Firebase Synced</p></div>`);
 }
 window.saveRate=async()=>{
   if(currentUser?.shift!=='Admin'){ showModal('Admin Only','Only Admin can edit dollar rate.'); return; }
@@ -391,9 +431,7 @@ window.showTab=(t)=>{
   document.querySelectorAll('.tab-btn').forEach(b=>{ b.classList.remove('tabA'); b.classList.add('tabN'); });
   const active=document.querySelector(`[data-tab="${t}"]`);
   if(active){ active.classList.remove('tabN'); active.classList.add('tabA'); }
-  if(t==='pos'){
-    setTimeout(()=>{ searchMeds(''); }, 150);
-  }
+  if(t==='pos'){ setTimeout(()=>{ searchMeds(''); }, 150); }
   if(t==='reports') renderReports();
   if(t==='shifts') loadShiftReports();
   if(t==='expenses') renderExpenses();
@@ -401,14 +439,14 @@ window.showTab=(t)=>{
 };
 function usd(s){ return (s/rate).toFixed(2); }
 function getExpiryStatus(d){ if(!d) return {text:'No Expiry Date',cls:'badge-expiry-yellow',days:9999,row:''}; const t=new Date(); t.setHours(0,0,0,0); const e=new Date(d); e.setHours(0,0,0,0); if(isNaN(e.getTime())) return {text:'No Expiry Date',cls:'badge-expiry-yellow',days:9999,row:''}; const diff=Math.ceil((e-t)/86400000); if(diff<0) return {text:`EXPIRED BLOCKED`,cls:'badge-expiry-red',days:diff,row:'row-expired'}; if(diff<=30) return {text:`CRITICAL ${diff} days`,cls:'badge-expiry-red',days:diff,row:'row-expired'}; if(diff<=60) return {text:`WARNING ${diff} days`,cls:'badge-expiry-orange',days:diff,row:'row-orange'}; return {text:`Safe - ${diff} days`,cls:'badge-expiry-green',days:diff,row:''}; }
-function checkExpiryAlerts(){ const critical=meds.filter(m=>{ const ex=getExpiryStatus(m.expiry); return ex.days<0 || ex.days<=30; }); const warning=meds.filter(m=>{ const ex=getExpiryStatus(m.expiry); return ex.days>30 && ex.days<=60; }); const critBanner=document.getElementById('expiryCriticalBanner'); const warnBanner=document.getElementById('expiryWarningBanner'); if(critical.length>0){ critBanner.classList.remove('hidden'); critBanner.innerHTML=`EXPIRED BLOCKED / CRITICAL: ${critical.length} items - <button onclick="viewExpired()" class="underline font-bold ml-2">View List</button> - V15.9 PRO English`; } else critBanner.classList.add('hidden'); if(warning.length>0){ warnBanner.classList.remove('hidden'); warnBanner.innerHTML=`WARNING 60-DAY ALERT: ${warning.length} items - <button onclick="viewExpired()" class="underline font-bold ml-2">View List</button> - V15.9 PRO English`; } else warnBanner.classList.add('hidden'); }
+function checkExpiryAlerts(){ const critical=meds.filter(m=>{ const ex=getExpiryStatus(m.expiry); return ex.days<0 || ex.days<=30; }); const warning=meds.filter(m=>{ const ex=getExpiryStatus(m.expiry); return ex.days>30 && ex.days<=60; }); const critBanner=document.getElementById('expiryCriticalBanner'); const warnBanner=document.getElementById('expiryWarningBanner'); if(critical.length>0){ critBanner.classList.remove('hidden'); critBanner.innerHTML=`EXPIRED BLOCKED / CRITICAL: ${critical.length} items - <button onclick="viewExpired()" class="underline font-bold ml-2">View List</button> - V16 PRO`; } else critBanner.classList.add('hidden'); if(warning.length>0){ warnBanner.classList.remove('hidden'); warnBanner.innerHTML=`WARNING 60-DAY ALERT: ${warning.length} items - <button onclick="viewExpired()" class="underline font-bold ml-2">View List</button> - V16 PRO`; } else warnBanner.classList.add('hidden'); }
 async function loadMedsFB(){ if(!firebaseEnabled){ renderStock(); checkExpiryAlerts(); if(currentUser) searchMeds(''); return; } try{ const q=query(collection(db,'meds'), orderBy('date','desc'), limit(500)); const snap=await getDocs(q); if(snap.size>0){ meds=snap.docs.map(d=>d.data()); localStorage.setItem('gp_meds', JSON.stringify(meds)); } }catch(e){} renderStock(); checkExpiryAlerts(); if(currentUser) searchMeds(''); }
 function searchMeds(term){
   term=(term||'').toLowerCase().trim();
   const list=document.getElementById('medsList');
   if(!list) return;
   if(meds.length===0){
-    list.innerHTML='<div class="p-6 text-center"><p class="text-red-500 font-bold">No medicines found - V15.9 PRO English</p><p class="text-[11px] text-gray-500 mt-2">Go to Stock tab -> Import Now -> Select All_Products.xlsx -> Then return to POS tab<br>Same Shape: Favorite | Name | Sales Price | Cost | Qty On Hand | Unit | Rate '+rate.toLocaleString()+' SSP</p><button onclick="showTab(\'stock\')" class="btn mt-3">Go to Stock - Import File</button><button onclick="refreshAllData()" class="btn mt-2 bg-[#C8A951] text-black">Refresh Data</button></div>';
+    list.innerHTML='<div class="p-6 text-center"><p class="text-red-500 font-bold">No medicines found - V16 PRO</p><p class="text-[11px] text-gray-500 mt-2">Go to Stock tab -> Import Now -> Select All_Products.xlsx -> Then return to POS tab<br>Same Shape: Favorite | Name | Sales Price | Cost | Qty On Hand | Unit | Rate '+rate.toLocaleString()+' SSP - Auto Updates</p><button onclick="showTab(\'stock\')" class="btn mt-3">Go to Stock - Import File</button><button onclick="refreshAllData()" class="btn mt-2 bg-[#C8A951] text-black">Refresh Data</button></div>';
     return;
   }
   let filtered;
@@ -418,10 +456,10 @@ function searchMeds(term){
     filtered=meds.filter(m=> (m.name||'').toLowerCase().includes(term) || (m.internalRef||'').toLowerCase().includes(term) || (m.barcode||'').toLowerCase().includes(term) || (m.unit||'').toLowerCase().includes(term)).slice(0,20);
   }
   if(filtered.length===0){
-    list.innerHTML=`<div class="p-4 text-center text-gray-400">No results for "${esc(term)}" - Try different name<br><span class="text-[10px]">Current Rate ${rate} SSP - Same Shape - <button onclick="refreshAllData()" class="text-[#0A5C36] underline">Refresh</button></span></div>`;
+    list.innerHTML=`<div class="p-4 text-center text-gray-400">No results for "${esc(term)}" - Try different name<br><span class="text-[10px]">Current Rate ${rate} SSP - Auto Updates All - <button onclick="refreshAllData()" class="text-[#0A5C36] underline">Refresh</button></span></div>`;
     return;
   }
-  list.innerHTML=filtered.map(m=>{ const ex=getExpiryStatus(m.expiry); const blocked=ex.days<0; const opacity=blocked?'opacity:0.5':''; const btnLabel=blocked?'Sale Blocked - EXPIRED':'Add to Cart - '+m.qty+' '+esc(m.unit||''); const btnClass=blocked?'bg-gray-400 cursor-not-allowed':'btn'; const profit=m.sell-m.buy; const soldQty=getSoldQtyForMed(m.id); return `<div class="card p-3 border ${ex.row} ${opacity} hover:shadow-lg transition-all"><div class="flex justify-between"><span class="font-bold text-[12px]">${esc(m.name)}</span><span class="badge ${ex.cls}">${ex.text}</span></div><div class="text-[11px] mt-1">Favorite: ${esc(m.favorite||'Normal')} | Sales Price: $${m.salesPrice} (${m.sell.toLocaleString()} SSP) | Cost: $${m.cost} (${m.buy.toLocaleString()} SSP) | Profit: ${profit.toLocaleString()} SSP | Qty On Hand: <span class="font-bold ${m.qty<=5?'text-red-600':''}">${m.qty}</span> | Sold: ${soldQty} | Unit: ${esc(m.unit||'')}</div><button onclick="addToCart('${m.id}')" class="${btnClass} w-full mt-2 text-[11px] py-2" ${blocked?'disabled':''}>${btnLabel} - V15.9 PRO English</button></div>`; }).join('');
+  list.innerHTML=filtered.map(m=>{ const ex=getExpiryStatus(m.expiry); const blocked=ex.days<0; const opacity=blocked?'opacity:0.5':''; const btnLabel=blocked?'Sale Blocked - EXPIRED':'Add to Cart - '+m.qty+' '+esc(m.unit||''); const btnClass=blocked?'bg-gray-400 cursor-not-allowed':'btn'; const profit=m.sell-m.buy; const soldQty=getSoldQtyForMed(m.id); return `<div class="card p-3 border ${ex.row} ${opacity} hover:shadow-lg transition-all"><div class="flex justify-between"><span class="font-bold text-[12px]">${esc(m.name)}</span><span class="badge ${ex.cls}">${ex.text}</span></div><div class="text-[11px] mt-1">Favorite: ${esc(m.favorite||'Normal')} | Sales Price: $${m.salesPrice} (${m.sell.toLocaleString()} SSP) | Cost: $${m.cost} (${m.buy.toLocaleString()} SSP) | Profit: ${profit.toLocaleString()} SSP | Qty On Hand: <span class="font-bold ${m.qty<=5?'text-red-600':''}">${m.qty}</span> | Sold: ${soldQty} | Unit: ${esc(m.unit||'')}</div><button onclick="addToCart('${m.id}')" class="${btnClass} w-full mt-2 text-[11px] py-2" ${blocked?'disabled':''}>${btnLabel} - V16 PRO</button></div>`; }).join('');
 }
 window.searchMeds=searchMeds;
 function getSoldQtyForMed(medId){
@@ -433,17 +471,17 @@ function getSoldQtyForMed(medId){
   }
   return total;
 }
-window.addToCart=(id)=>{ const med=meds.find(m=>m.id===id); if(!med || med.qty<=0){ showModal('Sale Blocked','<div class="alert-critical p-3 rounded-xl">Out of stock or expired blocked - V15.9 PRO English - Same Shape.</div>'); return; } const ex=getExpiryStatus(med.expiry); if(ex.days<0){ showModal('Sale Blocked - EXPIRED','<div class="alert-critical p-3 rounded-xl font-bold">EXPIRED BLOCKED - Cannot be sold - Same Shape - V15.9 PRO English.</div>'); return; } if(ex.days<=60){ showModal('Warning - 60-Day Alert',`<div class="alert-warning p-3 rounded-xl"><p class="font-bold">WARNING: Expires in ${ex.days} days (${esc(med.expiry)}) - V15.9 PRO English</p></div>`,true,()=>{ proceedAddToCart(med); }); return; } proceedAddToCart(med); };
-function proceedAddToCart(med){ let item=cart.find(c=>c.id===med.id); if(item){ if(item.qty < med.qty) item.qty++; else { showModal('Stock Limit','Only '+med.qty+' '+esc(med.unit||'Units')+' available - Same Shape - V15.9 PRO English'); return; } } else cart.push({id:med.id, name:med.name, sell:med.sell, buy:med.buy, qty:1, expiry:med.expiry, salesPrice:med.salesPrice, cost:med.cost, unit:med.unit, qtyOnHand: med.qty}); renderCart(); }
-function renderCart(){ const list=document.getElementById('cartList'); if(!list) return; if(cart.length===0) list.innerHTML='<div class="p-4 text-center text-gray-400">Cart is empty - V15.9 PRO English - Same Shape - Rate '+rate.toLocaleString()+' SSP<br><span class="text-[10px]">Add medicines from left list - 20 items shown automatically - <button onclick="refreshAllData()" class="text-[#0A5C36] underline">Refresh</button></span></div>'; else { list.innerHTML=cart.map(c=>{ return `<div class="flex justify-between py-2 border-b text-[12px] hover:bg-gray-50"><span>${esc(c.name)} x${c.qty} ${esc(c.unit||'')} | Sales $${c.salesPrice} (${c.sell.toLocaleString()} SSP) | Cost $${c.cost}</span><span class="flex items-center gap-2">${(c.sell*c.qty).toLocaleString()} SSP <button onclick="removeFromCart('${c.id}')" class="text-red-500 ml-2 border px-2 py-0.5 rounded-full">X</button></span></div>`; }).join(''); } let t=cart.reduce((s,c)=>s+c.sell*c.qty,0); let p=cart.reduce((s,c)=>s+(c.sell-c.buy)*c.qty,0); const totalEl=document.getElementById('cartTotal'); if(totalEl) totalEl.textContent=t.toLocaleString()+' SSP'; const totalUSDEl=document.getElementById('cartTotalUSD'); if(totalUSDEl) totalUSDEl.textContent=usd(t)+' USD @ '+rate.toLocaleString()+' - V15.9 PRO English'; const countEl=document.getElementById('cartCount'); if(countEl) countEl.textContent=cart.reduce((s,c)=>s+c.qty,0); const profitEl=document.getElementById('cartProfit'); if(profitEl) profitEl.textContent=p.toLocaleString()+' SSP ('+usd(p)+' USD @ '+rate.toLocaleString()+') - V15.9 PRO English'; }
+window.addToCart=(id)=>{ const med=meds.find(m=>m.id===id); if(!med || med.qty<=0){ showModal('Sale Blocked','<div class="alert-critical p-3 rounded-xl">Out of stock or expired blocked - V16 PRO.</div>'); return; } const ex=getExpiryStatus(med.expiry); if(ex.days<0){ showModal('Sale Blocked - EXPIRED','<div class="alert-critical p-3 rounded-xl font-bold">EXPIRED BLOCKED - Cannot be sold.</div>'); return; } if(ex.days<=60){ showModal('Warning - 60-Day Alert',`<div class="alert-warning p-3 rounded-xl"><p class="font-bold">WARNING: Expires in ${ex.days} days (${esc(med.expiry)}) - V16 PRO</p></div>`,true,()=>{ proceedAddToCart(med); }); return; } proceedAddToCart(med); };
+function proceedAddToCart(med){ let item=cart.find(c=>c.id===med.id); if(item){ if(item.qty < med.qty) item.qty++; else { showModal('Stock Limit','Only '+med.qty+' '+esc(med.unit||'Units')+' available'); return; } } else cart.push({id:med.id, name:med.name, sell:med.sell, buy:med.buy, qty:1, expiry:med.expiry, salesPrice:med.salesPrice, cost:med.cost, unit:med.unit, qtyOnHand: med.qty}); renderCart(); }
+function renderCart(){ const list=document.getElementById('cartList'); if(!list) return; if(cart.length===0) list.innerHTML='<div class="p-4 text-center text-gray-400">Cart is empty - V16 PRO - Rate '+rate.toLocaleString()+' SSP - Auto Updates All<br><span class="text-[10px]">Add medicines from left list - 20 items shown automatically - <button onclick="refreshAllData()" class="text-[#0A5C36] underline">Refresh</button></span></div>'; else { list.innerHTML=cart.map(c=>{ return `<div class="flex justify-between py-2 border-b text-[12px] hover:bg-gray-50"><span>${esc(c.name)} x${c.qty} ${esc(c.unit||'')} | Sales $${c.salesPrice} (${c.sell.toLocaleString()} SSP) | Cost $${c.cost}</span><span class="flex items-center gap-2">${(c.sell*c.qty).toLocaleString()} SSP <button onclick="removeFromCart('${c.id}')" class="text-red-500 ml-2 border px-2 py-0.5 rounded-full">X</button></span></div>`; }).join(''); } let t=cart.reduce((s,c)=>s+c.sell*c.qty,0); let p=cart.reduce((s,c)=>s+(c.sell-c.buy)*c.qty,0); const totalEl=document.getElementById('cartTotal'); if(totalEl) totalEl.textContent=t.toLocaleString()+' SSP'; const totalUSDEl=document.getElementById('cartTotalUSD'); if(totalUSDEl) totalUSDEl.textContent=usd(t)+' USD @ '+rate.toLocaleString()+' - V16 PRO'; const countEl=document.getElementById('cartCount'); if(countEl) countEl.textContent=cart.reduce((s,c)=>s+c.qty,0); const profitEl=document.getElementById('cartProfit'); if(profitEl) profitEl.textContent=p.toLocaleString()+' SSP ('+usd(p)+' USD @ '+rate.toLocaleString()+') - V16 PRO'; }
 window.removeFromCart=(id)=>{ cart=cart.filter(c=>c.id!==id); renderCart(); };
 window.clearCart=()=>{ cart=[]; renderCart(); };
-window.checkout=async()=>{ if(cart.length===0){ showModal('Empty Cart','<p>Cart is empty - V15.9 PRO English - Same Shape.</p>'); return; } for(let c of cart){ const m=meds.find(mm=>mm.id===c.id); const ex=getExpiryStatus(m?.expiry); if(ex.days<0){ showModal('Sale Blocked','<div class="alert-critical p-3 rounded-xl">Cart contains expired: ${esc(c.name)} - Same Shape - V15.9 PRO English</div>'); return; } if(c.qty > m.qty){ showModal('Stock Limit','Not enough stock for ${esc(c.name)} - Available: '+m.qty+' - Same Shape'); return; } } let total=cart.reduce((s,c)=>s+c.sell*c.qty,0); let totalBuy=cart.reduce((s,c)=>s+c.buy*c.qty,0); let profit=total-totalBuy; const currentShift=getCurrentShiftByTime(); for(let c of cart){ let m=meds.find(mm=>mm.id===c.id); if(m) m.qty=Math.max(0, m.qty-c.qty); } localStorage.setItem('gp_meds', JSON.stringify(meds)); const saleRecord={id:safeId(), items:cart, total, totalBuy, profit, totalUSD:parseFloat(usd(total)), by:currentUser.username, shift:currentUser.shift, jubaShift:currentShift, time:new Date().toISOString(), date:new Date().toISOString().slice(0,10), rate}; sales.unshift(saleRecord); localStorage.setItem('gp_sales', JSON.stringify(sales.slice(0,1000))); if(firebaseEnabled){ for(let c of cart){ let m=meds.find(mm=>mm.id===c.id); if(m){ try{ await setDoc(doc(db,'meds',m.id), {...m, ts:serverTimestamp()}); }catch(e){} } } try{ await addDoc(collection(db,'sales'), {...saleRecord, ts:serverTimestamp()}); }catch(e){} } await addAudit('SALE_V15_9_PRO_ENGLISH', `Sold ${cart.length} types - V15.9 PRO English - Top Selling + Dead Stock Updated - Same Shape - Total ${total} SSP @ Rate ${rate} - Profit ${profit} SSP - Shift ${currentShift}`, profit); cart=[]; renderCart(); renderStock(); renderReports(); loadShiftReports(); checkExpiryAlerts(); searchMeds(document.getElementById('searchMed')?.value||''); };
+window.checkout=async()=>{ if(cart.length===0){ showModal('Empty Cart','<p>Cart is empty - V16 PRO.</p>'); return; } for(let c of cart){ const m=meds.find(mm=>mm.id===c.id); const ex=getExpiryStatus(m?.expiry); if(ex.days<0){ showModal('Sale Blocked','<div class="alert-critical p-3 rounded-xl">Cart contains expired: ${esc(c.name)}</div>'); return; } if(c.qty > m.qty){ showModal('Stock Limit','Not enough stock for ${esc(c.name)} - Available: '+m.qty); return; } } let total=cart.reduce((s,c)=>s+c.sell*c.qty,0); let totalBuy=cart.reduce((s,c)=>s+c.buy*c.qty,0); let profit=total-totalBuy; const currentShift=getCurrentShiftByTime(); for(let c of cart){ let m=meds.find(mm=>mm.id===c.id); if(m) m.qty=Math.max(0, m.qty-c.qty); } localStorage.setItem('gp_meds', JSON.stringify(meds)); const saleRecord={id:safeId(), items:cart, total, totalBuy, profit, totalUSD:parseFloat(usd(total)), by:currentUser.username, shift:currentUser.shift, jubaShift:currentShift, time:new Date().toISOString(), date:new Date().toISOString().slice(0,10), rate}; sales.unshift(saleRecord); localStorage.setItem('gp_sales', JSON.stringify(sales.slice(0,1000))); if(firebaseEnabled){ for(let c of cart){ let m=meds.find(mm=>mm.id===c.id); if(m){ try{ await setDoc(doc(db,'meds',m.id), {...m, ts:serverTimestamp()}); }catch(e){} } } try{ await addDoc(collection(db,'sales'), {...saleRecord, ts:serverTimestamp()}); }catch(e){} } await addAudit('SALE_V16_PRO', `Sold ${cart.length} types - V16 PRO - Top Selling + Monthly Updated - Total ${total} SSP @ Rate ${rate} - Profit ${profit} SSP - Shift ${currentShift}`, profit); cart=[]; renderCart(); renderStock(); renderReports(); loadShiftReports(); checkExpiryAlerts(); searchMeds(document.getElementById('searchMed')?.value||''); };
 window.updateProfitPreview=()=>{ const cost=parseFloat(document.getElementById('mCost').value||0); const sales=parseFloat(document.getElementById('mSales').value||0); const costEl=document.getElementById('prevCost'); if(costEl) costEl.textContent=cost.toFixed(2); const salesEl=document.getElementById('prevSales'); if(salesEl) salesEl.textContent=sales.toFixed(2); const profitUSD=sales-cost; const profitSSP=Math.round(profitUSD*rate); const margin=cost>0?((profitUSD/cost)*100).toFixed(1):0; const profitEl=document.getElementById('prevProfit'); if(profitEl) profitEl.textContent=profitSSP.toLocaleString()+' SSP'; const marginEl=document.getElementById('prevMargin'); if(marginEl) marginEl.textContent=margin+'%'; const prevRate=document.getElementById('prevRate'); if(prevRate) prevRate.textContent=rate.toLocaleString(); };
-window.addMed=async()=>{ const fav=document.getElementById('mFav').value||'Normal'; const name=document.getElementById('mName').value.trim(); const internal=document.getElementById('mInternal').value||''; const resp=document.getElementById('mResp').value||'Administrator'; const salesPrice=parseFloat(document.getElementById('mSales').value||0); const cost=parseFloat(document.getElementById('mCost').value||0); const qty=parseInt(document.getElementById('mQty').value||0); const forecast=parseInt(document.getElementById('mForecast').value||qty); const unit=document.getElementById('mUnit').value||'Units'; const expiry=document.getElementById('mExpiry').value||'2027-12-31'; if(!name){ showModal('Error','Name is required - Same Shape - V15.9 PRO English.'); return; } const buy=Math.round(cost*rate); const sell=Math.round(salesPrice*rate); const med={id:safeId(), favorite:fav, name:sanitizeStr(name,100), internalRef:sanitizeStr(internal,50), responsible:resp, salesPrice, cost, buy, sell, qty, forecasted:forecast, unit:sanitizeStr(unit,20), barcode:'AUTO-'+safeId(), expiry, by:currentUser.username, date:new Date().toISOString(), rateAtAdd: rate}; if(firebaseEnabled){ try{ await setDoc(doc(db,'meds',med.id), {...med, ts:serverTimestamp()}); }catch(e){} } meds.unshift(med); localStorage.setItem('gp_meds', JSON.stringify(meds)); await addAudit('ADD_SINGLE_V15_9_PRO_ENGLISH', `Added V15.9 PRO English Same Shape: ${name} - Favorite ${fav} - Sales Price $${salesPrice} (${sell} SSP) - Cost $${cost} (${buy} SSP) - Qty On Hand ${qty} - Forecasted ${forecast} - Unit ${unit} - Profit ${sell-buy} SSP @ Rate ${rate}`, sell-buy); renderStock(); checkExpiryAlerts(); searchMeds(''); renderReports(); };
-window.downloadTemplate=()=>{ const csv="Favorite,Name,Internal Reference,Responsible,Sales Price,Cost,Quantity On Hand,Forecasted Quantity,Unit of Measure,Expiry Date\nNormal,ADOLIN GEL (Adapalene 0.1%) 30g,,Administrator,9,4.5,5,5,Tube,2027-12-31\nNormal,ATOR (Atorvastatin 40mg) Tablets,,Administrator,5,2.5,10,10,Pkt,2027-12-31\nNormal,Abeer (esomeprazole 40mg),,Administrator,2.66,1.33,30,30,Strip,2027-12-31\n"; const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Grace_Template_Same_Shape_V15_9_PRO_English_Rate'+rate+'.csv'; a.click(); };
+window.addMed=async()=>{ const fav=document.getElementById('mFav').value||'Normal'; const name=document.getElementById('mName').value.trim(); const internal=document.getElementById('mInternal').value||''; const resp=document.getElementById('mResp').value||'Administrator'; const salesPrice=parseFloat(document.getElementById('mSales').value||0); const cost=parseFloat(document.getElementById('mCost').value||0); const qty=parseInt(document.getElementById('mQty').value||0); const forecast=parseInt(document.getElementById('mForecast').value||qty); const unit=document.getElementById('mUnit').value||'Units'; const expiry=document.getElementById('mExpiry').value||'2027-12-31'; if(!name){ showModal('Error','Name is required - V16 PRO.'); return; } const buy=Math.round(cost*rate); const sell=Math.round(salesPrice*rate); const med={id:safeId(), favorite:fav, name:sanitizeStr(name,100), internalRef:sanitizeStr(internal,50), responsible:resp, salesPrice, cost, buy, sell, qty, forecasted:forecast, unit:sanitizeStr(unit,20), barcode:'AUTO-'+safeId(), expiry, by:currentUser.username, date:new Date().toISOString(), rateAtAdd: rate}; if(firebaseEnabled){ try{ await setDoc(doc(db,'meds',med.id), {...med, ts:serverTimestamp()}); }catch(e){} } meds.unshift(med); localStorage.setItem('gp_meds', JSON.stringify(meds)); await addAudit('ADD_SINGLE_V16_PRO', `Added V16 PRO Same Shape: ${name} - Sales Price $${salesPrice} (${sell} SSP) - Cost $${cost} (${buy} SSP) - Qty ${qty} - Profit ${sell-buy} SSP @ Rate ${rate}`, sell-buy); renderStock(); checkExpiryAlerts(); searchMeds(''); renderReports(); };
+window.downloadTemplate=()=>{ const csv="Favorite,Name,Internal Reference,Responsible,Sales Price,Cost,Quantity On Hand,Forecasted Quantity,Unit of Measure,Expiry Date\nNormal,ADOLIN GEL (Adapalene 0.1%) 30g,,Administrator,9,4.5,5,5,Tube,2027-12-31\nNormal,ATOR (Atorvastatin 40mg) Tablets,,Administrator,5,2.5,10,10,Pkt,2027-12-31\nNormal,Abeer (esomeprazole 40mg),,Administrator,2.66,1.33,30,30,Strip,2027-12-31\n"; const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Grace_Template_Same_Shape_V16_PRO_Rate'+rate+'.csv'; a.click(); };
 window.importBulk=async()=>{
-  const file=document.getElementById('bulkFile').files[0]; if(!file){ showModal('Error','Please select a file - Same Shape - V15.9 PRO English.'); return; }
+  const file=document.getElementById('bulkFile').files[0]; if(!file){ showModal('Error','Please select a file - V16 PRO.'); return; }
   try{
     let rows=[]; const norm=(k)=> String(k||'').toLowerCase().replace(/[^a-z0-9]/g,''); const getVal=(obj,keys)=>{ for(let k of keys){ if(obj[k]!==undefined && obj[k]!=='' && String(obj[k]).trim()!=='') return obj[k]; for(let ok in obj){ if(norm(ok)===norm(k) && String(obj[ok]).trim()!=='') return obj[ok]; } } return ''; };
     if(file.name.toLowerCase().endsWith('.csv')){ const text=await file.text(); const lines=text.split(/\r?\n/).filter(l=>l.trim()); const headers=lines[0].split(',').map(h=>h.trim()); for(let i=1;i<lines.length;i++){ const cols=lines[i].split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/); let obj={}; headers.forEach((h,idx)=>obj[h]=(cols[idx]||'').replace(/^"|"$/g,'').trim()); rows.push(obj); } }else{ const data=await file.arrayBuffer(); const wb=XLSX.read(data,{type:'array'}); const ws=wb.Sheets[wb.SheetNames[0]]; rows=XLSX.utils.sheet_to_json(ws,{defval:''}); }
@@ -471,17 +509,17 @@ window.importBulk=async()=>{
       if(firebaseEnabled){ try{ await setDoc(doc(db,'meds',med.id), {...med, ts:serverTimestamp()}); }catch(e){} }
       meds.unshift(med); saved++;
     }
-    localStorage.setItem('gp_meds',JSON.stringify(meds)); await addAudit('BULK_IMPORT_V15_9_PRO_ENGLISH',`Bulk imported ${saved} medicines - V15.9 PRO English - Top Selling + Dead Stock + Refresh + Same Shape - @ Rate ${rate} SSP - Firebase`,0);
-    document.getElementById('importMsg').textContent=`Import Completed: ${saved} medicines - V15.9 PRO English - Top Selling + Dead Stock + Refresh - Same Shape - @ Rate ${rate} SSP - Firebase Synced - Now go to POS tab, you will see 20 items automatically`;
+    localStorage.setItem('gp_meds',JSON.stringify(meds)); await addAudit('BULK_IMPORT_V16_PRO',`Bulk imported ${saved} medicines - V16 PRO - Auto Rate + Monthly Chart - @ Rate ${rate} SSP - Firebase`,0);
+    document.getElementById('importMsg').textContent=`Import Completed: ${saved} medicines - V16 PRO - Auto Rate + Monthly Chart - @ Rate ${rate} SSP - Firebase Synced - Now go to POS tab, you will see 20 items automatically`;
     document.getElementById('importMsg').className='mt-2 p-2 rounded bg-green-50 border text-green-700'; document.getElementById('importMsg').classList.remove('hidden');
     renderStock(); checkExpiryAlerts(); searchMeds(''); renderReports();
-  }catch(e){ showModal('Import Error - V15.9 PRO English',e.message); }
+  }catch(e){ showModal('Import Error - V16 PRO',e.message); }
 };
 window.viewLowStock=()=>{ activeStockFilter='LowStock'; document.getElementById('expiryFilter').value='LowStock'; renderStock(); showTab('stock'); };
 window.viewExpired=()=>{ activeStockFilter='Expired'; document.getElementById('expiryFilter').value='Expired'; renderStock(); showTab('stock'); };
 window.clearStockFilter=()=>{ activeStockFilter='All'; document.getElementById('expiryFilter').value='All'; document.getElementById('stockSearch').value=''; document.getElementById('activeFilterBadge').classList.add('hidden'); document.getElementById('clearFilterBtn').classList.add('hidden'); renderStock(); };
 window.refreshAllData=async()=>{
-  showModal('Refreshing Data...','<div class="p-3 bg-[#F0FDF4] border rounded-xl"><p class="font-bold text-[#0A5C36]">Refreshing All Data - V15.9 PRO English</p><p class="text-[11px]">Loading from Firebase + LocalStorage + Updating Reports + Top Selling + Dead Stock + POS + Stock...</p></div>');
+  showModal('Refreshing Data...','<div class="p-3 bg-[#F0FDF4] border rounded-xl"><p class="font-bold text-[#0A5C36]">Refreshing All Data - V16 PRO</p><p class="text-[11px]">Loading from Firebase + LocalStorage + Updating Reports + Monthly Chart + Top Selling + Dead Stock + POS + Stock...</p></div>');
   try{
     await loadRateFromFirebase();
     await loadMedsFB();
@@ -493,10 +531,8 @@ window.refreshAllData=async()=>{
     checkExpiryAlerts();
     searchMeds(document.getElementById('searchMed')?.value||'');
     updateLiveTime();
-    setTimeout(()=>{ closeModal(true); showModal('Refresh Complete','<div class="p-3 bg-green-50 border rounded-xl text-green-700"><p class="font-bold">Refresh Complete - V15.9 PRO English</p><p class="text-[11px]">Firebase: '+(firebaseEnabled?'Online Synced':'Offline Local')+'<br>Meds: '+meds.length+' items<br>Sales: '+sales.length+' transactions<br>Rate: 1$ = '+rate.toLocaleString()+' SSP<br>Top Selling + Dead Stock Updated<br>POS Fixed - 20 items auto shown<br>Same Shape as File - 100% English</p></div>'); }, 800);
-  }catch(e){
-    showModal('Refresh Error',e.message);
-  }
+    setTimeout(()=>{ closeModal(true); showModal('Refresh Complete','<div class="p-3 bg-green-50 border rounded-xl text-green-700"><p class="font-bold">Refresh Complete - V16 PRO</p><p class="text-[11px]">Firebase: '+(firebaseEnabled?'Online Synced':'Offline Local')+'<br>Meds: '+meds.length+' items<br>Sales: '+sales.length+' transactions<br>Rate: 1$ = '+rate.toLocaleString()+' SSP - Auto Updates All Meds<br>Monthly Chart + Daily Search Updated<br>POS Fixed - 20 items auto shown<br>Same Shape as File - 100% English</p></div>'); }, 800);
+  }catch(e){ showModal('Refresh Error',e.message); }
 };
 window.renderStock=(filter='')=>{
   const tbody=document.getElementById('stockTable'); if(!tbody) return;
@@ -504,20 +540,14 @@ window.renderStock=(filter='')=>{
   const filterType=document.getElementById('expiryFilter').value;
   activeStockFilter=filterType;
   const badge=document.getElementById('activeFilterBadge'); const clearBtn=document.getElementById('clearFilterBtn');
-  if(filterType!=='All'){ badge.textContent=`Filter: ${filterType} @ Rate ${rate} - V15.9 PRO English`; badge.classList.remove('hidden'); clearBtn.classList.remove('hidden'); } else { badge.classList.add('hidden'); clearBtn.classList.add('hidden'); }
+  if(filterType!=='All'){ badge.textContent=`Filter: ${filterType} @ Rate ${rate} - V16 PRO Auto Updates`; badge.classList.remove('hidden'); clearBtn.classList.remove('hidden'); } else { badge.classList.add('hidden'); clearBtn.classList.add('hidden'); }
   if(filterType==='Expired') list=list.filter(m=>getExpiryStatus(m.expiry).days<0);
   else if(filterType==='LowStock') list=list.filter(m=>m.qty<=5);
-  else if(filterType==='DeadStock'){
-    const deadIds=getDeadStockIds();
-    list=list.filter(m=>deadIds.includes(m.id));
-  }
-  else if(filterType==='TopSelling'){
-    const topIds=getTopSellingIds();
-    list=list.filter(m=>topIds.includes(m.id));
-  }
+  else if(filterType==='DeadStock'){ const deadIds=getDeadStockIds(); list=list.filter(m=>deadIds.includes(m.id)); }
+  else if(filterType==='TopSelling'){ const topIds=getTopSellingIds(); list=list.filter(m=>topIds.includes(m.id)); }
   else if(filterType==='Safe') list=list.filter(m=>getExpiryStatus(m.expiry).days>60);
   if(filter){ const f=filter.toLowerCase(); list=list.filter(m=>(m.name||'').toLowerCase().includes(f) || (m.internalRef||'').toLowerCase().includes(f) || (m.barcode||'').toLowerCase().includes(f)); }
-  if(badge) badge.textContent=`Filter: ${filterType} - ${list.length} items @ Rate ${rate} SSP - V15.9 PRO English - Same Shape`;
+  if(badge) badge.textContent=`Filter: ${filterType} - ${list.length} items @ Rate ${rate} SSP - V16 PRO Auto Updates - Same Shape`;
   tbody.innerHTML=list.slice(0,200).map(m=>{ const ex=getExpiryStatus(m.expiry); const isAdmin=currentUser.shift==='Admin'; const profit=m.sell-m.buy; const margin=m.buy>0?((profit/m.buy)*100).toFixed(0):0; const soldQty=getSoldQtyForMed(m.id); const editBtn=isAdmin?`<button onclick="editMed('${m.id}')" class="text-[10px] bg-[#0A5C36] text-white px-2 py-1 rounded-full font-bold">Edit Qty/Sales/Cost/Expiry</button> <button onclick="deleteMed('${m.id}')" class="text-[10px] bg-red-50 text-red-600 border px-2 py-1 rounded-full">Delete</button>`:`<span class="text-[10px] bg-gray-100 border px-2 py-1 rounded-full">Admin only</span>`; return `<tr class="${ex.row} border-b hover:bg-gray-50"><td class="p-2 text-[11px]">${esc(m.favorite||'Normal')}</td><td class="p-2 font-bold text-[12px]">${esc(m.name)}</td><td class="p-2 text-[11px]">${esc(m.internalRef||'')}</td><td class="p-2 text-[11px]">${esc(m.responsible||'Administrator')}</td><td class="p-2 text-[11px]"><span class="font-bold">$${m.salesPrice}</span><br><span class="text-[#0A5C36] font-bold">${m.sell.toLocaleString()} SSP</span><br><span class="text-[10px] text-[#C8A951]">${usd(m.sell)}$ @ ${rate}</span></td><td class="p-2 text-[11px]"><span class="text-gray-500">$${m.cost}</span><br><span class="font-bold">${m.buy.toLocaleString()} SSP</span><br><span class="text-green-700 font-bold">Profit ${profit.toLocaleString()} SSP (${margin}%)</span></td><td class="p-2 font-bold ${m.qty<=5?'text-red-600':''}">${m.qty}</td><td class="p-2">${m.forecasted||m.qty}</td><td class="p-2">${esc(m.unit||'')}</td><td class="p-2 text-[11px]"><span class="badge ${ex.cls}">${ex.text}</span><br><span class="text-[10px]">${esc(m.expiry)}</span><br><span class="text-[9px] bg-blue-50 text-blue-700 px-1 py-0.5 rounded">Sold: ${soldQty}</span><br>${editBtn}</td></tr>`; }).join('');
 };
 function getTopSellingIds(){
@@ -551,9 +581,9 @@ function getDeadStockIds(){
   }
   return dead;
 }
-window.deleteMed=async(id)=>{ if(currentUser.shift!=='Admin'){ showModal('Admin Only','Only Admin can delete - V15.9 PRO English.'); return; } const med=meds.find(m=>m.id===id); showModal('Confirm Delete - V15.9 PRO English - Same Shape',`<div class="alert-critical p-3 rounded-xl"><p class="font-bold">Delete ${esc(med?.name||'this')}? - V15.9 PRO English</p><p class="text-[11px]">Favorite: ${esc(med?.favorite)} | Sales Price $${med?.salesPrice} | Cost $${med?.cost} | Qty On Hand ${med?.qty} | Unit ${esc(med?.unit)} | Sold: ${getSoldQtyForMed(med.id)}</p></div>`,true,async()=>{ meds=meds.filter(m=>m.id!==id); localStorage.setItem('gp_meds', JSON.stringify(meds)); if(firebaseEnabled){ try{ await deleteDoc(doc(db,'meds',id)); }catch(e){} } await addAudit('DELETE_MEDICINE_V15_9_PRO_ENGLISH',`Deleted V15.9 PRO English: ${med?.name} - Sales Price $${med?.salesPrice} Cost $${med?.cost} @ Rate ${rate} - Qty On Hand ${med?.qty} - Sold ${getSoldQtyForMed(med.id)}`,0); renderStock(); checkExpiryAlerts(); searchMeds(''); renderReports(); }); };
+window.deleteMed=async(id)=>{ if(currentUser.shift!=='Admin'){ showModal('Admin Only','Only Admin can delete - V16 PRO.'); return; } const med=meds.find(m=>m.id===id); showModal('Confirm Delete - V16 PRO',`<div class="alert-critical p-3 rounded-xl"><p class="font-bold">Delete ${esc(med?.name||'this')}? - V16 PRO</p><p class="text-[11px]">Favorite: ${esc(med?.favorite)} | Sales Price $${med?.salesPrice} | Cost $${med?.cost} | Qty On Hand ${med?.qty} | Unit ${esc(med?.unit)} | Sold: ${getSoldQtyForMed(med.id)}</p></div>`,true,async()=>{ meds=meds.filter(m=>m.id!==id); localStorage.setItem('gp_meds', JSON.stringify(meds)); if(firebaseEnabled){ try{ await deleteDoc(doc(db,'meds',id)); }catch(e){} } await addAudit('DELETE_MEDICINE_V16_PRO',`Deleted V16 PRO: ${med?.name} - Sales Price $${med?.salesPrice} Cost $${med?.cost} @ Rate ${rate} - Qty On Hand ${med?.qty} - Sold ${getSoldQtyForMed(med.id)}`,0); renderStock(); checkExpiryAlerts(); searchMeds(''); renderReports(); }); };
 window.editMed=async(id)=>{
-  if(currentUser.shift!=='Admin'){ showModal('Admin Only','Only Admin can edit - V15.9 PRO English - Same Shape.'); return; }
+  if(currentUser.shift!=='Admin'){ showModal('Admin Only','Only Admin can edit - V16 PRO - Same Shape.'); return; }
   const med=meds.find(m=>m.id===id); if(!med) return;
   const newFav=prompt(`Edit Favorite for:\n${med.name}\nCurrent: ${med.favorite||'Normal'}\nSold: ${getSoldQtyForMed(med.id)}\n(Normal/Warning/Expired)`, med.favorite||'Normal'); if(newFav===null) return;
   const newName=prompt(`Edit Name:\nCurrent: ${med.name}\nSold Qty: ${getSoldQtyForMed(med.id)}`, med.name); if(newName===null) return;
@@ -564,13 +594,13 @@ window.editMed=async(id)=>{
   const newUnit=prompt(`Edit Unit of Measure:\n${med.name}\nCurrent: ${med.unit}\n(e.g. Tube, Bottle, Pkt, Strip, Units)`, med.unit); if(newUnit===null) return;
   const newExpiry=prompt(`Edit Expiry Date:\n${med.name}\nCurrent: ${med.expiry}\nYYYY-MM-DD:`, med.expiry); if(newExpiry===null) return;
   const salesPrice=parseFloat(newSales||'0'); const cost=parseFloat(newCost||'0'); const qty=parseInt(newQty||'0'); const forecast=parseInt(newForecast||qty);
-  if(isNaN(salesPrice) || isNaN(cost) || isNaN(qty)){ showModal('Error','Invalid numbers - V15.9 PRO English.'); return; }
+  if(isNaN(salesPrice) || isNaN(cost) || isNaN(qty)){ showModal('Error','Invalid numbers - V16 PRO.'); return; }
   const oldSales=med.salesPrice; const oldCost=med.cost;
   med.favorite=newFav||'Normal'; med.name=sanitizeStr(newName,100); med.salesPrice=salesPrice; med.cost=cost; med.buy=Math.round(cost*rate); med.sell=Math.round(salesPrice*rate); med.qty=qty; med.forecasted=forecast; med.unit=sanitizeStr(newUnit,20); med.expiry=(newExpiry||'2027-12-31').slice(0,10); med.rateAtEdit=rate;
   localStorage.setItem('gp_meds', JSON.stringify(meds));
   if(firebaseEnabled){ try{ await setDoc(doc(db,'meds',med.id), {...med, ts:serverTimestamp()}); }catch(e){} }
-  await addAudit('EDIT_MEDICINE_V15_9_PRO_ENGLISH',`Edited V15.9 PRO English: ${med.name} - Favorite ${newFav} - Sales Price $${oldSales}-> $${salesPrice} (${(oldSales*rate).toLocaleString()}->${med.sell.toLocaleString()} SSP) - Cost $${oldCost}-> $${cost} (${(oldCost*rate).toLocaleString()}->${med.buy.toLocaleString()} SSP) @ Rate ${rate} - Qty On Hand ${qty} - Forecasted ${forecast} - Unit ${newUnit} - Sold ${getSoldQtyForMed(med.id)} - Profit ${med.sell-med.buy} SSP - V15.9 PRO English`, med.sell-med.buy);
-  renderStock(); checkExpiryAlerts(); searchMeds(''); renderReports(); showConfirmationReport('V15.9 PRO English Updated @ Rate '+rate,`${med.name}\nFavorite: ${newFav}\nSales Price: $${salesPrice} (${med.sell.toLocaleString()} SSP)\nCost: $${cost} (${med.buy.toLocaleString()} SSP)\nProfit: ${(med.sell-med.buy).toLocaleString()} SSP @ Rate ${rate}\nQty On Hand: ${qty}\nForecasted: ${forecast}\nUnit: ${newUnit}\nSold: ${getSoldQtyForMed(med.id)}\nExpiry: ${med.expiry}\nV15.9 PRO English Top Selling + Dead Stock + Refresh`, med.sell-med.buy);
+  await addAudit('EDIT_MEDICINE_V16_PRO',`Edited V16 PRO: ${med.name} - Favorite ${newFav} - Sales Price $${oldSales}-> $${salesPrice} (${(oldSales*rate).toLocaleString()}->${med.sell.toLocaleString()} SSP) - Cost $${oldCost}-> $${cost} @ Rate ${rate} - Qty ${qty} - Sold ${getSoldQtyForMed(med.id)} - Profit ${med.sell-med.buy} SSP`, med.sell-med.buy);
+  renderStock(); checkExpiryAlerts(); searchMeds(''); renderReports(); showConfirmationReport('V16 PRO Updated @ Rate '+rate,`${med.name}\nFavorite: ${newFav}\nSales Price: $${salesPrice} (${med.sell.toLocaleString()} SSP)\nCost: $${cost} (${med.buy.toLocaleString()} SSP)\nProfit: ${(med.sell-med.buy).toLocaleString()} SSP @ Rate ${rate}\nQty On Hand: ${qty}\nForecasted: ${forecast}\nUnit: ${newUnit}\nSold: ${getSoldQtyForMed(med.id)}\nExpiry: ${med.expiry}`, med.sell-med.buy);
 };
 function renderReports(){
   const today=new Date().toISOString().slice(0,10);
@@ -626,7 +656,7 @@ function renderReports(){
   deadStock.sort((a,b)=>b.daysIdle-a.daysIdle);
   const deadStockTop10=deadStock.slice(0,10);
   const setText=(id,txt)=>{ const el=document.getElementById(id); if(el) el.textContent=txt; };
-  setText('repTotalMeds', totalMedsCount.toLocaleString()+' - V15.9 PRO English');
+  setText('repTotalMeds', totalMedsCount.toLocaleString()+' - V16 PRO');
   setText('repTotalMedsQty', totalQty.toLocaleString()+' Units - Same Shape');
   setText('repStockBuy', totalStockBuy.toLocaleString()+' SSP');
   setText('repStockBuyUSD', usd(totalStockBuy)+' USD @ '+rate);
@@ -666,7 +696,7 @@ function renderReports(){
   const topTable=document.getElementById('topSellingTable');
   if(topTable){
     if(topSellingSorted.length===0){
-      topTable.innerHTML='<tr><td colspan="6" class="p-4 text-center text-gray-400">No sales yet - Start selling to see Top 10 Most Sold - V15.9 PRO English</td></tr>';
+      topTable.innerHTML='<tr><td colspan="6" class="p-4 text-center text-gray-400">No sales yet - Start selling to see Top 10 Most Sold - V16 PRO</td></tr>';
     }else{
       topTable.innerHTML=topSellingSorted.map((item,idx)=>{
         const med=meds.find(m=>m.id===item.id);
@@ -678,7 +708,7 @@ function renderReports(){
   const deadTable=document.getElementById('deadStockTable');
   if(deadTable){
     if(deadStockTop10.length===0){
-      deadTable.innerHTML='<tr><td colspan="6" class="p-4 text-center text-gray-400">No dead stock - All medicines sold within 30 days - Excellent! - V15.9 PRO English</td></tr>';
+      deadTable.innerHTML='<tr><td colspan="6" class="p-4 text-center text-gray-400">No dead stock - All medicines sold within 30 days - Excellent! - V16 PRO</td></tr>';
     }else{
       deadTable.innerHTML=deadStockTop10.map((entry,idx)=>{
         const m=entry.med;
@@ -693,28 +723,101 @@ function renderReports(){
   setText('repRate', rate.toLocaleString()+' SSP');
   setText('repRateUSD', rate.toLocaleString());
   const reportRateDisplay=document.getElementById('reportRateDisplay'); if(reportRateDisplay) reportRateDisplay.textContent=rate.toLocaleString();
+
+  // V16 NEW: Monthly Calendar + Chart
+  const year=now.getFullYear(), month=now.getMonth();
+  const monthEnd=new Date(year, month+1, 0);
+  const curMonthEl=document.getElementById('currentMonthLabel');
+  if(curMonthEl) curMonthEl.textContent=now.toLocaleDateString('en-US',{month:'long', year:'numeric'});
+  const dailyMap={};
+  for(let d=1; d<=monthEnd.getDate(); d++){
+    const dateStr=new Date(year, month, d).toISOString().slice(0,10);
+    dailyMap[dateStr]={morning:0, evening:0, total:0, profit:0, count:0};
+  }
+  for(let s of filteredSales){
+    const d=new Date(s.time);
+    if(d.getFullYear()===year && d.getMonth()===month){
+      const key=s.date;
+      if(!dailyMap[key]) dailyMap[key]={morning:0, evening:0, total:0, profit:0, count:0};
+      dailyMap[key].total+=s.total;
+      dailyMap[key].profit+=(s.profit||0);
+      dailyMap[key].count++;
+      if(s.jubaShift==='Morning') dailyMap[key].morning+=s.total;
+      else if(s.jubaShift==='Evening') dailyMap[key].evening+=s.total;
+    }
+  }
+  const mTbody=document.getElementById('monthlyTable');
+  if(mTbody){
+    mTbody.innerHTML=Object.entries(dailyMap).reverse().map(([date, v])=>{
+      const isToday=date===today;
+      return `<tr class="border-b ${isToday?'bg-[#F0FDF4] font-bold':''} hover:bg-gray-50 cursor-pointer" onclick="renderDailyDetail('${date}')">
+        <td class="p-2">${date} ${isToday?'<span class="text-[9px] bg-green-600 text-white px-1 rounded">TODAY</span>':''}</td>
+        <td class="p-2 text-center">${v.morning.toLocaleString()}</td>
+        <td class="p-2 text-center">${v.evening.toLocaleString()}</td>
+        <td class="p-2 text-center font-bold">${v.total.toLocaleString()} SSP</td>
+        <td class="p-2 text-center text-green-600">${v.profit.toLocaleString()}</td>
+        <td class="p-2 text-center">${v.count}</td>
+      </tr>`;
+    }).join('');
+  }
+  const labels=Object.keys(dailyMap).map(d=>d.slice(8));
+  const totals=Object.values(dailyMap).map(v=>v.total);
+  const ctx=document.getElementById('monthlyChart');
+  if(ctx){
+    if(monthlyChartInstance) monthlyChartInstance.destroy();
+    monthlyChartInstance=new Chart(ctx, {
+      type:'bar',
+      data:{labels, datasets:[{label:'Daily Sales SSP', data:totals, backgroundColor:'#0A5C36', borderColor:'#C8A951', borderWidth:1}]},
+      options:{responsive:true, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}}}
+    });
+  }
 }
 window.renderReports=renderReports;
-window.exportReportsCSV=()=>{ let csv="Time,User,Shift,JubaShift,Action,Details,Profit,Rate,Favorite,Name,Internal Reference,Responsible,Sales Price,Cost,Quantity On Hand,Forecasted Quantity,Unit of Measure\n"; let filtered=auditLog; if(currentUser.shift!=='Admin') filtered=auditLog.filter(a=>a.jubaShift===currentUser.shift); filtered.slice(0,500).forEach(a=>{ csv+=`"${a.time}","${a.user}","${a.shift}","${a.jubaShift||''}","${a.action}","${a.details}",${a.profit||0},${a.rate||rate},,,,,,,,\n`; }); const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`Grace_Reports_V15_9_PRO_English_TopSelling_DeadStock_Rate${rate}_${new Date().toISOString().slice(0,10)}.csv`; a.click(); };
-window.clearAudit=()=>{ if(currentUser.shift!=='Admin'){ showModal('Admin Only','Only Admin can clear audit logs.'); return; } showModal('Clear Audit? - V15.9 PRO English','<div class="alert-critical p-3 rounded-xl">Clear all audit logs? - V15.9 PRO English - Top Selling + Dead Stock + Refresh</div>',true,()=>{ auditLog=[]; localStorage.setItem('gp_audit', JSON.stringify(auditLog)); renderReports(); }); };
+window.renderDailyDetail=(dateStr)=>{
+  if(!dateStr) return;
+  const box=document.getElementById('dailyDetailBox');
+  if(!box) return;
+  box.classList.remove('hidden');
+  document.getElementById('detailDate').textContent=dateStr;
+  document.getElementById('detailRate').textContent=rate.toLocaleString();
+  let filtered=sales.filter(s=>s.date===dateStr);
+  if(currentUser.shift!=='Admin') filtered=filtered.filter(s=>s.jubaShift===currentUser.shift);
+  const morning=filtered.filter(s=>s.jubaShift==='Morning');
+  const evening=filtered.filter(s=>s.jubaShift==='Evening');
+  const morningTotal=morning.reduce((a,b)=>a+b.total,0);
+  const eveningTotal=evening.reduce((a,b)=>a+b.total,0);
+  const total=morningTotal+eveningTotal;
+  const profit=filtered.reduce((a,b)=>a+(b.profit||0),0);
+  document.getElementById('detailMorning').textContent=morningTotal.toLocaleString()+' SSP';
+  document.getElementById('detailMorningTrans').textContent=morning.length+' transactions - 8AM-2PM';
+  document.getElementById('detailEvening').textContent=eveningTotal.toLocaleString()+' SSP';
+  document.getElementById('detailEveningTrans').textContent=evening.length+' transactions - 2PM-9PM';
+  document.getElementById('detailTotal').textContent=total.toLocaleString()+' SSP';
+  document.getElementById('detailProfit').textContent=`Profit ${profit.toLocaleString()} SSP | ${filtered.length} trans | USD ${(total/rate).toFixed(2)} $`;
+  const list=document.getElementById('dailySalesList');
+  if(filtered.length===0) list.innerHTML='<tr><td colspan="5" class="p-4 text-center text-gray-400">No sales on this date - V16 PRO</td></tr>';
+  else list.innerHTML=filtered.map(s=>`<tr class="border-b"><td class="p-2 text-[10px]">${new Date(s.time).toLocaleTimeString()}</td><td class="p-2"><b>${esc(s.by)}</b><br><span class="badge ${s.jubaShift==='Morning'?'badge-morning':'badge-evening'} text-[9px]">${esc(s.jubaShift)}</span></td><td class="p-2 text-[10px]">${s.items.map(i=>`${esc(i.name)} x${i.qty}`).join('<br>')}</td><td class="p-2 font-bold">${s.total.toLocaleString()} SSP</td><td class="p-2 text-green-600">${(s.profit||0).toLocaleString()}</td></tr>`).join('');
+};
+window.exportReportsCSV=()=>{ let csv="Time,User,Shift,JubaShift,Action,Details,Profit,Rate,Favorite,Name,Internal Reference,Responsible,Sales Price,Cost,Quantity On Hand,Forecasted Quantity,Unit of Measure\n"; let filtered=auditLog; if(currentUser.shift!=='Admin') filtered=auditLog.filter(a=>a.jubaShift===currentUser.shift); filtered.slice(0,500).forEach(a=>{ csv+=`"${a.time}","${a.user}","${a.shift}","${a.jubaShift||''}","${a.action}","${a.details}",${a.profit||0},${a.rate||rate},,,,,,,,\n`; }); const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`Grace_Reports_V16_PRO_Rate${rate}_${new Date().toISOString().slice(0,10)}.csv`; a.click(); };
+window.clearAudit=()=>{ if(currentUser.shift!=='Admin'){ showModal('Admin Only','Only Admin can clear audit logs.'); return; } showModal('Clear Audit? - V16 PRO','<div class="alert-critical p-3 rounded-xl">Clear all audit logs? - V16 PRO - Auto Rate + Monthly Chart</div>',true,()=>{ auditLog=[]; localStorage.setItem('gp_audit', JSON.stringify(auditLog)); renderReports(); }); };
 function loadShiftReports(){
   const today=new Date().toISOString().slice(0,10);
   const morningSales=sales.filter(s=>s.jubaShift==='Morning' && s.date===today);
   const eveningSales=sales.filter(s=>s.jubaShift==='Evening' && s.date===today);
-  const mSales=document.getElementById('morningSales'); if(mSales) mSales.textContent=morningSales.reduce((s,x)=>s+x.total,0).toLocaleString()+' SSP @ '+rate+' V15.9 PRO English';
+  const mSales=document.getElementById('morningSales'); if(mSales) mSales.textContent=morningSales.reduce((s,x)=>s+x.total,0).toLocaleString()+' SSP @ '+rate+' V16 PRO';
   const mTrans=document.getElementById('morningTrans'); if(mTrans) mTrans.textContent=morningSales.length.toLocaleString();
-  const mProfit=document.getElementById('morningProfit'); if(mProfit) mProfit.textContent=morningSales.reduce((s,x)=>s+(x.profit||0),0).toLocaleString()+' SSP V15.9 PRO English';
-  const eSales=document.getElementById('eveningSales'); if(eSales) eSales.textContent=eveningSales.reduce((s,x)=>s+x.total,0).toLocaleString()+' SSP @ '+rate+' V15.9 PRO English';
+  const mProfit=document.getElementById('morningProfit'); if(mProfit) mProfit.textContent=morningSales.reduce((s,x)=>s+(x.profit||0),0).toLocaleString()+' SSP V16 PRO';
+  const eSales=document.getElementById('eveningSales'); if(eSales) eSales.textContent=eveningSales.reduce((s,x)=>s+x.total,0).toLocaleString()+' SSP @ '+rate+' V16 PRO';
   const eTrans=document.getElementById('eveningTrans'); if(eTrans) eTrans.textContent=eveningSales.length.toLocaleString();
-  const eProfit=document.getElementById('eveningProfit'); if(eProfit) eProfit.textContent=eveningSales.reduce((s,x)=>s+(x.profit||0),0).toLocaleString()+' SSP V15.9 PRO English';
+  const eProfit=document.getElementById('eveningProfit'); if(eProfit) eProfit.textContent=eveningSales.reduce((s,x)=>s+(x.profit||0),0).toLocaleString()+' SSP V16 PRO';
   const currShift=getCurrentShiftByTime();
   const morningStatus=document.getElementById('morningStatus'); const eveningStatus=document.getElementById('eveningStatus');
   if(morningStatus){ morningStatus.textContent=currShift==='Morning'?'ACTIVE NOW 8AM-2PM':'Inactive 8AM-2PM'; morningStatus.className='badge '+(currShift==='Morning'?'badge-morning':'bg-gray-100'); }
   if(eveningStatus){ eveningStatus.textContent=currShift==='Evening'?'ACTIVE NOW 2PM-9PM':'Inactive 2PM-9PM'; eveningStatus.className='badge '+(currShift==='Evening'?'badge-evening':'bg-gray-100'); }
   const tbody=document.getElementById('shiftReportsTable'); if(!tbody) return;
   let filteredReports=shiftReports; if(currentUser.shift!=='Admin'){ filteredReports=shiftReports.filter(r=>r.shift===currentUser.shift); }
-  if(filteredReports.length===0) tbody.innerHTML=`<tr><td colspan="8" class="p-4 text-center text-gray-400">No closed shift reports yet - Rate ${rate} SSP - V15.9 PRO English - Same Shape - ${currentUser.shift!=='Admin'?currentUser.shift+' only - No cross view':'Admin sees all'}</td></tr>`;
-  else tbody.innerHTML=filteredReports.slice(0,50).map(r=>`<tr class="border-b"><td class="p-2 text-[10px]">${new Date(r.closedAt).toLocaleString()}<br>${r.date}</td><td class="p-2"><span class="badge ${r.shift==='Morning'?'badge-morning':'badge-evening'}">${r.shift} ${r.shift==='Morning'?'8AM-2PM':'2PM-9PM'}</span></td><td class="p-2 font-bold">${esc(r.closedBy)}</td><td class="p-2 font-bold">${r.totalSales.toLocaleString()} SSP @ ${r.rate||rate}<br><span class="text-[10px] text-[#C8A951]">${(r.totalSales/(r.rate||rate)).toFixed(2)} $ V15.9 PRO English</span></td><td class="p-2 text-green-600 font-bold">${r.totalProfit.toLocaleString()} SSP V15.9 PRO English</td><td class="p-2 text-center">${r.transactions}</td><td class="p-2">${r.totalExpenses.toLocaleString()} SSP</td><td class="p-2"><span class="badge bg-green-100 text-green-700">Sent to Admin - Rate ${r.rate||rate} - V15.9 PRO English</span></td></tr>`).join('');
+  if(filteredReports.length===0) tbody.innerHTML=`<tr><td colspan="8" class="p-4 text-center text-gray-400">No closed shift reports yet - Rate ${rate} SSP - V16 PRO - Same Shape - ${currentUser.shift!=='Admin'?currentUser.shift+' only - No cross view':'Admin sees all'}</td></tr>`;
+  else tbody.innerHTML=filteredReports.slice(0,50).map(r=>`<tr class="border-b"><td class="p-2 text-[10px]">${new Date(r.closedAt).toLocaleString()}<br>${r.date}</td><td class="p-2"><span class="badge ${r.shift==='Morning'?'badge-morning':'badge-evening'}">${r.shift} ${r.shift==='Morning'?'8AM-2PM':'2PM-9PM'}</span></td><td class="p-2 font-bold">${esc(r.closedBy)}</td><td class="p-2 font-bold">${r.totalSales.toLocaleString()} SSP @ ${r.rate||rate}<br><span class="text-[10px] text-[#C8A951]">${(r.totalSales/(r.rate||rate)).toFixed(2)} $ V16 PRO</span></td><td class="p-2 text-green-600 font-bold">${r.totalProfit.toLocaleString()} SSP V16 PRO</td><td class="p-2 text-center">${r.transactions}</td><td class="p-2">${r.totalExpenses.toLocaleString()} SSP</td><td class="p-2"><span class="badge bg-green-100 text-green-700">Sent to Admin - Rate ${r.rate||rate} - V16 PRO</span></td></tr>`).join('');
 }
 window.loadShiftReports=loadShiftReports;
 window.closeShift=async(shift)=>{
@@ -729,21 +832,24 @@ window.closeShift=async(shift)=>{
   shiftReports.unshift(report);
   localStorage.setItem('gp_shift_reports', JSON.stringify(shiftReports.slice(0,200)));
   if(firebaseEnabled){ try{ await addDoc(collection(db,'shiftReports'), {...report, ts:serverTimestamp()}); }catch(e){} }
-  await addAudit('CLOSE_SHIFT_V15_9_PRO_ENGLISH', `${shift} shift closed - V15.9 PRO English - Top Selling + Dead Stock + Refresh - Same Shape - Sales ${totalSales} SSP @ Rate ${rate} Profit ${totalProfit} SSP - Sent to Admin`, totalProfit);
+  await addAudit('CLOSE_SHIFT_V16_PRO', `${shift} shift closed - V16 PRO - Auto Rate + Monthly Chart - Sales ${totalSales} SSP @ Rate ${rate} Profit ${totalProfit} SSP - Sent to Admin`, totalProfit);
   loadShiftReports(); renderReports();
 };
 window.closeCurrentShift=()=>{ closeShift(getCurrentShiftByTime()); };
-function renderExpenses(){ const tbody=document.getElementById('expTable'); if(!tbody) return; let filtered=expenses; if(currentUser.shift!=='Admin') filtered=expenses.filter(e=>e.shift===currentUser.shift); if(filtered.length===0){ tbody.innerHTML=`<tr><td colspan="6" class="p-4 text-center text-gray-400">No expenses @ Rate ${rate} - V15.9 PRO English - <button onclick="refreshAllData()" class="text-[#0A5C36] underline">Refresh</button></td></tr>`; return; } tbody.innerHTML=filtered.slice(0,100).map(e=>{ const canDelete=currentUser.shift==='Admin'; const delBtn=canDelete?`<button onclick="delExp('${e.id}')" class="text-red-500 text-[10px]">Delete - V15.9 PRO English</button>`:`<span class="text-[10px] bg-gray-100 px-2 py-1 rounded-full">Admin only</span>`; return `<tr class="border-b"><td class="p-2 font-bold">${esc(e.title)}</td><td class="p-2 font-bold">${e.amount.toLocaleString()} SSP @ ${rate} V15.9 PRO English</td><td class="p-2 text-[11px]">${esc(e.date)}</td><td class="p-2"><span class="badge ${e.shift==='Morning'?'badge-morning':'badge-evening'}">${esc(e.shift||'-')}</span></td><td class="p-2 text-[10px]">${esc(e.by||'-')}</td><td class="p-2">${delBtn}</td></tr>`; }).join(''); }
+function renderExpenses(){ const tbody=document.getElementById('expTable'); if(!tbody) return; let filtered=expenses; if(currentUser.shift!=='Admin') filtered=expenses.filter(e=>e.shift===currentUser.shift); if(filtered.length===0){ tbody.innerHTML=`<tr><td colspan="6" class="p-4 text-center text-gray-400">No expenses @ Rate ${rate} - V16 PRO - <button onclick="refreshAllData()" class="text-[#0A5C36] underline">Refresh</button></td></tr>`; return; } tbody.innerHTML=filtered.slice(0,100).map(e=>{ const canDelete=currentUser.shift==='Admin'; const delBtn=canDelete?`<button onclick="delExp('${e.id}')" class="text-red-500 text-[10px]">Delete - V16 PRO</button>`:`<span class="text-[10px] bg-gray-100 px-2 py-1 rounded-full">Admin only</span>`; return `<tr class="border-b"><td class="p-2 font-bold">${esc(e.title)}</td><td class="p-2 font-bold">${e.amount.toLocaleString()} SSP @ ${rate} V16 PRO</td><td class="p-2 text-[11px]">${esc(e.date)}</td><td class="p-2"><span class="badge ${e.shift==='Morning'?'badge-morning':'badge-evening'}">${esc(e.shift||'-')}</span></td><td class="p-2 text-[10px]">${esc(e.by||'-')}</td><td class="p-2">${delBtn}</td></tr>`; }).join(''); }
 window.renderExpenses=renderExpenses;
-window.addExpense=async()=>{ const title=document.getElementById('expTitle').value.trim(); const amount=parseInt(document.getElementById('expAmount').value||0); const date=document.getElementById('expDate').value||new Date().toISOString().slice(0,10); if(!title||!amount){ showModal('Error','Title & Amount required - V15.9 PRO English.'); return; } const exp={id:safeId(), title:sanitizeStr(title,100), amount, date, shift:getCurrentShiftByTime(), by:currentUser.username, time:new Date().toISOString(), rate}; expenses.unshift(exp); localStorage.setItem('gp_expenses', JSON.stringify(expenses.slice(0,500))); if(firebaseEnabled){ try{ await setDoc(doc(db,'expenses',exp.id), {...exp, ts:serverTimestamp()}); }catch(e){} } await addAudit('EXPENSE_V15_9_PRO_ENGLISH', `${title} ${amount} SSP @ Rate ${rate} Shift ${exp.shift} - V15.9 PRO English - Top Selling + Dead Stock + Refresh`,0); renderExpenses(); renderReports(); };
-window.delExp=async(id)=>{ if(currentUser.shift!=='Admin'){ showModal('Admin Only','Only Admin can delete expenses - V15.9 PRO English.'); return; } expenses=expenses.filter(e=>e.id!==id); localStorage.setItem('gp_expenses', JSON.stringify(expenses)); if(firebaseEnabled){ try{ await deleteDoc(doc(db,'expenses',id)); }catch(e){} } await addAudit('DELETE_EXPENSE_V15_9_PRO_ENGLISH',`Deleted expense ${id} @ Rate ${rate} - V15.9 PRO English`,0); renderExpenses(); renderReports(); };
+window.addExpense=async()=>{ const title=document.getElementById('expTitle').value.trim(); const amount=parseInt(document.getElementById('expAmount').value||0); const date=document.getElementById('expDate').value||new Date().toISOString().slice(0,10); if(!title||!amount){ showModal('Error','Title & Amount required - V16 PRO.'); return; } const exp={id:safeId(), title:sanitizeStr(title,100), amount, date, shift:getCurrentShiftByTime(), by:currentUser.username, time:new Date().toISOString(), rate}; expenses.unshift(exp); localStorage.setItem('gp_expenses', JSON.stringify(expenses.slice(0,500))); if(firebaseEnabled){ try{ await setDoc(doc(db,'expenses',exp.id), {...exp, ts:serverTimestamp()}); }catch(e){} } await addAudit('EXPENSE_V16_PRO', `${title} ${amount} SSP @ Rate ${rate} Shift ${exp.shift} - V16 PRO`,0); renderExpenses(); renderReports(); };
+window.delExp=async(id)=>{ if(currentUser.shift!=='Admin'){ showModal('Admin Only','Only Admin can delete expenses - V16 PRO.'); return; } expenses=expenses.filter(e=>e.id!==id); localStorage.setItem('gp_expenses', JSON.stringify(expenses)); if(firebaseEnabled){ try{ await deleteDoc(doc(db,'expenses',id)); }catch(e){} } await addAudit('DELETE_EXPENSE_V16_PRO',`Deleted expense ${id} @ Rate ${rate} - V16 PRO`,0); renderExpenses(); renderReports(); };
 window.soAddRow=()=>{ const tbody=document.getElementById('soTableBody'); const tr=document.createElement('tr'); tr.innerHTML=`<td><input class="inp so-item" placeholder="Name - Same Shape"></td><td><input class="inp so-desc" placeholder="Internal Reference"></td><td><input type="number" class="inp so-qty" placeholder="Qty On Hand" oninput="soCalc()"></td><td><input class="inp so-um" placeholder="Unit of Measure" value="Units"></td><td><input type="number" step="0.01" class="inp so-rate" placeholder="Cost $" oninput="soCalc()"></td><td><input type="number" step="0.01" class="inp so-amount bg-[#FFFBEB]" placeholder="Sales Price $" oninput="soCalc()"></td><td><input type="date" class="inp so-expiry"></td><td><button onclick="this.closest('tr').remove(); soCalc();" class="text-red-500">X</button></td>`; tbody.appendChild(tr); };
-window.soCalc=()=>{ let totalUSD=0; let totalCostUSD=0; document.querySelectorAll('#soTableBody tr').forEach(tr=>{ const qty=parseFloat(tr.querySelector('.so-qty')?.value||0); const costVal=parseFloat(tr.querySelector('.so-rate')?.value||0); const salesVal=parseFloat(tr.querySelector('.so-amount')?.value||0); if(qty>0&&costVal>0&&salesVal===0){ tr.querySelector('.so-amount').value=(costVal*1.3).toFixed(2); } totalCostUSD+=qty*costVal; totalUSD+=qty*(parseFloat(tr.querySelector('.so-amount')?.value||0)); }); document.getElementById('soTotalUSD').textContent='USD '+totalUSD.toFixed(2)+' - Sales Price Total - V15.9 PRO English'; document.getElementById('soTotalSSP').textContent=(totalUSD*rate).toLocaleString()+' SSP @ '+rate.toLocaleString()+' - Cost $'+totalCostUSD.toFixed(2)+' = '+(totalCostUSD*rate).toLocaleString()+' SSP'; };
+window.soCalc=()=>{ let totalUSD=0; let totalCostUSD=0; document.querySelectorAll('#soTableBody tr').forEach(tr=>{ const qty=parseFloat(tr.querySelector('.so-qty')?.value||0); const costVal=parseFloat(tr.querySelector('.so-rate')?.value||0); const salesVal=parseFloat(tr.querySelector('.so-amount')?.value||0); if(qty>0&&costVal>0&&salesVal===0){ tr.querySelector('.so-amount').value=(costVal*1.3).toFixed(2); } totalCostUSD+=qty*costVal; totalUSD+=qty*(parseFloat(tr.querySelector('.so-amount')?.value||0)); }); document.getElementById('soTotalUSD').textContent='USD '+totalUSD.toFixed(2)+' - Sales Price Total - V16 PRO'; document.getElementById('soTotalSSP').textContent=(totalUSD*rate).toLocaleString()+' SSP @ '+rate.toLocaleString()+' - Cost $'+totalCostUSD.toFixed(2)+' = '+(totalCostUSD*rate).toLocaleString()+' SSP'; };
 window.clearSalesOrder=()=>{ document.getElementById('soTableBody').innerHTML=''; for(let i=0;i<3;i++) soAddRow(); soCalc(); };
-window.saveSalesOrder=async()=>{ const rows=document.querySelectorAll('#soTableBody tr'); let saved=0; const profit=parseFloat(document.getElementById('soProfit').value||30); for(const tr of rows){ const item=tr.querySelector('.so-item').value.trim(); const qty=parseInt(tr.querySelector('.so-qty').value||0); if(!item||!qty) continue; const costVal=parseFloat(tr.querySelector('.so-rate').value||0); const salesVal=parseFloat(tr.querySelector('.so-amount').value||0); if(costVal<=0 && salesVal<=0) continue; const expiry=tr.querySelector('.so-expiry').value||'2027-12-31'; const internal=tr.querySelector('.so-desc').value||''; const unit=tr.querySelector('.so-um').value||'Units'; const finalCost=costVal>0?costVal:(salesVal>0?salesVal/1.3:0); const finalSales=salesVal>0?salesVal:(costVal>0?costVal*1.3:0); const buySSP=Math.round(finalCost*rate); const sellSSP=Math.round(finalSales*rate); const med={id:safeId(), favorite:'Normal', name:sanitizeStr(item,100), internalRef:sanitizeStr(internal,50), responsible:'Administrator', salesPrice:finalSales, cost:finalCost, buy:buySSP, sell:sellSSP, qty, forecasted:qty, unit:sanitizeStr(unit,20), barcode:'AUTO-'+safeId(), expiry, by:currentUser.username, date:new Date().toISOString(), rateAtAdd: rate}; if(firebaseEnabled){ try{ await setDoc(doc(db,'meds',med.id), {...med, ts:serverTimestamp()}); }catch(e){} } meds.unshift(med); saved++; } localStorage.setItem('gp_meds', JSON.stringify(meds)); await addAudit('SALES_ORDER_V15_9_PRO_ENGLISH',`Saved ${saved} items @ Rate ${rate} SSP - V15.9 PRO English - Top Selling + Dead Stock + Refresh - Same Shape: Name | Internal Ref | Qty On Hand | Unit | Cost $ | Sales Price $ | Profit ${profit}% - Firebase`,0); renderStock(); checkExpiryAlerts(); searchMeds(''); renderReports(); };
-function updateLiveTime(){ const el=document.getElementById('liveTime'); if(el) el.textContent=formatJubaTime()+' | Shift: '+getCurrentShiftByTime()+' 8AM-2PM/2PM-9PM | Rate '+rate.toLocaleString()+' V15.9 PRO English'; const banner=document.getElementById('shiftBanner'); if(banner){ const curr=getCurrentShiftByTime(); banner.innerHTML=`<span>${curr} Shift Active: ${getShiftTimeRange(curr)} | ${formatJubaTime()} | Rate ${rate.toLocaleString()} SSP | V15.9 PRO English - Top Selling + Dead Stock + Daily/Weekly/Monthly + Total + Refresh + Same Shape - Firebase Sync</span><span class="badge ${curr==='Morning'?'badge-morning':'badge-evening'}">ACTIVE NOW ${curr==='Morning'?'8AM-2PM':'2PM-9PM'}</span>`; banner.classList.remove('hidden'); } const currentShiftDisplay=document.getElementById('currentShiftDisplay'); if(currentShiftDisplay){ const curr=getCurrentShiftByTime(); currentShiftDisplay.textContent=curr+' '+getShiftTimeRange(curr); currentShiftDisplay.className='text-[10px] px-2 py-1 rounded-full font-bold '+(curr==='Morning'?'badge-morning':'badge-evening'); } }
+window.saveSalesOrder=async()=>{ const rows=document.querySelectorAll('#soTableBody tr'); let saved=0; const profit=parseFloat(document.getElementById('soProfit').value||30); for(const tr of rows){ const item=tr.querySelector('.so-item').value.trim(); const qty=parseInt(tr.querySelector('.so-qty').value||0); if(!item||!qty) continue; const costVal=parseFloat(tr.querySelector('.so-rate').value||0); const salesVal=parseFloat(tr.querySelector('.so-amount').value||0); if(costVal<=0 && salesVal<=0) continue; const expiry=tr.querySelector('.so-expiry').value||'2027-12-31'; const internal=tr.querySelector('.so-desc').value||''; const unit=tr.querySelector('.so-um').value||'Units'; const finalCost=costVal>0?costVal:(salesVal>0?salesVal/1.3:0); const finalSales=salesVal>0?salesVal:(costVal>0?costVal*1.3:0); const buySSP=Math.round(finalCost*rate); const sellSSP=Math.round(finalSales*rate); const med={id:safeId(), favorite:'Normal', name:sanitizeStr(item,100), internalRef:sanitizeStr(internal,50), responsible:'Administrator', salesPrice:finalSales, cost:finalCost, buy:buySSP, sell:sellSSP, qty, forecasted:qty, unit:sanitizeStr(unit,20), barcode:'AUTO-'+safeId(), expiry, by:currentUser.username, date:new Date().toISOString(), rateAtAdd: rate}; if(firebaseEnabled){ try{ await setDoc(doc(db,'meds',med.id), {...med, ts:serverTimestamp()}); }catch(e){} } meds.unshift(med); saved++; } localStorage.setItem('gp_meds', JSON.stringify(meds)); await addAudit('SALES_ORDER_V16_PRO',`Saved ${saved} items @ Rate ${rate} SSP - V16 PRO - Auto Rate Update - Same Shape: Name | Internal Ref | Qty On Hand | Unit | Cost $ | Sales Price $ | Profit ${profit}% - Firebase`,0); renderStock(); checkExpiryAlerts(); searchMeds(''); renderReports(); };
+function updateLiveTime(){ const el=document.getElementById('liveTime'); if(el) el.textContent=formatJubaTime()+' | Shift: '+getCurrentShiftByTime()+' 8AM-2PM/2PM-9PM | Rate '+rate.toLocaleString()+' V16 PRO Auto UpdateContinue Part 4/4 - paste this right after where it stopped to complete V16:
+
+```html
+ | V16 PRO Auto Update All Meds</span><span class="badge ${curr==='Morning'?'badge-morning':'badge-evening'}">ACTIVE NOW ${curr==='Morning'?'8AM-2PM':'2PM-9PM'}</span>`; banner.classList.remove('hidden'); } const currentShiftDisplay=document.getElementById('currentShiftDisplay'); if(currentShiftDisplay){ const curr=getCurrentShiftByTime(); currentShiftDisplay.textContent=curr+' '+getShiftTimeRange(curr); currentShiftDisplay.className='text-[10px] px-2 py-1 rounded-full font-bold '+(curr==='Morning'?'badge-morning':'badge-evening'); } }
 setInterval(updateLiveTime, 60000);
-if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js').then(()=>console.log('SW V15.9 PRO English - Top Selling + Dead Stock + Refresh + POS Fixed - Same Shape Registered')).catch(()=>{}); }
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js').then(()=>console.log('SW V16 PRO Auto Rate + Monthly Chart Registered')).catch(()=>{}); }
 (async function init(){ if(!currentUser){ document.getElementById('login').classList.remove('hidden'); document.getElementById('app').classList.add('hidden'); updateLiveTime(); await loadRateFromFirebase(); return; } document.getElementById('login').classList.add('hidden'); document.getElementById('app').classList.remove('hidden'); document.getElementById('userBadge').textContent=currentUser.username; document.getElementById('shiftBadge').textContent=currentUser.shift+' - '+getShiftTimeRange(currentUser.shift); document.getElementById('shiftBadge').className='badge '+(currentUser.shift==='Morning'?'badge-morning':currentUser.shift==='Evening'?'badge-evening':'badge-admin'); document.getElementById('rCashier').textContent=currentUser.username; document.getElementById('rShift').textContent=currentUser.shift; document.getElementById('rShiftTime').textContent=getShiftTimeRange(currentUser.shift); await loadRateFromFirebase(); await loadMedsFB(); for(let i=0;i<3;i++) soAddRow(); renderStock(); renderReports(); renderExpenses(); loadShiftReports(); showTab('pos'); updateLiveTime(); checkExpiryAlerts(); searchMeds(''); })();
 </script>
 </body>
