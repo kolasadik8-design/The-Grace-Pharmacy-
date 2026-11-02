@@ -1,48 +1,13 @@
-const CACHE_NAME = 'grace-pharmacy-v15-9-pro-english-top-selling-dead-stock-refresh-pos-fixed-same-shape-rate-8000';
-const urlsToCache = [
-  './',
-  './index.html',
-  './manifest.json',
-  './logo.png'
-];
-
+const CACHE_NAME = 'grace-pharmacy-v16-pro-auto-rate-monthly-chart-daily-search';
+const urlsToCache = ['./','./index.html','./manifest.json','./logo.png'];
 self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Opened cache V15.9 PRO FINAL English - Top Selling + Dead Stock + Refresh + POS Fixed - Same Shape - Rate 8000 - 100% English - Code Corrected - Cart Added - Auto 20 items');
-        return cache.addAll(urlsToCache);
-      })
-  );
+  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache)));
   self.skipWaiting();
 });
-
 self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
-      }
-    )
-  );
+  event.respondWith(caches.match(event.request).then(r=>r||fetch(event.request)));
 });
-
 self.addEventListener('activate', event => {
-  const cacheWhitelist = [CACHE_NAME];
-  event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            console.log('Deleting old cache V15.6/V15.7/V15.7.1/V15.8/V15.9 Arabic:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
+  event.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>{ if(k!==CACHE_NAME) return caches.delete(k); }))));
   self.clients.claim();
 });
