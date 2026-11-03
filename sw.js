@@ -1,13 +1,11 @@
-const CACHE_NAME = 'grace-pharmacy-v16-1-single-rate-daily-report-auto-clear';
+const CACHE_NAME = 'grace-pharmacy-v16-2-clean';
 const urlsToCache = [
   './',
   './index.html',
-  './logo.png',
   './manifest.json'
 ];
 
 self.addEventListener('install', event => {
-  console.log('SW V16.1 Installing - Single Rate Place');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
@@ -18,13 +16,11 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('activate', event => {
-  console.log('SW V16.1 Activating');
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
           if (cacheName !== CACHE_NAME) {
-            console.log('Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
@@ -42,8 +38,8 @@ self.addEventListener('fetch', event => {
           return response;
         }
         return fetch(event.request).catch(() => {
-          // لو offline وما لقيناها في الكاش
-          if (event.request.destination === 'document') {
+          // Offline fallback - return cached index
+          if (event.request.mode === 'navigate') {
             return caches.match('./index.html');
           }
         });
