@@ -1,21 +1,21 @@
 {
-  "name": "The Grace Pharmacy - V16.1 - Single Rate Place + Daily Report Same Shape",
-  "short_name": "Grace Pharmacy V16.1",
-  "description": "The Grace Pharmacy Juba - V16.1 PRO - Single Place for Rate - Daily Report Same Shape as Image - Auto Clear Input - Firebase Sync",
+  "name": "The Grace Pharmacy",
+  "short_name": "Grace Pharmacy",
+  "description": "The Grace Pharmacy POS - V16.2 Clean - Juba Time",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0A5C36",
+  "background_color": "#F5F5DC",
   "theme_color": "#0A5C36",
-  "orientation": "portrait",
+  "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "logo.png",
+      "src": "https://cdn-icons-png.flaticon.com/512/2966/2966327.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "logo.png",
+      "src": "https://cdn-icons-png.flaticon.com/512/2966/2966327.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
