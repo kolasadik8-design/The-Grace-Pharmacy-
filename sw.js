@@ -1,8 +1,8 @@
-// The Grace Pharmacy - V18.1 Accounting - Safe SW - No Data Delete - Professional
-const CACHE_NAME = 'grace-v18-1-accounting-safe-v1';
+// The Grace Pharmacy - V18.2.1 Professional Fix - Alerts 60 Days + Chart Restored + Edit Medicine Restored - Safe SW - No Data Delete
+const CACHE_NAME = 'grace-v18-2-1-fix-alerts-chart-edit-professional-safe-v1';
 self.addEventListener('install', (event) => {
   self.skipWaiting();
-  console.log('Grace Pharmacy V18.1 - Accounting - SW Installed - Safe');
+  console.log('Grace Pharmacy V18.2.1 Fix - Alerts 60d + Chart + Edit Medicine + Add Medicine + Purchase + Expenses + Debts - SW Installed - Safe - No Data Loss');
 });
 self.addEventListener('activate', (event) => {
   event.waitUntil(
