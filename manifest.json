@@ -1,7 +1,7 @@
 {
-  "name": "The Grace Pharmacy - Professional V18.1 - Accounting",
+  "name": "The Grace Pharmacy - V18.2.1 Professional Fix - Alerts 60 Days",
   "short_name": "Grace Pharmacy",
-  "description": "The Grace Pharmacy - Professional System with Debts and Expenses Accounting - Juba, South Sudan",
+  "description": "The Grace Pharmacy - Professional Pharmacy System with 60 Days Expiry Alerts, Low Stock Finish Alerts, Monthly Sales Chart, Expenses and Debts Accounting - Juba, South Sudan",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
