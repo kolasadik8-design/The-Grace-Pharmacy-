@@ -3,482 +3,225 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>The Grace Pharmacy - Professional V18.1 Accounting</title>
+<title>The Grace Pharmacy - V18.2 Alerts</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0A5C36">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-:root{ --primary:#0A5C36; --secondary:#0E8CA2; --accent:#C8A951; --bg:#F8FAF9; }
-body{background:var(--bg); font-family: Inter, system-ui, sans-serif;}
-.card{background:#fff;border-radius:16px;border:1px solid #e5e7eb;box-shadow:0 2px 12px rgba(0,0,0,0.04)}
-.inp{border:1px solid #d1d5db;border-radius:10px;padding:10px 12px;width:100%;font-size:14px;outline:none;background:#fff}
-.inp:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(10,92,54,0.1)}
-.btn{background:var(--primary);color:#fff;border-radius:10px;padding:10px 18px;font-size:14px;font-weight:600;cursor:pointer;transition:0.2s}
-.btn:hover{background:#084a2b}
-.badge{padding:4px 10px;border-radius:999px;font-size:11px;font-weight:600}
-.badge-morning{background:#FEF3C7;color:#92400E}
-.badge-evening{background:#EDE9FE;color:#5B21B6}
-.badge-admin{background:var(--primary);color:#fff}
+:root{ --primary:#0A5C36; --accent:#C8A951; --bg:#F8FAF9; }
+body{background:var(--bg); font-family: Inter, sans-serif;}
+.card{background:#fff;border-radius:14px;border:1px solid #e5e7eb;box-shadow:0 1px 6px rgba(0,0,0,0.04)}
+.inp{border:1px solid #d1d5db;border-radius:8px;padding:8px 10px;width:100%;font-size:13px;outline:none}
+.btn{background:var(--primary);color:#fff;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer}
+.badge{padding:3px 8px;border-radius:999px;font-size:10px;font-weight:600}
 .tabA{background:var(--primary)!important;color:#fff!important}
 .tabN{background:#fff;color:#374151;border:1px solid #e5e7eb}
-.qty-btn{width:32px;height:32px;border-radius:8px;border:1px solid #d1d5db;background:#fff;font-weight:700;cursor:pointer}
-.qty-btn:hover{background:var(--primary);color:#fff}
-.qty-input{width:50px;text-align:center;border:1px solid #d1d5db;border-radius:8px;padding:4px;font-weight:700}
+.alert-card{cursor:pointer;transition:0.2s}
+.alert-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.1)}
+.clickable{cursor:pointer}
+.clickable:hover{opacity:0.9;transform:translateY(-1px)}
 </style>
 </head>
 <body>
-<div id="customModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-<div class="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl">
-<h3 id="modalTitle" class="font-bold text-[16px] text-[#0A5C36]"></h3>
-<div id="modalBody" class="mt-3 text-[14px] text-gray-700"></div>
-<div class="flex justify-end gap-2 mt-5">
-<button id="modalCancel" onclick="closeModal(false)" class="hidden border px-4 py-2 rounded-full text-[13px]">Cancel</button>
-<button onclick="closeModal(true)" class="btn">Confirm</button>
+<div id="login" class="min-h-screen flex items-center justify-center p-4">
+<div class="card p-7 w-full max-w-sm">
+<div class="text-center"><img src="logo.png" class="w-[70px] h-[70px] mx-auto rounded-xl border" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2966/2966327.png'"><h1 class="font-bold text-[#0A5C36] text-[20px] mt-3">The Grace Pharmacy</h1><p class="text-[10px] text-gray-400">V18.2 • ALERTS • JUBA</p></div>
+<div class="mt-6 space-y-3"><input id="u" placeholder="Username" class="inp"><input id="p" type="password" placeholder="Password" class="inp"><button onclick="doLogin()" class="btn w-full py-3">Login</button><p id="loginError" class="hidden p-2 rounded bg-red-50 text-red-600 text-[12px] text-center"></p></div>
 </div>
 </div>
-</div>
-<div id="login" class="min-h-screen flex items-center justify-center p-4 bg-[#F8FAF9]">
-<div class="card p-8 w-full max-w-sm">
-<div class="flex flex-col items-center">
-<img src="logo.png" class="w-[90px] h-[90px] rounded-2xl object-contain border p-2 bg-white" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2966/2966327.png'">
-<h1 class="font-bold text-[#0A5C36] text-[22px] mt-4">The Grace Pharmacy</h1>
-<p class="text-[11px] text-gray-400 tracking-widest mt-1">JUBA • SOUTH SUDAN • V18.1 ACCOUNTING</p>
-</div>
-<div class="mt-8 space-y-4">
-<input id="u" placeholder="Username" class="inp py-3">
-<div class="relative"><input id="p" type="password" placeholder="Password" class="inp py-3 pr-10"><span onclick="togglePass()" class="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400">👁️</span></div>
-<button onclick="doLogin()" class="btn w-full py-3.5 text-[15px]">Login</button>
-<p id="loginError" class="hidden p-3 rounded-xl bg-red-50 text-red-600 text-[13px] text-center border border-red-100"></p>
-</div>
-</div>
-</div>
+
 <div id="app" class="hidden">
 <header class="bg-white border-b sticky top-0 z-20">
-<div class="max-w-[1450px] mx-auto px-4 py-3 flex justify-between items-center flex-wrap gap-3">
-<div class="flex items-center gap-3">
-<img src="logo.png" class="w-9 h-9 rounded-xl border p-1" onerror="this.style.display='none'">
-<span class="font-bold text-[#0A5C36]">The Grace Pharmacy</span>
-<span id="userBadge" class="badge bg-gray-100"></span>
-<span id="liveTime" class="text-[11px] text-gray-500 font-mono"></span>
-</div>
-<div class="flex gap-1.5 flex-wrap items-center">
-<button onclick="editRate()" id="rateBadgeHeader" class="badge bg-[#0A5C36] text-white px-3 py-1.5">Rate: 8000 SSP</button>
-<button data-tab="pos" onclick="showTab('pos')" class="tab-btn px-4 py-2 rounded-full text-[13px] tabA">POS</button>
-<button data-tab="stock" onclick="showTab('stock')" class="tab-btn px-4 py-2 rounded-full text-[13px] tabN">Stock</button>
-<button data-tab="reports" onclick="showTab('reports')" class="tab-btn px-4 py-2 rounded-full text-[13px] tabN">Reports</button>
-<button data-tab="expenses" onclick="showTab('expenses')" class="tab-btn px-4 py-2 rounded-full text-[13px] tabN">Expenses</button>
-<button data-tab="debts" onclick="showTab('debts')" class="tab-btn px-4 py-2 rounded-full text-[13px] tabN bg-[#EFF6FF] border-blue-200">Debts</button>
-<button data-tab="shifts" onclick="showTab('shifts')" class="tab-btn px-4 py-2 rounded-full text-[13px] tabN">Shifts</button>
-<button data-tab="purchases" onclick="showTab('purchases')" class="tab-btn px-4 py-2 rounded-full text-[13px] tabN bg-[#FFFBEB]">Purchase</button>
-<button onclick="doLogout()" class="text-[12px] text-red-500 ml-2">Logout</button>
+<div class="max-w-[1400px] mx-auto px-3 py-2 flex justify-between items-center flex-wrap gap-2">
+<div class="flex items-center gap-2"><span class="font-bold text-[#0A5C36] text-[14px]">Grace Pharmacy</span><span id="userBadge" class="badge bg-gray-100"></span><span id="liveTime" class="text-[10px] text-gray-500 font-mono"></span></div>
+<div class="flex gap-1 flex-wrap items-center">
+<button onclick="editRate()" id="rateBadgeHeader" class="badge bg-[#0A5C36] text-white">8000 SSP</button>
+<button data-tab="pos" onclick="showTab('pos')" class="tab-btn px-3 py-1.5 rounded-full text-[12px] tabA">POS</button>
+<button data-tab="stock" onclick="showTab('stock')" class="tab-btn px-3 py-1.5 rounded-full text-[12px] tabN">Stock</button>
+<button data-tab="reports" onclick="showTab('reports')" class="tab-btn px-3 py-1.5 rounded-full text-[12px] tabN">Reports</button>
+<button data-tab="expenses" onclick="showTab('expenses')" class="tab-btn px-3 py-1.5 rounded-full text-[12px] tabN">Expenses</button>
+<button data-tab="debts" onclick="showTab('debts')" class="tab-btn px-3 py-1.5 rounded-full text-[12px] tabN">Debts</button>
+<button data-tab="shifts" onclick="showTab('shifts')" class="tab-btn px-3 py-1.5 rounded-full text-[12px] tabN">Shifts</button>
+<button onclick="doLogout()" class="text-[11px] text-red-500 ml-1">Logout</button>
 </div>
 </div>
 </header>
-<main class="max-w-[1450px] mx-auto p-4"><div id="tab-pos" class="tab-content">
-<div class="grid lg:grid-cols-[1.7fr_.9fr] gap-4">
-<div class="card p-4">
-<div class="flex justify-between items-center mb-4"><h3 class="font-bold text-[#0A5C36] text-[15px]">Search Medicine</h3><span id="posRate" class="badge bg-[#0A5C36] text-white">8000 SSP</span></div>
-<input id="searchMed" oninput="searchMeds(this.value)" placeholder="Search medicine name..." class="inp py-3 border-2 border-[#0A5C36]/20">
-<div id="medsList" class="grid md:grid-cols-2 gap-3 mt-4 max-h-[65vh] overflow-auto"></div>
-</div>
-<div class="card p-4 border-t-4 border-[#0A5C36]">
-<div class="flex justify-between items-center"><h3 class="font-bold text-[#0A5C36]">Shopping Cart</h3><span id="cartCount" class="bg-[#0A5C36] text-white w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-bold">0</span></div>
-<div id="cartList" class="mt-4 space-y-2"></div>
-<div class="border-t-2 border-dashed mt-4 pt-4 space-y-2">
-<div class="flex justify-between font-bold text-[16px]"><span>Total</span><span id="cartTotal">0 SSP</span></div>
-<div class="flex justify-between text-[13px] text-gray-500"><span>USD Equivalent</span><span id="cartTotalUSD">$0</span></div>
-<div class="flex justify-between text-[12px] text-green-700"><span>Profit</span><span id="cartProfit">0 SSP</span></div>
-<div class="grid grid-cols-2 gap-2 mt-4"><button onclick="clearCart()" class="border border-red-200 bg-red-50 text-red-600 rounded-xl py-3 font-bold text-[13px]">Clear</button><button onclick="checkout()" class="btn py-3">Checkout</button></div>
-</div>
-</div>
+<main class="max-w-[1400px] mx-auto p-3">
+
+<!-- POS -->
+<div id="tab-pos" class="tab-content">
+<div class="grid lg:grid-cols-[1.6fr_.9fr] gap-3">
+<div class="card p-3"><div class="flex justify-between items-center mb-2"><h3 class="font-bold text-[#0A5C36] text-[13px]">Search</h3><span id="posRate" class="badge bg-[#0A5C36] text-white">8000 SSP</span></div><input id="searchMed" oninput="searchMeds(this.value)" placeholder="Search..." class="inp py-2"><div id="medsList" class="grid md:grid-cols-2 gap-2 mt-3 max-h-[65vh] overflow-auto"></div></div>
+<div class="card p-3 border-t-4 border-[#0A5C36]"><div class="flex justify-between"><h3 class="font-bold text-[13px]">Cart</h3><span id="cartCount" class="bg-[#0A5C36] text-white w-6 h-6 rounded-full flex items-center justify-center text-[11px]">0</span></div><div id="cartList" class="mt-3 space-y-2"></div><div class="border-t-2 border-dashed mt-3 pt-3 space-y-1"><div class="flex justify-between font-bold text-[14px]"><span>Total</span><span id="cartTotal">0 SSP</span></div><div class="flex justify-between text-[11px] text-gray-500"><span>USD</span><span id="cartTotalUSD">$0</span></div><div class="flex justify-between text-[11px] text-green-700"><span>Profit</span><span id="cartProfit">0 SSP</span></div><div class="grid grid-cols-2 gap-2 mt-2"><button onclick="clearCart()" class="border bg-red-50 text-red-600 rounded-lg py-2 text-[12px]">Clear</button><button onclick="checkout()" class="btn py-2">Checkout</button></div></div></div>
 </div>
 </div>
 
+<!-- STOCK -->
 <div id="tab-stock" class="tab-content hidden">
-<div class="card p-4 mb-4">
-<div class="flex justify-between items-center flex-wrap gap-3">
-<div><h3 class="font-bold text-[#0A5C36]">Stock Control</h3><p class="text-[11px] text-gray-500 mt-1">1$ = <span id="rateInputDisplay">8000</span> SSP • <span id="medsCountDisplay">0</span> items</p></div>
-<button onclick="editRate()" class="btn text-[12px]">Edit Rate</button>
-</div>
-</div>
-<div class="card p-4 mb-4">
-<div class="flex gap-2"><input type="file" id="bulkFile" accept=".csv,.xlsx,.xls" class="inp text-[12px]"><button onclick="importBulk()" class="btn text-[13px]">Import</button><button onclick="downloadTemplate()" class="text-[11px] border px-3 py-2 rounded-full">Template</button></div>
-<p id="importMsg" class="hidden mt-2 p-2 rounded text-[12px] bg-green-50 border"></p>
-</div>
-<div class="card p-5">
-<h3 class="font-bold text-[#0A5C36] mb-3">Add Medicine</h3>
-<div class="grid md:grid-cols-5 gap-2">
-<input id="mFav" placeholder="Favorite" class="inp" value="Normal"><input id="mName" placeholder="Name *" class="inp"><input id="mInternal" placeholder="Internal Ref" class="inp"><input id="mResp" placeholder="Responsible" class="inp" value="Administrator"><input id="mSales" type="number" step="0.01" placeholder="Sales $ *" class="inp">
-<input id="mCost" type="number" step="0.01" placeholder="Cost $" class="inp"><input id="mQty" type="number" placeholder="Qty" class="inp"><input id="mForecast" type="number" placeholder="Forecasted" class="inp"><input id="mUnit" placeholder="Unit" class="inp"><input id="mExpiry" type="date" class="inp">
-<button onclick="addMed()" class="btn md:col-span-5 py-3">Save Medicine</button>
-</div>
-</div>
-<div class="card p-4 mt-4">
-<div class="flex justify-between items-center mb-3"><h3 class="font-bold text-[#0A5C36]">Stock List</h3><div class="flex gap-2"><select id="expiryFilter" onchange="renderStock(document.getElementById('stockSearch').value)" class="inp w-auto text-[12px]"><option value="All">All</option><option value="LowStock">Low Stock</option><option value="Expired">Expired</option></select><input id="stockSearch" oninput="renderStock(this.value)" placeholder="Search..." class="inp w-[140px] text-[12px]"></div></div>
-<div class="overflow-x-auto"><table class="w-full text-[12px]"><thead class="bg-gray-50 text-gray-600"><tr><th class="p-3 text-left">Name</th><th class="p-3">Sales</th><th class="p-3">Cost / Profit</th><th class="p-3">Qty</th><th class="p-3">Expiry</th><th class="p-3">Action</th></tr></thead><tbody id="stockTable"></tbody></table></div>
-</div>
-</div><div id="tab-reports" class="tab-content hidden">
-<div class="grid md:grid-cols-4 gap-3 mb-4">
-<div class="card p-4 text-center"><p class="text-[11px] text-gray-500">Total Medicines</p><p id="repTotalMeds" class="font-bold text-[20px]">0</p></div>
-<div class="card p-4 text-center"><p class="text-[11px] text-gray-500">Stock Buy Value</p><p id="repStockBuy" class="font-bold text-red-600">0</p></div>
-<div class="card p-4 text-center"><p class="text-[11px] text-gray-500">Stock Sell Value</p><p id="repStockSell" class="font-bold text-green-600">0</p></div>
-<div class="card p-4 text-center bg-[#0A5C36] text-white"><p class="text-[11px] opacity-80">Expected Profit</p><p id="repStockProfit" class="font-bold text-[18px] text-[#C8A951]">0</p></div>
-</div>
-<div class="grid md:grid-cols-3 gap-3 mb-4">
-<div class="card p-4 bg-[#0A5C36] text-white"><p class="text-[11px]">Today Sales</p><p id="repTodaySSP" class="font-bold text-[18px]">0 SSP</p><p id="repTodayProfit" class="text-[11px] text-[#C8A951]">0 Gross • 0 Net</p><p id="repTodayCount" class="text-[10px] opacity-70">0</p></div>
-<div class="card p-4 bg-[#1E40AF] text-white"><p class="text-[11px]">Last 7 Days</p><p id="repWeekSSP" class="font-bold text-[18px]">0 SSP</p><p id="repWeekProfit" class="text-[11px] opacity-80">0 Gross</p><p id="repWeekCount" class="text-[10px] opacity-70">0</p></div>
-<div class="card p-4 bg-[#5B21B6] text-white"><p class="text-[11px]">This Month</p><p id="repMonthSSP" class="font-bold text-[18px]">0 SSP</p><p id="repMonthProfit" class="text-[11px] opacity-80">0 Gross</p><p id="repMonthCount" class="text-[10px] opacity-70">0</p></div>
-</div>
-<div class="card p-4">
-<h3 class="font-bold text-[#0A5C36] mb-3">Daily Sales Report - Expenses Deducted</h3>
-<div class="flex gap-2 mb-3"><input id="dailyReportDate" type="date" class="inp w-auto text-[12px]"><button onclick="renderDailyReportSameShape(document.getElementById('dailyReportDate').value)" class="btn text-[11px]">Show</button><button onclick="renderDailyReportSameShape(new Date().toISOString().slice(0,10))" class="border px-3 py-2 rounded-full text-[11px]">Today</button></div>
-<div class="overflow-x-auto"><table class="w-full text-[11px]"><thead class="bg-[#0A5C36] text-white"><tr><th class="p-2 text-left">#</th><th class="p-2 text-left">Name</th><th class="p-2">Qty</th><th class="p-2">Sales</th><th class="p-2">Profit</th><th class="p-2">Stock</th></tr></thead><tbody id="dailyReportTableSameShape"></tbody></table></div>
-</div>
-<div class="card p-4 mt-4">
-<h3 class="font-bold text-[#0A5C36] mb-3">Monthly Calendar - Accounting</h3>
-<div class="grid md:grid-cols-2 gap-4"><div class="overflow-auto max-h-[40vh] border rounded-xl"><table class="w-full text-[11px]"><thead class="bg-[#0A5C36] text-white sticky top-0"><tr><th class="p-2 text-left">Date</th><th>Morning</th><th>Evening</th><th>Total</th><th>Profit (Net)</th></tr></thead><tbody id="monthlyTable"></tbody></table></div><div><canvas id="monthlyChart" style="max-height:300px"></canvas></div></div>
-<div id="dailyDetailBox" class="hidden mt-4 p-4 bg-[#FFFBEB] border rounded-xl"></div>
-</div>
+<div class="card p-3 mb-3 flex justify-between items-center"><div><h3 class="font-bold text-[13px]">Stock</h3><p class="text-[10px] text-gray-500">1$ = <span id="rateInputDisplay">8000</span> SSP • <span id="medsCountDisplay">0</span> items</p></div><div class="flex gap-1"><button onclick="editRate()" class="btn text-[11px]">Rate</button><input id="stockSearch" oninput="renderStock(this.value)" placeholder="Search..." class="inp w-[120px] text-[11px]"><select id="expiryFilter" onchange="renderStock(document.getElementById('stockSearch').value)" class="inp w-auto text-[11px]"><option value="All">All</option><option value="LowStock">Low Stock</option><option value="Expiring60">Expiring ≤60d</option><option value="Expired">Expired</option></select></div></div>
+<div class="card p-3"><div class="overflow-x-auto"><table class="w-full text-[11px]"><thead class="bg-gray-50"><tr><th class="p-2 text-left">Name</th><th class="p-2">Sales</th><th class="p-2">Profit</th><th class="p-2">Qty</th><th class="p-2">Expiry</th><th class="p-2">Days Left</th><th class="p-2">Action</th></tr></thead><tbody id="stockTable"></tbody></table></div></div>
 </div>
 
-<div id="tab-shifts" class="tab-content hidden">
-<div class="grid md:grid-cols-2 gap-4">
-<div id="morningShiftCard" class="card p-4 border-l-4 border-[#FCD34D]"><h4 class="font-bold">Morning Shift • 8:00 AM - 2:00 PM</h4><div class="grid grid-cols-3 gap-2 mt-3 text-[11px]"><div class="bg-gray-50 p-2 rounded-xl text-center"><p>Sales</p><p id="morningSales" class="font-bold">0</p></div><div class="bg-gray-50 p-2 rounded-xl text-center"><p>Trans</p><p id="morningTrans" class="font-bold">0</p></div><div class="bg-gray-50 p-2 rounded-xl text-center"><p>Profit</p><p id="morningProfit" class="font-bold text-green-600">0</p></div></div></div>
-<div id="eveningShiftCard" class="card p-4 border-l-4 border-[#7C3AED]"><h4 class="font-bold">Evening Shift • 2:00 PM - 9:00 PM</h4><div class="grid grid-cols-3 gap-2 mt-3 text-[11px]"><div class="bg-gray-50 p-2 rounded-xl text-center"><p>Sales</p><p id="eveningSales" class="font-bold">0</p></div><div class="bg-gray-50 p-2 rounded-xl text-center"><p>Trans</p><p id="eveningTrans" class="font-bold">0</p></div><div class="bg-gray-50 p-2 rounded-xl text-center"><p>Profit</p><p id="eveningProfit" class="font-bold text-green-600">0</p></div></div></div>
-</div>
-<div class="card p-4 mt-4"><h4 class="font-bold text-[#0A5C36]">Closed Shift Reports - Net Cash = Sales - Expenses + Receivable - Payable</h4><div class="overflow-x-auto mt-3"><table class="w-full text-[11px]"><thead class="bg-[#0A5C36] text-white"><tr><th class="p-2 text-left">Date</th><th>Shift</th><th>Cashier</th><th>Sales</th><th>Profit</th><th>Trans</th><th>Expenses</th><th>Net Cash</th></tr></thead><tbody id="shiftReportsTable"></tbody></table></div></div>
+<!-- REPORTS - ALERTS + CLICKABLE -->
+<div id="tab-reports" class="tab-content hidden">
+<!-- ALERTS -->
+<div class="grid md:grid-cols-4 gap-2 mb-3">
+<div onclick="goToStockFilter('Expiring60')" class="alert-card card p-3 bg-red-50 border-red-200 border-l-4 border-l-red-600"><p class="text-[10px] text-red-600">Expiring ≤60 Days</p><p id="alertExpiring" class="font-bold text-[18px] text-red-700">0</p><p class="text-[9px] text-gray-500">Click to view list →</p></div>
+<div onclick="goToStockFilter('Expired')" class="alert-card card p-3 bg-red-100 border-red-300 border-l-4 border-l-red-800"><p class="text-[10px] text-red-800">Expired</p><p id="alertExpired" class="font-bold text-[18px] text-red-800">0</p><p class="text-[9px] text-gray-500">Click →</p></div>
+<div onclick="goToStockFilter('LowStock')" class="alert-card card p-3 bg-orange-50 border-orange-200 border-l-4 border-l-orange-500"><p class="text-[10px] text-orange-600">Low Stock / 60d Finish</p><p id="alertLowStock" class="font-bold text-[18px] text-orange-700">0</p><p class="text-[9px] text-gray-500">Click →</p></div>
+<div onclick="goToStockFilter('All')" class="alert-card card p-3 bg-green-50 border-green-200 border-l-4 border-l-green-600"><p class="text-[10px] text-green-600">Total Stock</p><p id="alertTotalStock" class="font-bold text-[18px] text-green-700">0</p><p class="text-[9px] text-gray-500">View all →</p></div>
 </div>
 
+<div class="grid md:grid-cols-4 gap-2 mb-3">
+<div onclick="renderDailyReportSameShape(new Date().toISOString().slice(0,10))" class="clickable card p-3 bg-[#0A5C36] text-white"><p class="text-[10px] opacity-80">Today</p><p id="repTodaySSP" class="font-bold text-[14px]">0 SSP</p><p id="repTodayProfit" class="text-[10px] text-[#C8A951]">0 Net</p><p id="repTodayCount" class="text-[9px] opacity-70">0 sales</p></div>
+<div onclick="showWeeklyDetail()" class="clickable card p-3 bg-[#1E40AF] text-white"><p class="text-[10px] opacity-80">7 Days</p><p id="repWeekSSP" class="font-bold text-[14px]">0 SSP</p><p id="repWeekProfit" class="text-[10px]">0 Net</p><p id="repWeekCount" class="text-[9px] opacity-70">0</p></div>
+<div onclick="showMonthlyDetail()" class="clickable card p-3 bg-[#5B21B6] text-white"><p class="text-[10px] opacity-80">This Month</p><p id="repMonthSSP" class="font-bold text-[14px]">0 SSP</p><p id="repMonthProfit" class="text-[10px]">0 Net</p><p id="repMonthCount" class="text-[9px] opacity-70">0</p></div>
+<div class="card p-3 text-center"><p class="text-[10px] text-gray-500">Stock Value</p><p id="repStockSell" class="font-bold text-green-600 text-[13px]">0</p><p id="repStockProfit" class="font-bold text-[11px] text-[#C8A951]">0 Profit</p></div>
+</div>
+
+<div class="card p-3">
+<div class="flex justify-between items-center mb-2"><h3 class="font-bold text-[12px]">Daily Sales - Net = Gross - Expenses</h3><div class="flex gap-1"><input id="dailyReportDate" type="date" class="inp w-auto text-[10px]"><button onclick="renderDailyReportSameShape(document.getElementById('dailyReportDate').value)" class="btn text-[10px]">Show</button></div></div>
+<div class="overflow-x-auto"><table class="w-full text-[10px]"><thead class="bg-[#0A5C36] text-white"><tr><th class="p-1.5 text-left">#</th><th class="p-1.5 text-left">Name</th><th class="p-1.5">Qty</th><th class="p-1.5">Sales</th><th class="p-1.5">Profit</th><th class="p-1.5">Stock</th></tr></thead><tbody id="dailyReportTableSameShape"></tbody></table></div>
+</div>
+<div class="card p-3 mt-3"><h3 class="font-bold text-[12px] mb-2">Monthly - Click date for detail</h3><div class="overflow-auto max-h-[30vh] border rounded-lg"><table class="w-full text-[10px]"><thead class="bg-[#0A5C36] text-white sticky top-0"><tr><th class="p-1.5 text-left">Date</th><th>Morning</th><th>Evening</th><th>Total</th><th>Net</th></tr></thead><tbody id="monthlyTable"></tbody></table></div><div id="dailyDetailBox" class="hidden mt-2 p-3 bg-[#FFFBEB] border rounded-lg text-[11px]"></div></div>
+</div>
+
+<!-- EXPENSES -->
 <div id="tab-expenses" class="tab-content hidden">
-<div class="card p-5">
-<div class="flex justify-between items-center"><h3 class="font-bold text-[#0A5C36]">Expenses - Included in Accounting (Deducted from Profit)</h3><span id="expTotalBadge" class="badge bg-gray-100">0 Expenses</span></div>
-<div class="grid md:grid-cols-5 gap-2 mt-4">
-<input id="expTitle" placeholder="Title *" class="inp"><input id="expAmount" type="number" placeholder="Amount SSP *" class="inp"><input id="expDate" type="date" class="inp"><select id="expCat" class="inp"><option>General</option><option>Rent</option><option>Transport</option><option>Salaries</option><option>Utilities</option><option>Purchase</option><option>Supplier Payment (Payable Debt)</option></select><button onclick="addExpense()" class="btn">Add Expense</button>
-</div>
-</div>
-<div class="card p-0 mt-4 overflow-hidden">
-<div class="p-4 border-b flex justify-between items-center bg-gray-50"><h4 class="font-bold text-[#0A5C36] text-[13px]">Expenses History • Affects Net Profit • Sorted by Date</h4></div>
-<div class="overflow-x-auto max-h-[70vh] overflow-auto">
-<table class="w-full text-[13px]"><thead class="bg-[#0A5C36] text-white sticky top-0 text-[11px] uppercase tracking-wider"><tr><th class="p-3 text-left">Date</th><th class="p-3 text-left">Title & Category</th><th class="p-3">Amount</th><th class="p-3">Shift</th><th class="p-3">By</th><th class="p-3">Action</th></tr></thead><tbody id="expTable" class="divide-y"></tbody></table>
-</div>
-<div id="expDailyDetail" class="hidden border-t bg-[#FFFBEB] p-4"></div>
-</div>
+<div class="card p-3 mb-2"><div class="flex gap-1"><input id="expTitle" placeholder="Title *" class="inp text-[11px]"><input id="expAmount" type="number" placeholder="Amount *" class="inp text-[11px]"><input id="expDate" type="date" class="inp text-[11px]"><select id="expCat" class="inp text-[11px]"><option>General</option><option>Rent</option><option>Salaries</option><option>Purchase</option><option>Payable</option></select><button onclick="addExpense()" class="btn text-[11px]">Add</button></div></div>
+<div class="card p-0 overflow-hidden"><div class="overflow-x-auto max-h-[70vh]"><table class="w-full text-[11px]"><thead class="bg-[#0A5C36] text-white sticky top-0 text-[10px]"><tr><th class="p-2 text-left">Date</th><th class="p-2 text-left">Title</th><th class="p-2">Amount</th><th class="p-2">Action</th></tr></thead><tbody id="expTable"></tbody></table></div></div>
 </div>
 
+<!-- DEBTS -->
 <div id="tab-debts" class="tab-content hidden">
-<div class="card p-5">
-<div class="flex justify-between items-center flex-wrap gap-3">
-<div><h3 class="font-bold text-[#0A5C36] text-[16px]">Debts Management - لينا وعلينا - Affects Cash Flow</h3><p class="text-[11px] text-gray-500 mt-1">Receivable = Cash to Receive • Payable = Cash to Pay + Added to Expenses</p></div>
-<div class="flex gap-2 flex-wrap">
-<span id="debtReceivableBadge" class="badge bg-blue-100 text-blue-700">Receivable: 0 SSP</span>
-<span id="debtPayableBadge" class="badge bg-red-100 text-red-700">Payable: 0 SSP</span>
-<span id="debtBalanceBadge" class="badge bg-[#0A5C36] text-white">Net: 0 SSP</span>
-</div>
-</div>
-<div class="grid md:grid-cols-6 gap-2 mt-5">
-<select id="debtType" class="inp"><option value="receivable">Receivable - Customer owes us (لينا)</option><option value="payable">Payable - We owe supplier (علينا)</option></select>
-<input id="debtParty" placeholder="Customer / Supplier Name *" class="inp">
-<input id="debtAmount" type="number" placeholder="Total Amount SSP *" class="inp">
-<input id="debtPaid" type="number" placeholder="Paid Already" class="inp" value="0">
-<input id="debtDate" type="date" class="inp">
-<input id="debtPhone" placeholder="Phone" class="inp">
-</div>
-<div class="grid md:grid-cols-4 gap-2 mt-2">
-<input id="debtNote" placeholder="Note" class="inp md:col-span-3">
-<button onclick="addDebt()" class="btn py-3">Add Debt</button>
-</div>
-</div>
-<div class="grid md:grid-cols-2 gap-4 mt-4">
-<div class="card p-0 overflow-hidden border-t-4 border-blue-500">
-<div class="p-4 bg-blue-50 flex justify-between items-center"><h4 class="font-bold text-blue-700">💰 Receivable - لينا</h4><span id="receivableTotal" class="font-bold">0 SSP</span></div>
-<div class="overflow-x-auto max-h-[50vh]"><table class="w-full text-[12px]"><thead class="bg-blue-600 text-white sticky top-0 text-[10px] uppercase"><tr><th class="p-2.5 text-left">Date / Party</th><th>Amount</th><th>Paid</th><th>Balance</th><th>Action</th></tr></thead><tbody id="debtReceivableTable"></tbody></table></div>
-</div>
-<div class="card p-0 overflow-hidden border-t-4 border-red-500">
-<div class="p-4 bg-red-50 flex justify-between items-center"><h4 class="font-bold text-red-700">💸 Payable - علينا</h4><span id="payableTotal" class="font-bold">0 SSP</span></div>
-<div class="overflow-x-auto max-h-[50vh]"><table class="w-full text-[12px]"><thead class="bg-red-600 text-white sticky top-0 text-[10px] uppercase"><tr><th class="p-2.5 text-left">Date / Party</th><th>Amount</th><th>Paid</th><th>Balance</th><th>Action</th></tr></thead><tbody id="debtPayableTable"></tbody></table></div>
-</div>
-</div>
-<div class="card p-4 mt-4">
-<h4 class="font-bold text-[#0A5C36]">Recent Payments History</h4>
-<div class="overflow-x-auto mt-3"><table class="w-full text-[11px]"><thead class="bg-gray-50"><tr><th class="p-2 text-left">Date</th><th class="p-2 text-left">Party</th><th>Type</th><th>Paid Amount</th><th>Remaining</th><th>By</th></tr></thead><tbody id="debtPaymentsTable"></tbody></table></div>
+<div class="card p-3 mb-2"><div class="grid md:grid-cols-6 gap-1"><select id="debtType" class="inp text-[11px]"><option value="receivable">Receivable - Cash In</option><option value="payable">Payable - Cash Out + Expense</option></select><input id="debtParty" placeholder="Name *" class="inp text-[11px]"><input id="debtAmount" type="number" placeholder="Total *" class="inp text-[11px]"><input id="debtPaid" type="number" placeholder="Paid" class="inp text-[11px]" value="0"><input id="debtDate" type="date" class="inp text-[11px]"><button onclick="addDebt()" class="btn text-[11px]">Add</button></div></div>
+<div class="grid md:grid-cols-2 gap-2">
+<div class="card p-0 overflow-hidden border-t-2 border-blue-500"><div class="p-2 bg-blue-50 flex justify-between"><h4 class="font-bold text-blue-700 text-[11px]">Receivable</h4><span id="receivableTotal" class="font-bold text-[11px]">0 SSP</span></div><div class="overflow-auto max-h-[45vh]"><table class="w-full text-[10px]"><thead class="bg-blue-600 text-white"><tr><th class="p-1.5 text-left">Party</th><th>Balance</th><th>Action</th></tr></thead><tbody id="debtReceivableTable"></tbody></table></div></div>
+<div class="card p-0 overflow-hidden border-t-2 border-red-500"><div class="p-2 bg-red-50 flex justify-between"><h4 class="font-bold text-red-700 text-[11px]">Payable</h4><span id="payableTotal" class="font-bold text-[11px]">0 SSP</span></div><div class="overflow-auto max-h-[45vh]"><table class="w-full text-[10px]"><thead class="bg-red-600 text-white"><tr><th class="p-1.5 text-left">Party</th><th>Balance</th><th>Action</th></tr></thead><tbody id="debtPayableTable"></tbody></table></div></div>
 </div>
 </div>
 
-<div id="tab-purchases" class="tab-content hidden">
-<div class="card p-4">
-<div class="flex justify-between items-center mb-3"><h3 class="font-bold text-[#0A5C36]">Purchase Order</h3><div class="flex gap-2"><input id="soSupplier" placeholder="Supplier" class="inp w-[120px] text-[12px]"><button onclick="soAddRow()" class="btn text-[12px]">+ Add Row</button></div></div>
-<div class="overflow-x-auto border rounded-xl"><table class="w-full text-[12px]"><thead class="bg-gray-100"><tr><th class="p-2 text-left">Item</th><th class="p-2">Qty</th><th class="p-2">Rate $</th><th class="p-2">Amount $</th><th class="p-2">Expiry</th><th></th></tr></thead><tbody id="soTableBody"></tbody><tfoot class="bg-gray-50 font-bold"><tr><td colspan="3" class="p-3 text-right">Total</td><td class="p-3"><span id="soTotalUSD">USD 0</span><br><span id="soTotalSSP" class="text-[10px]">0 SSP</span></td><td colspan="2"></td></tr></tfoot></table></div>
-<div class="flex gap-2 mt-3"><button onclick="saveSalesOrder()" class="btn flex-1 py-3">Save to Stock</button><button onclick="clearSalesOrder()" class="border px-4 py-3 rounded-xl">Clear</button></div>
+<!-- SHIFTS -->
+<div id="tab-shifts" class="tab-content hidden">
+<div class="grid md:grid-cols-2 gap-2">
+<div id="morningShiftCard" class="card p-3 border-l-4 border-yellow-400"><h4 class="font-bold text-[12px]">Morning 8AM-2PM</h4><div class="grid grid-cols-3 gap-1 mt-2 text-[10px]"><div class="bg-gray-50 p-1.5 rounded text-center"><p>Sales</p><p id="morningSales" class="font-bold">0</p></div><div class="bg-gray-50 p-1.5 rounded text-center"><p>Trans</p><p id="morningTrans" class="font-bold">0</p></div><div class="bg-gray-50 p-1.5 rounded text-center"><p>Net</p><p id="morningProfit" class="font-bold text-green-600">0</p></div></div></div>
+<div id="eveningShiftCard" class="card p-3 border-l-4 border-purple-500"><h4 class="font-bold text-[12px]">Evening 2PM-9PM</h4><div class="grid grid-cols-3 gap-1 mt-2 text-[10px]"><div class="bg-gray-50 p-1.5 rounded text-center"><p>Sales</p><p id="eveningSales" class="font-bold">0</p></div><div class="bg-gray-50 p-1.5 rounded text-center"><p>Trans</p><p id="eveningTrans" class="font-bold">0</p></div><div class="bg-gray-50 p-1.5 rounded text-center"><p>Net</p><p id="eveningProfit" class="font-bold text-green-600">0</p></div></div></div>
 </div>
-</div>
-
-<div id="editMedModal" class="hidden fixed inset-0 bg-black/60 z-[70] flex items-center justify-center p-4">
-<div class="card p-6 w-full max-w-md shadow-2xl">
-<h3 class="font-bold text-[#0A5C36]">Edit Medicine</h3>
-<p id="editMedName" class="text-[13px] text-gray-500 mt-1 font-bold">-</p>
-<div class="grid grid-cols-2 gap-3 mt-4">
-<div><label class="text-[11px] font-bold text-gray-600">Sales Price $</label><input id="editSales" type="number" step="0.01" class="inp mt-1"></div>
-<div><label class="text-[11px] font-bold text-gray-600">Cost $</label><input id="editCost" type="number" step="0.01" class="inp mt-1"></div>
-<div><label class="text-[11px] font-bold text-gray-600">Quantity</label><input id="editQty" type="number" class="inp mt-1"></div>
-<div><label class="text-[11px] font-bold text-[#0A5C36]">Expiry Date</label><input id="editExpiry" type="date" class="inp mt-1 border-[#C8A951]"></div>
-</div>
-<div class="flex gap-2 mt-6">
-<button onclick="closeEditMed()" class="flex-1 border bg-gray-50 px-4 py-3 rounded-xl font-bold text-[13px]">Back</button>
-<button onclick="saveEditMed()" class="flex-1 btn py-3">Save Changes</button>
-</div>
-</div>
+<div class="card p-3 mt-2"><div class="overflow-x-auto"><table class="w-full text-[10px]"><thead class="bg-[#0A5C36] text-white"><tr><th class="p-1.5 text-left">Date</th><th>Shift</th><th>Sales</th><th>Expenses</th><th>Net Cash</th></tr></thead><tbody id="shiftReportsTable"></tbody></table></div></div>
 </div>
 
-<div id="payDebtModal" class="hidden fixed inset-0 bg-black/60 z-[80] flex items-center justify-center p-4">
-<div class="card p-6 w-full max-w-md shadow-2xl">
-<h3 class="font-bold text-[#0A5C36]">Record Payment - Updates Cash & Accounting</h3>
-<p id="payDebtName" class="text-[13px] text-gray-500 mt-1 font-bold">-</p>
-<div class="mt-4 space-y-3">
-<div class="p-3 bg-gray-50 rounded-xl border"><p class="text-[11px] text-gray-500">Remaining Balance</p><p id="payDebtBalance" class="font-bold text-[18px]">0 SSP</p></div>
-<div><label class="text-[11px] font-bold">Payment Amount SSP *</label><input id="payDebtAmount" type="number" class="inp mt-1 font-bold" placeholder="e.g., 50000"></div>
-<div><label class="text-[11px] font-bold">Payment Date</label><input id="payDebtPayDate" type="date" class="inp mt-1"></div>
-<div><label class="text-[11px] font-bold">Note</label><input id="payDebtNote" placeholder="Cash / Bank transfer..." class="inp mt-1"></div>
-</div>
-<div class="flex gap-2 mt-6">
-<button onclick="closePayDebt()" class="flex-1 border bg-gray-50 px-4 py-3 rounded-xl font-bold text-[13px]">Back</button>
-<button onclick="savePayDebt()" class="flex-1 btn py-3 bg-[#0A5C36]">Save Payment</button>
-</div>
-</div>
-</div>
+<div id="payDebtModal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"><div class="card p-4 w-full max-w-sm"><h3 class="font-bold text-[13px]">Pay Debt</h3><p id="payDebtName" class="text-[11px] text-gray-500 mt-1">-</p><div class="mt-3 space-y-2"><div class="p-2 bg-gray-50 rounded"><p id="payDebtBalance" class="font-bold">0 SSP</p></div><input id="payDebtAmount" type="number" class="inp" placeholder="Amount"><input id="payDebtPayDate" type="date" class="inp"><input id="payDebtNote" placeholder="Note" class="inp"></div><div class="flex gap-2 mt-3"><button onclick="closePayDebt()" class="flex-1 border py-2 rounded-lg text-[12px]">Back</button><button onclick="savePayDebt()" class="flex-1 btn py-2">Save</button></div></div></div>
 
 </main>
-<footer class="bg-[#0A5C36] text-white mt-8"><div class="max-w-[1450px] mx-auto px-4 py-3 flex justify-between text-[11px]"><span>© 2026 The Grace Pharmacy - V18.1 Accounting</span><span>Professional System • Debts + Expenses Accounting • Juba</span></div></footer>
-                                                      </div><script type="module">
+<footer class="bg-[#0A5C36] text-white mt-6"><div class="max-w-[1400px] mx-auto px-3 py-2 flex justify-between text-[10px]"><span>V18.2 Alerts • English • Clean</span><span>Expenses + Debts Accounting</span></div></footer>
+</div>
+
+<script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, setDoc, doc, getDocs, deleteDoc, query, orderBy, limit, serverTimestamp, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 const firebaseConfig = { apiKey: "AIzaSyD14R3WMA_x_r5AaUQismNciaiLQFowgMc", authDomain: "the-grace-78e6c.firebaseapp.com", projectId: "the-grace-78e6c", storageBucket: "the-grace-78e6c.firebasestorage.app", messagingSenderId: "155088026492", appId: "1:155088026492:web:c4b08420f69e36145b42f9" };
-let db, firebaseEnabled=false;
-try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); firebaseEnabled=true; }catch(e){}
+let db, firebaseEnabled=false; try{ const app=initializeApp(firebaseConfig); db=getFirestore(app); firebaseEnabled=true; }catch(e){}
 function esc(s){ if(!s) return ''; const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
-function safeId(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,8).toUpperCase(); }
-function sanitizeStr(str,max=200){ if(!str) return ''; return String(str).slice(0,max).replace(/[<>]/g,'').trim(); }
+function safeId(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6).toUpperCase(); }
 let currentUser=JSON.parse(localStorage.getItem('gp_user')||'null');
 const USERS_HASH={'admin':{hash:'GraceAdmin@2026!',shift:'Admin'},'cashier.morning':{hash:'GraceMorning2026',shift:'Morning'},'cashier.evening':{hash:'GraceEvening2026',shift:'Evening'}};
-let meds=JSON.parse(localStorage.getItem('gp_meds')||'[]'); 
-let cart=[]; 
-let rate=parseInt(localStorage.getItem('gp_rate')||'8000');
-let auditLog=JSON.parse(localStorage.getItem('gp_audit')||'[]'); 
-let expenses=JSON.parse(localStorage.getItem('gp_expenses')||'[]'); 
-let sales=JSON.parse(localStorage.getItem('gp_sales')||'[]'); 
-let shiftReports=JSON.parse(localStorage.getItem('gp_shift_reports')||'[]');
-let debts=JSON.parse(localStorage.getItem('gp_debts')||'[]');
-let debtPayments=JSON.parse(localStorage.getItem('gp_debt_payments')||'[]');
-let pendingConfirmAction=null; 
-let monthlyChartInstance=null; 
-let editingMedId=null;
-let payingDebtId=null;
+let meds=JSON.parse(localStorage.getItem('gp_meds')||'[]'); let cart=[]; let rate=parseInt(localStorage.getItem('gp_rate')||'8000');
+let expenses=JSON.parse(localStorage.getItem('gp_expenses')||'[]'); let sales=JSON.parse(localStorage.getItem('gp_sales')||'[]'); let shiftReports=JSON.parse(localStorage.getItem('gp_shift_reports')||'[]');
+let debts=JSON.parse(localStorage.getItem('gp_debts')||'[]'); let debtPayments=JSON.parse(localStorage.getItem('gp_debt_payments')||'[]');
+let monthlyChartInstance=null; let payingDebtId=null;
+
 function getJubaTime(){ const now=new Date(); const utc=now.getTime()+(now.getTimezoneOffset()*60000); return new Date(utc+(2*3600000)); }
-function getCurrentShiftByTime(){ const juba=getJubaTime(); const h=juba.getHours(); const m=juba.getMinutes(); const totalMin=h*60+m; if(totalMin>=480 && totalMin<840) return 'Morning'; if(totalMin>=840 && totalMin<1260) return 'Evening'; if(totalMin<480) return 'Morning'; return 'Evening'; }
+function getCurrentShiftByTime(){ const j=getJubaTime(); const h=j.getHours()*60+j.getMinutes(); if(h>=480 && h<840) return 'Morning'; if(h>=840 && h<1260) return 'Evening'; return h<480?'Morning':'Evening'; }
 function formatJubaTime(){ const j=getJubaTime(); return j.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',hour12:true})+' Juba'; }
-window.togglePass=()=>{ const p=document.getElementById('p'); p.type=p.type==='password'?'text':'password'; };
-window.doLogin=()=>{ const u=document.getElementById('u').value.trim().toLowerCase(); const p=document.getElementById('p').value; const errorEl=document.getElementById('loginError'); if(!USERS_HASH[u]||USERS_HASH[u].hash!==p){ errorEl.textContent='Invalid username or password.'; errorEl.classList.remove('hidden'); return;} currentUser={username:u,shift:USERS_HASH[u].shift}; localStorage.setItem('gp_user',JSON.stringify(currentUser)); location.reload(); };
+window.doLogin=()=>{ const u=document.getElementById('u').value.trim().toLowerCase(); const p=document.getElementById('p').value; const el=document.getElementById('loginError'); if(!USERS_HASH[u]||USERS_HASH[u].hash!==p){ el.textContent='Invalid login'; el.classList.remove('hidden'); return;} currentUser={username:u,shift:USERS_HASH[u].shift}; localStorage.setItem('gp_user',JSON.stringify(currentUser)); location.reload(); };
 window.doLogout=()=>{ localStorage.removeItem('gp_user'); location.reload(); };
-window.showModal=(title,body,showCancel=false,onConfirm=null)=>{ document.getElementById('modalTitle').textContent=title; document.getElementById('modalBody').innerHTML=body; const cancel=document.getElementById('modalCancel'); if(showCancel) cancel.classList.remove('hidden'); else cancel.classList.add('hidden'); document.getElementById('customModal').classList.remove('hidden'); pendingConfirmAction=onConfirm; };
-window.closeModal=(confirmed)=>{ document.getElementById('customModal').classList.add('hidden'); if(confirmed && typeof pendingConfirmAction==='function') pendingConfirmAction(); pendingConfirmAction=null; };
-async function addAudit(a,d,profit=0){ const e={time:new Date().toISOString(),user:currentUser?.username||'system',shift:currentUser?.shift||'-',jubaShift:getCurrentShiftByTime(),action:a,details:d,profit,rate}; auditLog.unshift(e); localStorage.setItem('gp_audit',JSON.stringify(auditLog.slice(0,500))); if(firebaseEnabled){ try{ await addDoc(collection(db,'audit'),{...e,ts:serverTimestamp()}); }catch(e){} } }
-async function loadRateFromFirebase(){ try{ if(!firebaseEnabled){ updateRateUI(); return; } const docRef=doc(db,'settings','dollarRate'); const snap=await getDoc(docRef); if(snap.exists()){ const data=snap.data(); if(data.rate && data.rate>=1000){ rate=parseInt(data.rate); localStorage.setItem('gp_rate',String(rate)); } } }catch(e){} updateRateUI(); }
-function updateRateUI(){ const set=(id,txt)=>{ const el=document.getElementById(id); if(el) el.textContent=txt; }; set('posRate', rate.toLocaleString()+' SSP'); set('rateBadgeHeader', 'Rate: '+rate.toLocaleString()+' SSP'); set('rateInputDisplay', rate.toLocaleString()); set('medsCountDisplay', meds.length); renderStock(document.getElementById('stockSearch')?.value||''); renderCart(); if(typeof renderReports==='function') renderReports(); }
-window.editRate=()=>{ if(currentUser?.shift!=='Admin'){ showModal('Access Denied','Only Admin can edit rate.'); return; } showModal('Edit Dollar Rate',`<div class="space-y-3"><div class="p-3 bg-gray-50 border rounded-xl"><p class="text-[11px] text-gray-500">Current Rate</p><p class="font-bold text-[18px]">${rate.toLocaleString()} SSP</p></div><div><label class="text-[12px] font-bold">New Rate 1$ = ? SSP</label><input id="newRateInputModal" type="number" min="1000" step="100" value="${rate}" class="inp mt-1 font-bold"></div></div>`,true,async()=>{ const newRateVal=parseInt(document.getElementById('newRateInputModal')?.value||'0'); if(!newRateVal || newRateVal<1000){ showModal('Error','Rate must be >= 1000'); return; } await saveRateValue(newRateVal); }); };
-async function saveRateValue(newRate){ const oldRate=rate; if(!confirm(`Change Rate ${oldRate} -> ${newRate} ? All ${meds.length} meds will be recalculated.`)) return; rate=newRate; localStorage.setItem('gp_rate', String(rate)); for(let m of meds){ m.buy=Math.round(m.cost * rate); m.sell=Math.round(m.salesPrice * rate); if(firebaseEnabled){ try{ await setDoc(doc(db,'meds',m.id), {...m, ts:serverTimestamp()}); }catch(e){} } } localStorage.setItem('gp_meds', JSON.stringify(meds)); if(firebaseEnabled){ try{ await setDoc(doc(db,'settings','dollarRate'), {rate: newRate, by: currentUser.username, date: new Date().toISOString(), oldRate, ts:serverTimestamp()}); }catch(e){} } await addAudit('EDIT_RATE',`Rate ${oldRate} -> ${newRate}`,0); updateRateUI(); showModal('Rate Updated',`Rate changed from ${oldRate} to ${newRate} SSP`); }
-window.showTab=(t)=>{ document.querySelectorAll('.tab-content').forEach(x=>x.classList.add('hidden')); document.getElementById('tab-'+t)?.classList.remove('hidden'); document.querySelectorAll('.tab-btn').forEach(b=>{ b.classList.remove('tabA'); b.classList.add('tabN'); }); const active=document.querySelector(`[data-tab="${t}"]`); if(active){ active.classList.remove('tabN'); active.classList.add('tabA'); } if(t==='pos') setTimeout(()=>{ searchMeds(''); },150); if(t==='reports') renderReports(); if(t==='shifts') loadShiftReports(); if(t==='expenses') renderExpenses(); if(t==='stock') renderStock(); if(t==='debts') renderDebts(); };
 function usd(s){ return (s/rate).toFixed(2); }
-function getExpiryStatus(d){ if(!d) return {text:'No Expiry',cls:'bg-green-50 text-green-700',days:9999,row:''}; const t=new Date(); t.setHours(0,0,0,0); const e=new Date(d); e.setHours(0,0,0,0); if(isNaN(e.getTime())) return {text:'No Expiry',cls:'bg-green-50 text-green-700',days:9999,row:''}; const diff=Math.ceil((e-t)/86400000); if(diff<0) return {text:`EXPIRED`,cls:'bg-red-100 text-red-700',days:diff,row:'bg-red-50'}; if(diff<=30) return {text:`Critical ${diff} days`,cls:'bg-red-100 text-red-700',days:diff,row:'bg-red-50'}; if(diff<=60) return {text:`Warning ${diff} days`,cls:'bg-orange-100 text-orange-700',days:diff,row:'bg-orange-50'}; return {text:`Safe - ${diff} days`,cls:'bg-green-50 text-green-700',days:diff,row:''}; }
-async function loadMedsFB(){ if(!firebaseEnabled){ renderStock(); if(currentUser) searchMeds(''); return; } try{ const q=query(collection(db,'meds'), orderBy('date','desc'), limit(500)); const snap=await getDocs(q); if(snap.size>0){ meds=snap.docs.map(d=>d.data()); localStorage.setItem('gp_meds', JSON.stringify(meds)); } const sSnap=await getDocs(query(collection(db,'sales'), orderBy('time','desc'), limit(1000))); if(sSnap.size>0){ sales=sSnap.docs.map(d=>d.data()); localStorage.setItem('gp_sales', JSON.stringify(sales)); } const expSnap=await getDocs(query(collection(db,'expenses'), orderBy('time','desc'), limit(200))); if(expSnap.size>0){ expenses=expSnap.docs.map(d=>d.data()); localStorage.setItem('gp_expenses', JSON.stringify(expenses)); } }catch(e){} renderStock(); if(currentUser) searchMeds(''); }
-function searchMeds(term){ term=(term||'').toLowerCase().trim(); const list=document.getElementById('medsList'); if(!list) return; if(meds.length===0){ list.innerHTML='<div class="p-6 text-center text-gray-400">No medicines found. Import first.</div>'; return; } let filtered=term==='' ? meds.slice(0,20) : meds.filter(m=> (m.name||'').toLowerCase().includes(term)).slice(0,20); if(filtered.length===0){ list.innerHTML=`<div class="p-4 text-center text-gray-400">No results for "${esc(term)}"</div>`; return; } list.innerHTML=filtered.map(m=>{ const ex=getExpiryStatus(m.expiry); const blocked=ex.days<0; return `<div class="card p-3 border ${ex.row}"><div class="flex justify-between items-start"><span class="font-bold text-[13px]">${esc(m.name)}</span><span class="badge ${ex.cls} text-[10px]">${ex.text}</span></div><div class="text-[11px] text-gray-500 mt-1">$${m.salesPrice} • ${m.sell.toLocaleString()} SSP • Qty ${m.qty}</div><button onclick="addToCart('${m.id}')" class="${blocked?'bg-gray-300 text-gray-500':'btn'} w-full mt-2 text-[12px] py-2 rounded-xl" ${blocked?'disabled':''}>${blocked?'Expired - Blocked':'Add to Cart'}</button></div>`; }).join(''); }
+function getExpiryStatus(d){ if(!d) return {text:'No Expiry',cls:'bg-green-50 text-green-700',days:9999,row:''}; const t=new Date(); t.setHours(0,0,0,0); const e=new Date(d); e.setHours(0,0,0,0); if(isNaN(e.getTime())) return {text:'No Expiry',cls:'bg-green-50 text-green-700',days:9999,row:''}; const diff=Math.ceil((e-t)/86400000); if(diff<0) return {text:`Expired ${diff}d`,cls:'bg-red-100 text-red-700',days:diff,row:'bg-red-50'}; if(diff<=30) return {text:`${diff}d Critical`,cls:'bg-red-100 text-red-700',days:diff,row:'bg-red-50'}; if(diff<=60) return {text:`${diff}d Warning`,cls:'bg-orange-100 text-orange-700',days:diff,row:'bg-orange-50'}; return {text:`${diff}d`,cls:'bg-green-50 text-green-700',days:diff,row:''}; }
+
+function getAvgDailySales(medId){
+  const thirtyDaysAgo=new Date(); thirtyDaysAgo.setDate(thirtyDaysAgo.getDate()-30);
+  let qtySold=0;
+  sales.forEach(s=>{ if(new Date(s.date)>=thirtyDaysAgo){ (s.items||[]).forEach(it=>{ if(it.id===medId) qtySold+=it.qty||0; }); } });
+  return qtySold/30; // avg per day
+}
+
+function getStockDaysLeft(med){
+  const avg=getAvgDailySales(med.id);
+  if(avg<=0) return 9999;
+  return Math.floor(med.qty/avg);
+}
+
+async function loadRate(){ if(!firebaseEnabled){ updateRateUI(); return; } try{ const snap=await getDoc(doc(db,'settings','dollarRate')); if(snap.exists() && snap.data().rate>=1000){ rate=parseInt(snap.data().rate); localStorage.setItem('gp_rate',String(rate)); } }catch(e){} updateRateUI(); }
+function updateRateUI(){ const set=(id,txt)=>{ const el=document.getElementById(id); if(el) el.textContent=txt; }; set('posRate', rate.toLocaleString()+' SSP'); set('rateBadgeHeader', 'Rate: '+rate.toLocaleString()+' SSP'); set('rateInputDisplay', rate.toLocaleString()); set('medsCountDisplay', meds.length); renderStock(document.getElementById('stockSearch')?.value||''); renderCart(); renderReports(); }
+window.editRate=()=>{ if(currentUser?.shift!=='Admin') return alert('Only Admin'); const newRate=prompt(`Current ${rate} - New Rate 1$ = ? SSP`, rate); const val=parseInt(newRate||0); if(!val||val<1000) return; if(!confirm(`Change ${rate} -> ${val} ?`)) return; rate=val; localStorage.setItem('gp_rate',String(rate)); meds.forEach(m=>{ m.buy=Math.round(m.cost*rate); m.sell=Math.round(m.salesPrice*rate); }); localStorage.setItem('gp_meds', JSON.stringify(meds)); updateRateUI(); };
+window.showTab=(t)=>{ document.querySelectorAll('.tab-content').forEach(x=>x.classList.add('hidden')); document.getElementById('tab-'+t)?.classList.remove('hidden'); document.querySelectorAll('.tab-btn').forEach(b=>{ b.classList.remove('tabA'); b.classList.add('tabN'); }); const a=document.querySelector(`[data-tab="${t}"]`); if(a){ a.classList.remove('tabN'); a.classList.add('tabA'); } if(t==='pos') searchMeds(''); if(t==='reports') renderReports(); if(t==='shifts') loadShiftReports(); if(t==='expenses') renderExpenses(); if(t==='stock') renderStock(); if(t==='debts') renderDebts(); };
+
+async function loadMedsFB(){ if(!firebaseEnabled){ renderStock(); searchMeds(''); return; } try{ const q=query(collection(db,'meds'), orderBy('date','desc'), limit(500)); const snap=await getDocs(q); if(snap.size>0){ meds=snap.docs.map(d=>d.data()); localStorage.setItem('gp_meds', JSON.stringify(meds)); } const sSnap=await getDocs(query(collection(db,'sales'), orderBy('time','desc'), limit(1000))); if(sSnap.size>0){ sales=sSnap.docs.map(d=>d.data()); localStorage.setItem('gp_sales', JSON.stringify(sales)); } }catch(e){} renderStock(); searchMeds(''); }
+function searchMeds(term){ term=(term||'').toLowerCase().trim(); const list=document.getElementById('medsList'); if(!list) return; if(meds.length===0){ list.innerHTML='<div class="p-6 text-center text-gray-400 text-[12px]">No medicines</div>'; return; } let filtered=term==='' ? meds.slice(0,20) : meds.filter(m=> (m.name||'').toLowerCase().includes(term)).slice(0,20); if(filtered.length===0){ list.innerHTML=`<div class="p-4 text-center text-gray-400 text-[11px]">No results</div>`; return; } list.innerHTML=filtered.map(m=>{ const ex=getExpiryStatus(m.expiry); const blocked=ex.days<0; return `<div class="card p-2 border ${ex.row}"><div class="flex justify-between"><span class="font-bold text-[12px]">${esc(m.name)}</span><span class="badge ${ex.cls} text-[9px]">${ex.text}</span></div><div class="text-[10px] text-gray-500">$${m.salesPrice} • ${m.qty} left • ${getStockDaysLeft(m)}d left</div><button onclick="addToCart('${m.id}')" class="${blocked?'bg-gray-300':'btn'} w-full mt-1 text-[11px] py-1.5 rounded" ${blocked?'disabled':''}>${blocked?'Expired':'Add'}</button></div>`; }).join(''); }
 window.searchMeds=searchMeds;
-window.addToCart=(id)=>{ const med=meds.find(m=>m.id===id); if(!med || med.qty<=0){ showModal('Out of Stock','This item is out of stock'); return; } const ex=getExpiryStatus(med.expiry); if(ex.days<0){ showModal('Expired','This medicine is expired'); return; } proceedAddToCart(med); };
-function proceedAddToCart(med){ let item=cart.find(c=>c.id===med.id); if(item){ if(item.qty < med.qty) item.qty++; else { showModal('Stock Limit','Only '+med.qty+' available'); return; } } else cart.push({id:med.id, name:med.name, sell:med.sell, buy:med.buy, qty:1, salesPrice:med.salesPrice, cost:med.cost, unit:med.unit}); renderCart(); const searchInput=document.getElementById('searchMed'); if(searchInput){ searchInput.value=''; searchMeds(''); searchInput.focus(); } }
-function renderCart(){ const list=document.getElementById('cartList'); if(!list) return; if(cart.length===0) { list.innerHTML='<div class="p-8 text-center text-gray-400 text-[13px]">Cart is empty<br><span class="text-[11px]">Search and add medicines</span></div>'; } else { list.innerHTML=cart.map(c=>{ const med=meds.find(m=>m.id===c.id); const maxQty=med?med.qty:99; return `<div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl border"><div class="flex-1"><p class="font-bold text-[13px]">${esc(c.name)}</p><p class="text-[11px] text-gray-500">${c.sell.toLocaleString()} SSP each</p></div><div class="flex items-center gap-1.5"><button onclick="updateCartQty('${c.id}', -1)" class="qty-btn">-</button><input type="number" min="1" max="${maxQty}" value="${c.qty}" onchange="setCartQty('${c.id}', this.value)" class="qty-input"><button onclick="updateCartQty('${c.id}', 1)" class="qty-btn">+</button></div><div class="ml-3 text-right"><p class="font-bold text-[12px]">${(c.sell*c.qty).toLocaleString()} SSP</p><button onclick="removeFromCart('${c.id}')" class="text-red-500 text-[11px] mt-1">Remove</button></div></div>`; }).join(''); } let t=cart.reduce((s,c)=>s+c.sell*c.qty,0); let p=cart.reduce((s,c)=>s+(c.sell-c.buy)*c.qty,0); document.getElementById('cartTotal').textContent=t.toLocaleString()+' SSP'; document.getElementById('cartTotalUSD').textContent='$'+usd(t); document.getElementById('cartCount').textContent=cart.reduce((s,c)=>s+c.qty,0); document.getElementById('cartProfit').textContent=p.toLocaleString()+' SSP'; }
-window.updateCartQty=(id, delta)=>{ const item=cart.find(c=>c.id===id); if(!item) return; const med=meds.find(m=>m.id===id); const max=med?med.qty:99; let newQty=item.qty+delta; if(newQty<1) newQty=1; if(newQty>max) { showModal('Stock Limit','Only '+max+' available'); newQty=max; } item.qty=newQty; renderCart(); };
-window.setCartQty=(id, val)=>{ const item=cart.find(c=>c.id===id); if(!item) return; const med=meds.find(m=>m.id===id); const max=med?med.qty:99; let newQty=parseInt(val||1); if(isNaN(newQty) || newQty<1) newQty=1; if(newQty>max) newQty=max; item.qty=newQty; renderCart(); };
+window.addToCart=(id)=>{ const med=meds.find(m=>m.id===id); if(!med || med.qty<=0) return alert('Out of stock'); const ex=getExpiryStatus(med.expiry); if(ex.days<0) return alert('Expired'); let item=cart.find(c=>c.id===med.id); if(item){ if(item.qty < med.qty) item.qty++; else return alert('Only '+med.qty+' available'); } else cart.push({id:med.id, name:med.name, sell:med.sell, buy:med.buy, qty:1}); renderCart(); document.getElementById('searchMed').value=''; searchMeds(''); };
+function renderCart(){ const list=document.getElementById('cartList'); if(!list) return; if(cart.length===0) list.innerHTML='<div class="p-6 text-center text-gray-400 text-[11px]">Empty</div>'; else list.innerHTML=cart.map(c=>{ const med=meds.find(m=>m.id===c.id); const max=med?med.qty:99; return `<div class="flex items-center justify-between p-2 bg-gray-50 rounded border text-[11px]"><span class="font-bold">${esc(c.name)}</span><div class="flex items-center gap-1"><button onclick="updateCartQty('${c.id}',-1)" class="w-6 h-6 border rounded bg-white">-</button><span class="w-6 text-center font-bold">${c.qty}</span><button onclick="updateCartQty('${c.id}',1)" class="w-6 h-6 border rounded bg-white">+</button></div><span class="font-bold">${(c.sell*c.qty).toLocaleString()}</span><button onclick="removeFromCart('${c.id}')" class="text-red-500">x</button></div>`; }).join(''); let t=cart.reduce((s,c)=>s+c.sell*c.qty,0); let p=cart.reduce((s,c)=>s+(c.sell-c.buy)*c.qty,0); document.getElementById('cartTotal').textContent=t.toLocaleString()+' SSP'; document.getElementById('cartTotalUSD').textContent='$'+usd(t); document.getElementById('cartCount').textContent=cart.reduce((s,c)=>s+c.qty,0); document.getElementById('cartProfit').textContent=p.toLocaleString()+' SSP'; }
+window.updateCartQty=(id,d)=>{ const it=cart.find(c=>c.id===id); if(!it) return; const med=meds.find(m=>m.id===id); const max=med?med.qty:99; let n=it.qty+d; if(n<1) n=1; if(n>max) n=max; it.qty=n; renderCart(); };
 window.removeFromCart=(id)=>{ cart=cart.filter(c=>c.id!==id); renderCart(); };
 window.clearCart=()=>{ cart=[]; renderCart(); };
-window.checkout=async()=>{ if(cart.length===0){ showModal('Empty Cart','Cart is empty'); return; } const merged={}; const cleanCart=[]; for(let c of cart){ if(merged[c.id]) merged[c.id].qty+=c.qty; else { merged[c.id]={...c}; cleanCart.push(merged[c.id]); } } cart=cleanCart; let total=cart.reduce((s,c)=>s+c.sell*c.qty,0); let totalBuy=cart.reduce((s,c)=>s+c.buy*c.qty,0); let profit=total-totalBuy; const currentShift=getCurrentShiftByTime(); for(let c of cart){ let m=meds.find(mm=>mm.id===c.id); if(m) m.qty=Math.max(0, m.qty-c.qty); } localStorage.setItem('gp_meds', JSON.stringify(meds)); const saleRecord={id:safeId(), items:cart, total, totalBuy, profit, totalUSD:parseFloat(usd(total)), by:currentUser.username, shift:currentUser.shift, jubaShift:currentShift, time:new Date().toISOString(), date:new Date().toISOString().slice(0,10), rate}; sales.unshift(saleRecord); localStorage.setItem('gp_sales', JSON.stringify(sales.slice(0,1000))); if(firebaseEnabled){ for(let c of cart){ let m=meds.find(mm=>mm.id===c.id); if(m){ try{ await setDoc(doc(db,'meds',m.id), {...m, ts:serverTimestamp()}); }catch(e){} } } try{ await addDoc(collection(db,'sales'), {...saleRecord, ts:serverTimestamp()}); }catch(e){} } await addAudit('SALE', `Sold ${cart.length} items - Total ${total} SSP`, profit); cart=[]; renderCart(); renderStock(); renderReports(); loadShiftReports(); searchMeds(''); showModal('Sale Completed',`Total: ${total.toLocaleString()} SSP ($${usd(total)})<br>Profit: ${profit.toLocaleString()} SSP`); };
-window.addMed=async()=>{ const name=document.getElementById('mName').value.trim(); if(!name){ showModal('Error','Name is required'); return; } const salesPrice=parseFloat(document.getElementById('mSales').value||0); const cost=parseFloat(document.getElementById('mCost').value||0); const qty=parseInt(document.getElementById('mQty').value||0); const forecast=parseInt(document.getElementById('mForecast')?.value||qty); const unit=document.getElementById('mUnit').value||'Units'; const expiry=document.getElementById('mExpiry').value||'2027-12-31'; const internal=document.getElementById('mInternal').value||''; const resp=document.getElementById('mResp')?.value||'Administrator'; const fav=document.getElementById('mFav').value||'Normal'; const buy=Math.round(cost*rate); const sell=Math.round(salesPrice*rate); const med={id:safeId(), name:sanitizeStr(name,100), salesPrice, cost, buy, sell, qty, forecasted:forecast, unit:sanitizeStr(unit,20), expiry, internal:sanitizeStr(internal,50), resp:sanitizeStr(resp,50), fav, date:new Date().toISOString(), rateAtAdd: rate}; if(firebaseEnabled){ try{ await setDoc(doc(db,'meds',med.id), {...med, ts:serverTimestamp()}); }catch(e){} } meds.unshift(med); localStorage.setItem('gp_meds', JSON.stringify(meds)); await addAudit('ADD_SINGLE', `Added ${name}`, sell-buy); renderStock(); searchMeds(''); renderReports(); ['mName','mSales','mCost','mQty','mForecast','mExpiry','mInternal'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; }); };
-window.importBulk=async()=>{ const file=document.getElementById('bulkFile').files[0]; if(!file){ showModal('Error','Select file first'); return; } try{ const data=await file.arrayBuffer(); const wb=XLSX.read(data,{type:'array'}); const ws=wb.Sheets[wb.SheetNames[0]]; const rows=XLSX.utils.sheet_to_json(ws,{defval:''}); let saved=0; for(let r of rows){ const name=(r.Name||r.name||'').toString().trim(); if(!name) continue; let salesPrice=parseFloat(r['Sales Price']||0)||0; let cost=parseFloat(r.Cost||0)||0; let qty=parseInt(r['Quantity On Hand']||0)||0; const buy=Math.round(cost*rate); const sell=Math.round(salesPrice*rate); const med={id:safeId(), name:sanitizeStr(name,100), salesPrice, cost, buy, sell, qty, forecasted:qty, unit:'Units', expiry:'2027-12-31', internal:'', resp:'Administrator', fav:'Normal', date:new Date().toISOString(), rateAtAdd: rate}; if(firebaseEnabled){ try{ await setDoc(doc(db,'meds',med.id), {...med, ts:serverTimestamp()}); }catch(e){} } meds.unshift(med); saved++; } localStorage.setItem('gp_meds',JSON.stringify(meds)); document.getElementById('importMsg').textContent=`Successfully imported ${saved} medicines`; document.getElementById('importMsg').classList.remove('hidden'); renderStock(); searchMeds(''); renderReports(); }catch(e){ showModal('Import Error',e.message); } };
-window.downloadTemplate=()=>{ const ws=XLSX.utils.json_to_sheet([{Name:'AMOXICILLIN 500MG', 'Sales Price':5, Cost:3, 'Quantity On Hand':100}]); const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Template'); XLSX.writeFile(wb, 'Grace_Pharmacy_Template.xlsx'); };
-window.renderStock=(filter='')=>{ const tbody=document.getElementById('stockTable'); if(!tbody) return; let list=[...meds]; const filterType=document.getElementById('expiryFilter').value; if(filterType==='Expired') list=list.filter(m=>getExpiryStatus(m.expiry).days<0); else if(filterType==='LowStock') list=list.filter(m=>m.qty<=5); if(filter){ const f=filter.toLowerCase(); list=list.filter(m=>(m.name||'').toLowerCase().includes(f)); } tbody.innerHTML=list.slice(0,200).map(m=>{ const ex=getExpiryStatus(m.expiry); return `<tr class="border-b hover:bg-gray-50 ${ex.row}"><td class="p-3 font-bold">${esc(m.name)}<br><span class="text-[10px] text-gray-400">${esc(m.internal||'')}</span></td><td class="p-3">$${m.salesPrice}<br><span class="text-[10px]">${m.sell.toLocaleString()} SSP</span></td><td class="p-3">$${m.cost}<br><span class="text-green-600 font-bold text-[11px]">${(m.sell-m.buy).toLocaleString()} SSP</span></td><td class="p-3 font-bold ${m.qty<=5?'text-red-600':''}">${m.qty}</td><td class="p-3"><span class="badge ${ex.cls}">${ex.text}</span></td><td class="p-3"><div class="flex gap-1"><button onclick="editMed('${m.id}')" class="bg-[#0A5C36] text-white px-2 py-1 rounded-full text-[10px]">Edit</button><button onclick="deleteMed('${m.id}')" class="bg-red-100 text-red-600 px-2 py-1 rounded-full text-[10px]">Delete</button></div></td></tr>`; }).join(''); };
-window.deleteMed=async(id)=>{ if(currentUser.shift!=='Admin'){ showModal('Access Denied','Only Admin can delete'); return; } if(!confirm('Delete this medicine?')) return; meds=meds.filter(m=>m.id!==id); localStorage.setItem('gp_meds', JSON.stringify(meds)); if(firebaseEnabled){ try{ await deleteDoc(doc(db,'meds',id)); }catch(e){} } renderStock(); renderReports(); };
-window.editMed=(id)=>{ const med=meds.find(m=>m.id===id); if(!med) return; editingMedId=id; document.getElementById('editMedName').textContent=med.name; document.getElementById('editSales').value=med.salesPrice; document.getElementById('editCost').value=med.cost; document.getElementById('editQty').value=med.qty; document.getElementById('editExpiry').value=med.expiry||''; document.getElementById('editMedModal').classList.remove('hidden'); };
-window.closeEditMed=()=>{ document.getElementById('editMedModal').classList.add('hidden'); editingMedId=null; };
-window.saveEditMed=async()=>{ if(!editingMedId) return; const med=meds.find(m=>m.id===editingMedId); if(!med) return; med.salesPrice=parseFloat(document.getElementById('editSales').value||0); med.cost=parseFloat(document.getElementById('editCost').value||0); med.qty=parseInt(document.getElementById('editQty').value||0); med.expiry=document.getElementById('editExpiry').value||med.expiry; med.buy=Math.round(med.cost*rate); med.sell=Math.round(med.salesPrice*rate); localStorage.setItem('gp_meds', JSON.stringify(meds)); if(firebaseEnabled){ try{ await setDoc(doc(db,'meds',med.id), {...med, ts:serverTimestamp()}); }catch(e){} } closeEditMed(); renderStock(); renderReports(); showModal('Updated','Medicine updated successfully'); };function renderReports(){ 
-  const today=new Date().toISOString().slice(0,10); 
-  const now=new Date(); 
-  const weekAgo=new Date(now); weekAgo.setDate(now.getDate()-7); 
-  let filteredSales=sales; 
-  let filteredExpenses=expenses;
-  if(currentUser.shift!=='Admin'){ 
-    filteredSales=sales.filter(s=>s.jubaShift===currentUser.shift); 
-    filteredExpenses=expenses.filter(e=>e.shift===currentUser.shift); 
-  }
-  const todaySales=filteredSales.filter(s=>s.date===today); 
-  const todayExpenses=filteredExpenses.filter(e=>e.date===today);
-  const weekSales=filteredSales.filter(s=>new Date(s.date)>=weekAgo); 
-  const weekExpenses=filteredExpenses.filter(e=>new Date(e.date)>=weekAgo);
-  const monthSales=filteredSales.filter(s=>s.date.slice(0,7)===today.slice(0,7));
-  const monthExpenses=filteredExpenses.filter(e=>e.date.slice(0,7)===today.slice(0,7));
-  const todayGross=todaySales.reduce((s,x)=>s+(x.profit||0),0);
-  const todayExpTotal=todayExpenses.reduce((s,x)=>s+x.amount,0);
-  const todayNet=todayGross-todayExpTotal;
-  const weekGross=weekSales.reduce((s,x)=>s+(x.profit||0),0);
-  const weekExpTotal=weekExpenses.reduce((s,x)=>s+x.amount,0);
-  const weekNet=weekGross-weekExpTotal;
-  const monthGross=monthSales.reduce((s,x)=>s+(x.profit||0),0);
-  const monthExpTotal=monthExpenses.reduce((s,x)=>s+x.amount,0);
-  const monthNet=monthGross-monthExpTotal;
-  const setText=(id,txt)=>{ const el=document.getElementById(id); if(el) el.textContent=txt; }; 
-  setText('repTodaySSP', todaySales.reduce((s,x)=>s+x.total,0).toLocaleString()+' SSP'); 
-  setText('repTodayProfit', todayGross.toLocaleString()+' SSP Gross • '+todayNet.toLocaleString()+' SSP Net (After '+todayExpTotal.toLocaleString()+' Exp)');
-  setText('repTodayCount', todaySales.length+' sales • '+todayExpenses.length+' expenses • '+todayExpTotal.toLocaleString()+' SSP Exp'); 
-  setText('repWeekSSP', weekSales.reduce((s,x)=>s+x.total,0).toLocaleString()+' SSP'); 
-  setText('repWeekProfit', weekGross.toLocaleString()+' Gross • '+weekNet.toLocaleString()+' Net (After '+weekExpTotal.toLocaleString()+')');
-  setText('repWeekCount', weekSales.length+' sales • '+weekExpenses.length+' expenses');
-  setText('repMonthSSP', monthSales.reduce((s,x)=>s+x.total,0).toLocaleString()+' SSP'); 
-  setText('repMonthProfit', monthGross.toLocaleString()+' Gross • '+monthNet.toLocaleString()+' Net (After '+monthExpTotal.toLocaleString()+')');
-  setText('repMonthCount', monthSales.length+' sales • '+monthExpenses.length+' expenses');
-  setText('repTotalMeds', meds.length); 
-  setText('repStockBuy', meds.reduce((a,b)=>a+b.buy*b.qty,0).toLocaleString()+' SSP'); 
-  setText('repStockSell', meds.reduce((a,b)=>a+b.sell*b.qty,0).toLocaleString()+' SSP'); 
-  setText('repStockProfit', meds.reduce((a,b)=>a+(b.sell-b.buy)*b.qty,0).toLocaleString()+' SSP'); 
-  renderDailyReportSameShape(new Date().toISOString().slice(0,10)); 
-  renderMonthlyCalendar(); 
+window.checkout=async()=>{ if(cart.length===0) return alert('Empty'); let total=cart.reduce((s,c)=>s+c.sell*c.qty,0); let totalBuy=cart.reduce((s,c)=>s+c.buy*c.qty,0); let profit=total-totalBuy; const currentShift=getCurrentShiftByTime(); for(let c of cart){ let m=meds.find(mm=>mm.id===c.id); if(m) m.qty=Math.max(0,m.qty-c.qty); } localStorage.setItem('gp_meds', JSON.stringify(meds)); const rec={id:safeId(), items:cart, total, totalBuy, profit, by:currentUser.username, shift:currentUser.shift, jubaShift:currentShift, time:new Date().toISOString(), date:new Date().toISOString().slice(0,10), rate}; sales.unshift(rec); localStorage.setItem('gp_sales', JSON.stringify(sales.slice(0,1000))); if(firebaseEnabled){ try{ for(let c of cart){ let m=meds.find(mm=>mm.id===c.id); if(m) await setDoc(doc(db,'meds',m.id), {...m, ts:serverTimestamp()}); } await addDoc(collection(db,'sales'), {...rec, ts:serverTimestamp()}); }catch(e){} } cart=[]; renderCart(); renderStock(); renderReports(); loadShiftReports(); searchMeds(''); alert('Sale: '+total.toLocaleString()+' SSP'); };
+
+window.renderStock=(filter='')=>{ const tbody=document.getElementById('stockTable'); if(!tbody) return; let list=[...meds]; const filterType=document.getElementById('expiryFilter').value; if(filterType==='Expired') list=list.filter(m=>getExpiryStatus(m.expiry).days<0); else if(filterType==='Expiring60') list=list.filter(m=>{ const d=getExpiryStatus(m.expiry).days; return d>=0 && d<=60; }); else if(filterType==='LowStock') list=list.filter(m=> m.qty<=5 || getStockDaysLeft(m)<=60); if(filter){ const f=filter.toLowerCase(); list=list.filter(m=>(m.name||'').toLowerCase().includes(f)); } tbody.innerHTML=list.slice(0,300).map(m=>{ const ex=getExpiryStatus(m.expiry); const daysLeft=getStockDaysLeft(m); const stockWarn=daysLeft<=60 || m.qty<=5; return `<tr class="border-b hover:bg-gray-50 ${ex.row} ${stockWarn?'bg-orange-50':''}"><td class="p-2 font-bold text-[11px]">${esc(m.name)}</td><td class="p-2">$${m.salesPrice}</td><td class="p-2 text-green-600 font-bold">${(m.sell-m.buy).toLocaleString()}</td><td class="p-2 font-bold ${m.qty<=5?'text-red-600':''}">${m.qty}</td><td class="p-2"><span class="badge ${ex.cls}">${ex.text}</span></td><td class="p-2 ${daysLeft<=60?'text-red-600 font-bold':''}">${daysLeft===9999?'No sales':daysLeft+'d'}</td><td class="p-2"><button onclick="deleteMed('${m.id}')" class="text-red-500 text-[10px]">Del</button></td></tr>`; }).join(''); };
+window.deleteMed=async(id)=>{ if(currentUser.shift!=='Admin') return alert('Only Admin'); if(!confirm('Delete?')) return; meds=meds.filter(m=>m.id!==id); localStorage.setItem('gp_meds', JSON.stringify(meds)); if(firebaseEnabled){ try{ await deleteDoc(doc(db,'meds',id)); }catch(e){} } renderStock(); renderReports(); };
+window.goToStockFilter=(type)=>{ document.getElementById('expiryFilter').value=type; showTab('stock'); renderStock(); };
+window.showWeeklyDetail=()=>{ const weekAgo=new Date(); weekAgo.setDate(weekAgo.getDate()-7); alert('Last 7 days sales: '+sales.filter(s=>new Date(s.date)>=weekAgo).length+' transactions'); };
+window.showMonthlyDetail=()=>{ const today=new Date().toISOString().slice(0,7); alert('This month sales: '+sales.filter(s=>s.date.slice(0,7)===today).length+' transactions'); };
+
+function renderReports(){ 
+  const today=new Date().toISOString().slice(0,10); const now=new Date(); const weekAgo=new Date(now); weekAgo.setDate(now.getDate()-7);
+  let filteredSales=sales; let filteredExpenses=expenses;
+  if(currentUser.shift!=='Admin'){ filteredSales=sales.filter(s=>s.jubaShift===currentUser.shift); filteredExpenses=expenses.filter(e=>e.shift===currentUser.shift); }
+  const todaySales=filteredSales.filter(s=>s.date===today); const todayExpenses=filteredExpenses.filter(e=>e.date===today);
+  const weekSales=filteredSales.filter(s=>new Date(s.date)>=weekAgo); const weekExpenses=filteredExpenses.filter(e=>new Date(e.date)>=weekAgo);
+  const monthSales=filteredSales.filter(s=>s.date.slice(0,7)===today.slice(0,7)); const monthExpenses=filteredExpenses.filter(e=>e.date.slice(0,7)===today.slice(0,7));
+  const todayGross=todaySales.reduce((s,x)=>s+(x.profit||0),0); const todayExp=todayExpenses.reduce((s,x)=>s+x.amount,0); const todayNet=todayGross-todayExp;
+  const weekGross=weekSales.reduce((s,x)=>s+(x.profit||0),0); const weekExp=weekExpenses.reduce((s,x)=>s+x.amount,0); const weekNet=weekGross-weekExp;
+  const monthGross=monthSales.reduce((s,x)=>s+(x.profit||0),0); const monthExp=monthExpenses.reduce((s,x)=>s+x.amount,0); const monthNet=monthGross-monthExp;
+  const set=(id,txt)=>{ const el=document.getElementById(id); if(el) el.textContent=txt; };
+  set('repTodaySSP', todaySales.reduce((s,x)=>s+x.total,0).toLocaleString()+' SSP'); set('repTodayProfit', todayNet.toLocaleString()+' Net (Gross '+todayGross.toLocaleString()+')'); set('repTodayCount', todaySales.length+' sales • '+todayExp.toLocaleString()+' Exp');
+  set('repWeekSSP', weekSales.reduce((s,x)=>s+x.total,0).toLocaleString()+' SSP'); set('repWeekProfit', weekNet.toLocaleString()+' Net'); set('repWeekCount', weekSales.length+' sales');
+  set('repMonthSSP', monthSales.reduce((s,x)=>s+x.total,0).toLocaleString()+' SSP'); set('repMonthProfit', monthNet.toLocaleString()+' Net'); set('repMonthCount', monthSales.length+' sales');
+  set('repStockSell', meds.reduce((a,b)=>a+b.sell*b.qty,0).toLocaleString()+' SSP'); set('repStockProfit', meds.reduce((a,b)=>a+(b.sell-b.buy)*b.qty,0).toLocaleString()+' SSP Profit');
+  // ALERTS
+  const expiring=meds.filter(m=>{ const d=getExpiryStatus(m.expiry).days; return d>=0 && d<=60; }).length;
+  const expired=meds.filter(m=>getExpiryStatus(m.expiry).days<0).length;
+  const lowStock=meds.filter(m=> m.qty<=5 || getStockDaysLeft(m)<=60).length;
+  set('alertExpiring', expiring); set('alertExpired', expired); set('alertLowStock', lowStock); set('alertTotalStock', meds.length);
+  renderDailyReportSameShape(today); renderMonthlyCalendar();
 }
 window.renderReports=renderReports;
-function renderMonthlyCalendar(){ const tbody=document.getElementById('monthlyTable'); if(!tbody) return; const today=new Date(); const year=today.getFullYear(); const month=today.getMonth(); const daysInMonth=new Date(year, month+1, 0).getDate(); let rows=''; let chartLabels=[]; let chartData=[]; let chartNet=[]; for(let d=1; d<=daysInMonth; d++){ const dateStr=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; let daySales=sales.filter(s=>s.date===dateStr); let dayExps=expenses.filter(e=>e.date===dateStr); if(currentUser.shift!=='Admin'){ daySales=daySales.filter(s=>s.jubaShift===currentUser.shift); dayExps=dayExps.filter(e=>e.shift===currentUser.shift); } const total=daySales.reduce((a,b)=>a+b.total,0); const profit=daySales.reduce((a,b)=>a+(b.profit||0),0); const expTotal=dayExps.reduce((a,b)=>a+b.amount,0); const net=profit-expTotal; const morning=daySales.filter(s=>s.jubaShift==='Morning').reduce((a,b)=>a+b.total,0); const evening=daySales.filter(s=>s.jubaShift==='Evening').reduce((a,b)=>a+b.total,0); if(total>0 || expTotal>0){ rows+=`<tr class="border-b hover:bg-gray-50 cursor-pointer" onclick="renderDailyDetail('${dateStr}')"><td class="p-2 font-bold">${dateStr}</td><td class="p-2">${morning.toLocaleString()}</td><td class="p-2">${evening.toLocaleString()}</td><td class="p-2 font-bold">${total.toLocaleString()}</td><td class="p-2 ${net>=0?'text-green-600':'text-red-600'} font-bold">${net.toLocaleString()}<br><span class="text-[9px] text-gray-400">Exp ${expTotal.toLocaleString()}</span></td></tr>`; chartLabels.push(String(d)); chartData.push(total); chartNet.push(net); } } if(rows==='') tbody.innerHTML='<tr><td colspan="5" class="p-4 text-center text-gray-400">No sales this month</td></tr>'; else tbody.innerHTML=rows; const ctx=document.getElementById('monthlyChart'); if(ctx){ if(monthlyChartInstance) monthlyChartInstance.destroy(); monthlyChartInstance=new Chart(ctx, {type:'bar', data:{labels:chartLabels, datasets:[{label:'Sales', data:chartData, backgroundColor:'#0A5C36'}, {label:'Net Profit', data:chartNet, backgroundColor:'#C8A951'}]}, options:{responsive:true}}); } }
-window.renderDailyReportSameShape=(dateStr)=>{ if(!dateStr) dateStr=new Date().toISOString().slice(0,10); const dateInput=document.getElementById('dailyReportDate'); if(dateInput) dateInput.value=dateStr; let filtered=sales.filter(s=>s.date===dateStr); if(currentUser.shift!=='Admin') filtered=filtered.filter(s=>s.jubaShift===currentUser.shift); const map={}; for(let sale of filtered){ for(let item of (sale.items||[])){ if(!map[item.id]) map[item.id]={name:item.name, qty:0, sales:0, profit:0, id:item.id}; map[item.id].qty+=item.qty||0; map[item.id].sales+=(item.sell*item.qty)||0; map[item.id].profit+=((item.sell-item.buy)*item.qty)||0; } } const sorted=Object.values(map).sort((a,b)=>b.qty-a.qty); const tbody=document.getElementById('dailyReportTableSameShape'); if(!tbody) return; if(sorted.length===0) tbody.innerHTML='<tr><td colspan="6" class="p-4 text-center text-gray-400">No sales on this date</td></tr>'; else tbody.innerHTML=sorted.map((item,idx)=>{ const med=meds.find(m=>m.id===item.id); const stockLeft=med?med.qty:0; return `<tr class="border-b"><td class="p-2">${idx+1}</td><td class="p-2 font-bold">${esc(item.name)}</td><td class="p-2 text-center font-bold">${item.qty}</td><td class="p-2 text-center">${item.sales.toLocaleString()}</td><td class="p-2 text-center text-green-600 font-bold">${item.profit.toLocaleString()}</td><td class="p-2 text-center ${stockLeft<=5?'text-red-600':''}">${stockLeft}</td></tr>`; }).join(''); };
-window.renderDailyDetail=(dateStr)=>{ if(!dateStr) return; const box=document.getElementById('dailyDetailBox'); if(!box) return; box.classList.remove('hidden'); const dayExps=expenses.filter(e=>e.date===dateStr); const daySales=sales.filter(s=>s.date===dateStr); const expTotal=dayExps.reduce((a,b)=>a+b.amount,0); const salesTotal=daySales.reduce((a,b)=>a+b.total,0); const gross=daySales.reduce((a,b)=>a+(b.profit||0),0); const net=gross-expTotal; box.innerHTML=`<div class="flex justify-between items-center mb-3"><h4 class="font-bold">Detail: ${dateStr} - Net ${net.toLocaleString()} SSP</h4><button onclick="document.getElementById('dailyDetailBox').classList.add('hidden')" class="border px-3 py-1 rounded-full text-[11px]">Close</button></div><p class="text-[12px]">Sales: ${salesTotal.toLocaleString()} • Gross: ${gross.toLocaleString()} • Expenses: ${expTotal.toLocaleString()} • Net: ${net.toLocaleString()} SSP</p>`; };
-function loadShiftReports(){ const today=new Date().toISOString().slice(0,10); const morningSales=sales.filter(s=>s.jubaShift==='Morning' && s.date===today); const eveningSales=sales.filter(s=>s.jubaShift==='Evening' && s.date===today); const set=(id,val)=>{ const el=document.getElementById(id); if(el) el.textContent=val; }; set('morningSales', morningSales.reduce((s,x)=>s+x.total,0).toLocaleString()+' SSP'); set('morningTrans', morningSales.length.toString()); set('morningProfit', (morningSales.reduce((s,x)=>s+(x.profit||0),0) - expenses.filter(e=>e.date===today && e.shift==='Morning').reduce((a,b)=>a+b.amount,0)).toLocaleString()+' SSP Net'); set('eveningSales', eveningSales.reduce((s,x)=>s+x.total,0).toLocaleString()+' SSP'); set('eveningTrans', eveningSales.length.toString()); set('eveningProfit', (eveningSales.reduce((s,x)=>s+(x.profit||0),0) - expenses.filter(e=>e.date===today && e.shift==='Evening').reduce((a,b)=>a+b.amount,0)).toLocaleString()+' SSP Net'); const mCard=document.getElementById('morningShiftCard'); const eCard=document.getElementById('eveningShiftCard'); if(mCard && !document.getElementById('btnCloseMorning')){ const btn=document.createElement('button'); btn.id='btnCloseMorning'; btn.textContent='Close Morning Shift'; btn.className='btn w-full mt-3 py-3'; btn.onclick=()=>closeCurrentShiftWithReport('Morning'); mCard.appendChild(btn); } if(eCard && !document.getElementById('btnCloseEvening')){ const btn=document.createElement('button'); btn.id='btnCloseEvening'; btn.textContent='Close Evening Shift'; btn.className='btn w-full mt-3 py-3 bg-[#5B21B6]'; btn.onclick=()=>closeCurrentShiftWithReport('Evening'); eCard.appendChild(btn); } const tbody=document.getElementById('shiftReportsTable'); if(!tbody) return; let filteredReports=shiftReports; if(currentUser.shift!=='Admin') filteredReports=shiftReports.filter(r=>r.shift===currentUser.shift); if(filteredReports.length===0) tbody.innerHTML=`<tr><td colspan="8" class="p-4 text-center text-gray-400">No closed reports yet</td></tr>`; else tbody.innerHTML=filteredReports.slice(0,50).map(r=>`<tr class="border-b"><td class="p-2">${new Date(r.closedAt).toLocaleString()}</td><td class="p-2"><span class="badge ${r.shift==='Morning'?'badge-morning':'badge-evening'}">${r.shift}</span></td><td class="p-2">${esc(r.closedBy)}</td><td class="p-2 font-bold">${r.totalSales.toLocaleString()} SSP</td><td class="p-2 text-green-600 font-bold">${r.totalProfit.toLocaleString()}</td><td class="p-2">${r.transactions}</td><td class="p-2 text-red-600">${(r.totalExpenses||0).toLocaleString()}</td><td class="p-2 font-bold bg-gray-50">${(r.netCash||r.totalSales-(r.totalExpenses||0)).toLocaleString()} SSP</td></tr>`).join(''); }
+function renderMonthlyCalendar(){ const tbody=document.getElementById('monthlyTable'); if(!tbody) return; const today=new Date(); const year=today.getFullYear(); const month=today.getMonth(); const daysInMonth=new Date(year, month+1, 0).getDate(); let rows=''; for(let d=1; d<=daysInMonth; d++){ const dateStr=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; let daySales=sales.filter(s=>s.date===dateStr); let dayExps=expenses.filter(e=>e.date===dateStr); if(currentUser.shift!=='Admin'){ daySales=daySales.filter(s=>s.jubaShift===currentUser.shift); dayExps=dayExps.filter(e=>e.shift===currentUser.shift); } const total=daySales.reduce((a,b)=>a+b.total,0); const profit=daySales.reduce((a,b)=>a+(b.profit||0),0); const expTotal=dayExps.reduce((a,b)=>a+b.amount,0); const net=profit-expTotal; if(total>0 || expTotal>0){ rows+=`<tr class="border-b hover:bg-gray-50 clickable" onclick="renderDailyDetail('${dateStr}')"><td class="p-1.5 font-bold">${dateStr}</td><td class="p-1.5">${daySales.filter(s=>s.jubaShift==='Morning').reduce((a,b)=>a+b.total,0).toLocaleString()}</td><td class="p-1.5">${daySales.filter(s=>s.jubaShift==='Evening').reduce((a,b)=>a+b.total,0).toLocaleString()}</td><td class="p-1.5 font-bold">${total.toLocaleString()}</td><td class="p-1.5 ${net>=0?'text-green-600':'text-red-600'} font-bold">${net.toLocaleString()}</td></tr>`; } } tbody.innerHTML=rows||'<tr><td colspan="5" class="p-4 text-center text-gray-400 text-[11px]">No data</td></tr>'; }
+window.renderDailyReportSameShape=(dateStr)=>{ if(!dateStr) dateStr=new Date().toISOString().slice(0,10); const dateInput=document.getElementById('dailyReportDate'); if(dateInput) dateInput.value=dateStr; let filtered=sales.filter(s=>s.date===dateStr); if(currentUser.shift!=='Admin') filtered=filtered.filter(s=>s.jubaShift===currentUser.shift); const map={}; for(let sale of filtered){ for(let item of (sale.items||[])){ if(!map[item.id]) map[item.id]={name:item.name, qty:0, sales:0, profit:0, id:item.id}; map[item.id].qty+=item.qty||0; map[item.id].sales+=(item.sell*item.qty)||0; map[item.id].profit+=((item.sell-item.buy)*item.qty)||0; } } const sorted=Object.values(map).sort((a,b)=>b.qty-a.qty); const tbody=document.getElementById('dailyReportTableSameShape'); if(!tbody) return; if(sorted.length===0) tbody.innerHTML='<tr><td colspan="6" class="p-4 text-center text-gray-400 text-[11px]">No sales</td></tr>'; else tbody.innerHTML=sorted.map((item,idx)=>{ const med=meds.find(m=>m.id===item.id); const stockLeft=med?med.qty:0; return `<tr class="border-b clickable" onclick="goToStockFilter('All')"><td class="p-1.5">${idx+1}</td><td class="p-1.5 font-bold">${esc(item.name)}</td><td class="p-1.5 text-center">${item.qty}</td><td class="p-1.5 text-center">${item.sales.toLocaleString()}</td><td class="p-1.5 text-center text-green-600 font-bold">${item.profit.toLocaleString()}</td><td class="p-1.5 text-center ${stockLeft<=5?'text-red-600':''}">${stockLeft}</td></tr>`; }).join(''); };
+window.renderDailyDetail=(dateStr)=>{ const box=document.getElementById('dailyDetailBox'); if(!box) return; box.classList.remove('hidden'); const dayExps=expenses.filter(e=>e.date===dateStr); const daySales=sales.filter(s=>s.date===dateStr); const expTotal=dayExps.reduce((a,b)=>a+b.amount,0); const salesTotal=daySales.reduce((a,b)=>a+b.total,0); const gross=daySales.reduce((a,b)=>a+(b.profit||0),0); const net=gross-expTotal; box.innerHTML=`<div class="flex justify-between"><h4 class="font-bold">${dateStr} - Net ${net.toLocaleString()} SSP</h4><button onclick="this.closest('#dailyDetailBox').classList.add('hidden')" class="border px-2 py-1 rounded text-[10px]">Close</button></div><p class="text-[11px] mt-1">Sales ${salesTotal.toLocaleString()} • Gross ${gross.toLocaleString()} • Exp ${expTotal.toLocaleString()} • Net ${net.toLocaleString()}</p><button onclick="renderDailyReportSameShape('${dateStr}')" class="btn text-[10px] mt-2">View Sales List →</button>`; box.scrollIntoView({behavior:'smooth'}); };
+
+function loadShiftReports(){ const today=new Date().toISOString().slice(0,10); const morningSales=sales.filter(s=>s.jubaShift==='Morning' && s.date===today); const eveningSales=sales.filter(s=>s.jubaShift==='Evening' && s.date===today); const set=(id,val)=>{ const el=document.getElementById(id); if(el) el.textContent=val; }; set('morningSales', morningSales.reduce((s,x)=>s+x.total,0).toLocaleString()+' SSP'); set('morningTrans', morningSales.length.toString()); set('morningProfit', (morningSales.reduce((s,x)=>s+(x.profit||0),0) - expenses.filter(e=>e.date===today && e.shift==='Morning').reduce((a,b)=>a+b.amount,0)).toLocaleString()+' SSP Net'); set('eveningSales', eveningSales.reduce((s,x)=>s+x.total,0).toLocaleString()+' SSP'); set('eveningTrans', eveningSales.length.toString()); set('eveningProfit', (eveningSales.reduce((s,x)=>s+(x.profit||0),0) - expenses.filter(e=>e.date===today && e.shift==='Evening').reduce((a,b)=>a+b.amount,0)).toLocaleString()+' SSP Net'); const tbody=document.getElementById('shiftReportsTable'); if(!tbody) return; let filtered=shiftReports; if(currentUser.shift!=='Admin') filtered=shiftReports.filter(r=>r.shift===currentUser.shift); if(filtered.length===0) tbody.innerHTML=`<tr><td colspan="5" class="p-4 text-center text-gray-400 text-[11px]">No reports</td></tr>`; else tbody.innerHTML=filtered.slice(0,50).map(r=>`<tr class="border-b clickable" onclick="renderDailyReportSameShape('${r.date}')"><td class="p-1.5">${new Date(r.closedAt).toLocaleDateString()}</td><td class="p-1.5"><span class="badge ${r.shift==='Morning'?'bg-yellow-100':'bg-purple-100'}">${r.shift}</span></td><td class="p-1.5 font-bold">${r.totalSales.toLocaleString()}</td><td class="p-1.5 text-red-600">${(r.totalExpenses||0).toLocaleString()}</td><td class="p-1.5 font-bold bg-gray-50">${(r.netCash||0).toLocaleString()}</td></tr>`).join(''); }
 window.loadShiftReports=loadShiftReports;
-window.closeShift=async(shift)=>{ const today=new Date().toISOString().slice(0,10); const shiftSales=sales.filter(s=>s.jubaShift===shift && s.date===today); const totalSales=shiftSales.reduce((s,x)=>s+x.total,0); const totalProfit=shiftSales.reduce((s,x)=>s+(x.profit||0),0); const transactions=shiftSales.length; const totalExpenses=expenses.filter(e=>e.date===today && e.shift===shift).reduce((a,b)=>a+b.amount,0); const recCollected=debtPayments.filter(p=>p.date===today && p.type==='receivable').reduce((a,b)=>a+b.paidAmount,0); const payPaid=debtPayments.filter(p=>p.date===today && p.type==='payable').reduce((a,b)=>a+b.paidAmount,0); const netCash=totalSales - totalExpenses + recCollected - payPaid; const report={id:safeId(), date:today, shift, totalSales, totalProfit, totalExpenses, transactions, recCollected, payPaid, netCash, closedBy:currentUser.username, closedAt:new Date().toISOString(), rate, status:'Closed'}; shiftReports.unshift(report); localStorage.setItem('gp_shift_reports', JSON.stringify(shiftReports.slice(0,200))); if(firebaseEnabled){ try{ await addDoc(collection(db,'shiftReports'), {...report, ts:serverTimestamp()}); }catch(e){} } await addAudit('CLOSE_SHIFT', `${shift} closed - Sales ${totalSales} - Net Cash ${netCash}`, totalProfit); loadShiftReports(); renderReports(); };
-window.closeCurrentShiftWithReport=async(requestedShift=null)=>{ const currShift=requestedShift || getCurrentShiftByTime(); const today=new Date().toISOString().slice(0,10); const shiftSales=sales.filter(s=>s.jubaShift===currShift && s.date===today); const totalSales=shiftSales.reduce((a,b)=>a+b.total,0); const totalExpenses=expenses.filter(e=>e.date===today && e.shift===currShift).reduce((a,b)=>a+b.amount,0); const totalProfit=shiftSales.reduce((a,b)=>a+(b.profit||0),0); const recCollected=debtPayments.filter(p=>p.date===today && p.type==='receivable').reduce((a,b)=>a+b.paidAmount,0); const payPaid=debtPayments.filter(p=>p.date===today && p.type==='payable').reduce((a,b)=>a+b.paidAmount,0); const netCash=totalSales-totalExpenses+recCollected-payPaid; const netProfit=totalProfit-totalExpenses; const html=`<div class="space-y-3"><div class="p-3 bg-gray-50 border rounded-xl text-center"><p class="font-bold">${currShift} Shift - ${today}</p><p class="text-[12px]">Cashier: ${currentUser.username} | Rate: ${rate.toLocaleString()} SSP</p></div><div class="grid grid-cols-2 gap-2 text-[12px]"><div class="bg-white p-3 rounded-xl border text-center"><p>Total Sales</p><p class="font-bold text-[16px]">${totalSales.toLocaleString()} SSP</p></div><div class="bg-white p-3 rounded-xl border text-center"><p>Expenses</p><p class="font-bold text-[16px] text-red-600">${totalExpenses.toLocaleString()} SSP</p></div><div class="bg-white p-3 rounded-xl border text-center"><p>Gross Profit</p><p class="font-bold">${totalProfit.toLocaleString()} SSP</p></div><div class="bg-[#0A5C36] p-3 rounded-xl text-white text-center"><p>Net Cash Handover</p><p class="font-bold text-[18px] text-[#C8A951]">${netCash.toLocaleString()} SSP</p><p class="text-[10px]">Net Profit ${netProfit.toLocaleString()}</p></div></div></div>`; showModal(`Close ${currShift} Shift - ${today}`, html, true, async()=>{ await closeShift(currShift); showModal('Shift Closed', `${currShift} Shift Closed Successfully<br>Cash Handover: ${netCash.toLocaleString()} SSP<br>Net Profit: ${netProfit.toLocaleString()} SSP`); }); };
-function renderExpenses(){ const tbody=document.getElementById('expTable'); const badge=document.getElementById('expTotalBadge'); if(!tbody) return; let sorted=[...expenses].sort((a,b)=> new Date(b.date) - new Date(a.date) || new Date(b.time) - new Date(a.time)); if(currentUser.shift!=='Admin') sorted=sorted.filter(e=>e.shift===currentUser.shift); if(badge) badge.textContent=`${sorted.length} Expenses - Total ${sorted.reduce((a,b)=>a+b.amount,0).toLocaleString()} SSP (Deducted)`; if(sorted.length===0){ tbody.innerHTML=`<tr><td colspan="6" class="p-6 text-center text-gray-400">No expenses found</td></tr>`; return; } const grouped={}; sorted.forEach(e=>{ if(!grouped[e.date]) grouped[e.date]=[]; grouped[e.date].push(e); }); let html=''; Object.keys(grouped).sort().reverse().forEach(date=>{ const dayExps=grouped[date]; const total=dayExps.reduce((a,b)=>a+b.amount,0); html+=`<tr class="bg-[#0A5C36]/5 border-b-2 border-[#0A5C36]/20 cursor-pointer hover:bg-[#0A5C36]/10" onclick="renderExpensesDetail('${date}')"><td class="p-3 font-bold text-[#0A5C36]">📅 ${date}</td><td class="p-3 font-bold text-[12px]">${dayExps.length} expenses</td><td class="p-3 font-bold text-red-600">${total.toLocaleString()} SSP</td><td colspan="3" class="p-3 text-[11px] text-gray-500">Click for details → Affects Net Profit</td></tr>`; dayExps.forEach(e=>{ html+=`<tr class="hover:bg-gray-50 text-[12px]"><td class="p-2.5 text-gray-400 text-[11px]">${new Date(e.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</td><td class="p-2.5"><span class="font-bold">${esc(e.title)}</span><br><span class="text-[10px] bg-gray-100 px-2 py-0.5 rounded-full">${esc(e.cat||'General')}</span></td><td class="p-2.5 font-bold text-red-600">${e.amount.toLocaleString()} SSP</td><td class="p-2.5"><span class="badge ${e.shift==='Morning'?'badge-morning':'badge-evening'}">${esc(e.shift||'-')}</span></td><td class="p-2.5">${esc(e.by||'-')}</td><td class="p-2.5"><button onclick="delExp('${e.id}')" class="text-red-500 hover:bg-red-50 px-2 py-1 rounded-full text-[11px]">Delete</button></td></tr>`; }); }); tbody.innerHTML=html; }
+window.closeShift=async(shift)=>{ const today=new Date().toISOString().slice(0,10); const shiftSales=sales.filter(s=>s.jubaShift===shift && s.date===today); const totalSales=shiftSales.reduce((s,x)=>s+x.total,0); const totalProfit=shiftSales.reduce((s,x)=>s+(x.profit||0),0); const totalExpenses=expenses.filter(e=>e.date===today && e.shift===shift).reduce((a,b)=>a+b.amount,0); const netCash=totalSales-totalExpenses; const report={id:safeId(), date:today, shift, totalSales, totalProfit, totalExpenses, transactions:shiftSales.length, netCash, closedBy:currentUser.username, closedAt:new Date().toISOString()}; shiftReports.unshift(report); localStorage.setItem('gp_shift_reports', JSON.stringify(shiftReports.slice(0,200))); if(firebaseEnabled){ try{ await addDoc(collection(db,'shiftReports'), {...report, ts:serverTimestamp()}); }catch(e){} } loadShiftReports(); renderReports(); alert(`${shift} Closed - Net Cash ${netCash.toLocaleString()} SSP`); };
+window.closeCurrentShiftWithReport=async(s)=>{ const curr=s||getCurrentShiftByTime(); if(!confirm(`Close ${curr} Shift?`)) return; await closeShift(curr); };
+
+function renderExpenses(){ const tbody=document.getElementById('expTable'); if(!tbody) return; let sorted=[...expenses].sort((a,b)=> new Date(b.date)-new Date(a.date)); if(currentUser.shift!=='Admin') sorted=sorted.filter(e=>e.shift===currentUser.shift); if(sorted.length===0){ tbody.innerHTML=`<tr><td colspan="4" class="p-4 text-center text-gray-400 text-[11px]">No expenses</td></tr>`; return; } tbody.innerHTML=sorted.map(e=>`<tr class="border-b hover:bg-gray-50 clickable" onclick="renderDailyReportSameShape('${e.date}')"><td class="p-2">${esc(e.date)}</td><td class="p-2 font-bold">${esc(e.title)}<br><span class="text-[9px] bg-gray-100 px-1 rounded">${esc(e.cat||'')}</span></td><td class="p-2 font-bold text-red-600">${e.amount.toLocaleString()}</td><td class="p-2"><button onclick="event.stopPropagation(); delExp('${e.id}')" class="text-red-500 text-[10px]">Del</button></td></tr>`).join(''); }
 window.renderExpenses=renderExpenses;
-window.renderExpensesDetail=(dateStr)=>{ const box=document.getElementById('expDailyDetail'); if(!box) return; box.classList.remove('hidden'); let filtered=expenses.filter(e=>e.date===dateStr); if(currentUser.shift!=='Admin') filtered=filtered.filter(e=>e.shift===currentUser.shift); const total=filtered.reduce((a,b)=>a+b.amount,0); const salesDay=sales.filter(s=>s.date===dateStr).reduce((a,b)=>a+(b.profit||0),0); const net=salesDay-total; box.innerHTML=`<div class="flex justify-between items-center mb-3"><h4 class="font-bold text-[#0A5C36]">Expenses ${dateStr} • ${total.toLocaleString()} SSP • Net ${net.toLocaleString()}</h4><button onclick="this.closest('#expDailyDetail').classList.add('hidden')" class="border bg-white px-4 py-1.5 rounded-full text-[12px] font-bold">Back</button></div><div class="bg-white border rounded-xl overflow-hidden"><table class="w-full text-[12px]"><thead class="bg-gray-50"><tr><th class="p-2.5 text-left">Time</th><th class="p-2.5 text-left">Title</th><th class="p-2.5">Amount</th><th class="p-2.5">By</th></tr></thead><tbody class="divide-y">${filtered.sort((a,b)=>new Date(b.time)-new Date(a.time)).map(e=>`<tr><td class="p-2.5">${new Date(e.time).toLocaleTimeString()}<br><span class="text-gray-400">${esc(e.date)}</span></td><td class="p-2.5"><b>${esc(e.title)}</b><br><span class="text-[10px] bg-gray-100 px-2 py-0.5 rounded-full">${esc(e.cat||'')}</span></td><td class="p-2.5 font-bold text-red-600">${e.amount.toLocaleString()} SSP</td><td class="p-2.5">${esc(e.by||'-')}</td></tr>`).join('')}</tbody></table></div>`; box.scrollIntoView({behavior:'smooth'}); };
-window.addExpense=async()=>{ const title=document.getElementById('expTitle').value.trim(); const amount=parseInt(document.getElementById('expAmount').value||0); const date=document.getElementById('expDate').value||new Date().toISOString().slice(0,10); const cat=document.getElementById('expCat')?.value||'General'; if(!title||!amount){ showModal('Error','Title and Amount are required'); return; } const exp={id:safeId(), title:sanitizeStr(title,100), amount, date, cat, shift:getCurrentShiftByTime(), by:currentUser.username, time:new Date().toISOString(), rate}; expenses.unshift(exp); expenses.sort((a,b)=> new Date(b.date) - new Date(a.date) || new Date(b.time) - new Date(a.time)); localStorage.setItem('gp_expenses', JSON.stringify(expenses.slice(0,500))); if(firebaseEnabled){ try{ await setDoc(doc(db,'expenses',exp.id), {...exp, ts:serverTimestamp()}); }catch(e){} } await addAudit('EXPENSE', `${title} ${amount} SSP - ${cat}`,0); renderExpenses(); renderReports(); ['expTitle','expAmount'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; }); document.getElementById('expTitle').focus(); setTimeout(()=>{ renderExpensesDetail(date); },200); };
-window.delExp=async(id)=>{ if(!confirm('Delete this expense?')) return; expenses=expenses.filter(e=>e.id!==id); localStorage.setItem('gp_expenses', JSON.stringify(expenses)); if(firebaseEnabled){ try{ await deleteDoc(doc(db,'expenses',id)); }catch(e){} } renderExpenses(); renderReports(); };
+window.addExpense=async()=>{ const title=document.getElementById('expTitle').value.trim(); const amount=parseInt(document.getElementById('expAmount').value||0); const date=document.getElementById('expDate').value||new Date().toISOString().slice(0,10); const cat=document.getElementById('expCat')?.value||'General'; if(!title||!amount) return alert('Title & Amount required'); const exp={id:safeId(), title, amount, date, cat, shift:getCurrentShiftByTime(), by:currentUser.username, time:new Date().toISOString(), rate}; expenses.unshift(exp); localStorage.setItem('gp_expenses', JSON.stringify(expenses.slice(0,500))); if(firebaseEnabled){ try{ await setDoc(doc(db,'expenses',exp.id), {...exp, ts:serverTimestamp()}); }catch(e){} } renderExpenses(); renderReports(); document.getElementById('expTitle').value=''; document.getElementById('expAmount').value=''; };
+window.delExp=async(id)=>{ if(!confirm('Delete?')) return; expenses=expenses.filter(e=>e.id!==id); localStorage.setItem('gp_expenses', JSON.stringify(expenses)); if(firebaseEnabled){ try{ await deleteDoc(doc(db,'expenses',id)); }catch(e){} } renderExpenses(); renderReports(); };
 
-function renderDebts(){
-  const recTable=document.getElementById('debtReceivableTable');
-  const payTable=document.getElementById('debtPayableTable');
-  const payHistTable=document.getElementById('debtPaymentsTable');
-  if(!recTable || !payTable) return;
-  let sorted=[...debts].sort((a,b)=> new Date(b.date) - new Date(a.date));
-  if(currentUser.shift!=='Admin') sorted=sorted.filter(d=>d.by===currentUser.username);
-  const receivable=sorted.filter(d=>d.type==='receivable');
-  const payable=sorted.filter(d=>d.type==='payable');
-  const recTotal=receivable.reduce((s,d)=>s+(d.balance||0),0);
-  const payTotal=payable.reduce((s,d)=>s+(d.balance||0),0);
-  const net=recTotal-payTotal;
-  const set=(id,val)=>{ const el=document.getElementById(id); if(el) el.textContent=val; };
-  set('receivableTotal', recTotal.toLocaleString()+' SSP');
-  set('payableTotal', payTotal.toLocaleString()+' SSP');
-  set('debtReceivableBadge', 'Receivable (لينا): '+recTotal.toLocaleString()+' SSP');
-  set('debtPayableBadge', 'Payable (علينا): '+payTotal.toLocaleString()+' SSP');
-  set('debtBalanceBadge', 'Net: '+net.toLocaleString()+' SSP');
-  if(receivable.length===0) recTable.innerHTML='<tr><td colspan="5" class="p-6 text-center text-gray-400">No receivables</td></tr>';
-  else recTable.innerHTML=receivable.map(d=>`<tr class="border-b hover:bg-blue-50 ${d.balance<=0?'bg-green-50':''}"><td class="p-2.5"><span class="font-bold">${esc(d.party)}</span><br><span class="text-[10px] text-gray-500">${esc(d.date)} • ${esc(d.note||'')}</span></td><td class="p-2.5 font-bold">${d.amount.toLocaleString()}</td><td class="p-2.5 text-green-600 font-bold">${(d.paid||0).toLocaleString()}</td><td class="p-2.5 font-bold ${d.balance>0?'text-red-600':'text-green-600'}">${(d.balance||0).toLocaleString()} SSP</td><td class="p-2.5"><div class="flex flex-col gap-1">${d.balance>0?`<button onclick="openPayDebt('${d.id}')" class="bg-blue-600 text-white px-2 py-1 rounded-full text-[10px]">Receive</button>`:''}<button onclick="deleteDebt('${d.id}')" class="text-red-500 text-[10px]">Delete</button></div></td></tr>`).join('');
-  if(payable.length===0) payTable.innerHTML='<tr><td colspan="5" class="p-6 text-center text-gray-400">No payables</td></tr>';
-  else payTable.innerHTML=payable.map(d=>`<tr class="border-b hover:bg-red-50 ${d.balance<=0?'bg-green-50':''}"><td class="p-2.5"><span class="font-bold">${esc(d.party)}</span><br><span class="text-[10px] text-gray-500">${esc(d.date)} • ${esc(d.note||'')}</span></td><td class="p-2.5 font-bold">${d.amount.toLocaleString()}</td><td class="p-2.5 text-green-600 font-bold">${(d.paid||0).toLocaleString()}</td><td class="p-2.5 font-bold ${d.balance>0?'text-red-600':'text-green-600'}">${(d.balance||0).toLocaleString()} SSP</td><td class="p-2.5"><div class="flex flex-col gap-1">${d.balance>0?`<button onclick="openPayDebt('${d.id}')" class="bg-red-600 text-white px-2 py-1 rounded-full text-[10px]">Pay</button>`:''}<button onclick="deleteDebt('${d.id}')" class="text-red-500 text-[10px]">Delete</button></div></td></tr>`).join('');
-  if(payHistTable){
-    if(debtPayments.length===0) payHistTable.innerHTML='<tr><td colspan="6" class="p-4 text-center text-gray-400">No payments yet</td></tr>';
-    else payHistTable.innerHTML=debtPayments.slice(0,100).map(p=>`<tr class="border-b hover:bg-gray-50"><td class="p-2">${esc(p.date)}</td><td class="p-2 font-bold">${esc(p.party)}</td><td class="p-2"><span class="badge ${p.type==='receivable'?'bg-blue-100 text-blue-700':'bg-red-100 text-red-700'}">${p.type==='receivable'?'لينا':'علينا'}</span></td><td class="p-2 font-bold text-green-600">${p.paidAmount.toLocaleString()} SSP</td><td class="p-2">${p.remaining.toLocaleString()} SSP</td><td class="p-2">${esc(p.by)}</td></tr>`).join('');
-  }
-}
+function renderDebts(){ const recTable=document.getElementById('debtReceivableTable'); const payTable=document.getElementById('debtPayableTable'); if(!recTable) return; let sorted=[...debts].sort((a,b)=> new Date(b.date)-new Date(a.date)); if(currentUser.shift!=='Admin') sorted=sorted.filter(d=>d.by===currentUser.username); const rec=sorted.filter(d=>d.type==='receivable'); const pay=sorted.filter(d=>d.type==='payable'); document.getElementById('receivableTotal').textContent=rec.reduce((s,d)=>s+(d.balance||0),0).toLocaleString()+' SSP'; document.getElementById('payableTotal').textContent=pay.reduce((s,d)=>s+(d.balance||0),0).toLocaleString()+' SSP'; recTable.innerHTML=rec.length===0?'<tr><td colspan="3" class="p-4 text-center text-gray-400 text-[11px]">No receivables</td></tr>':rec.map(d=>`<tr class="border-b hover:bg-blue-50"><td class="p-2"><span class="font-bold">${esc(d.party)}</span><br><span class="text-[9px] text-gray-500">${esc(d.date)}</span></td><td class="p-2 font-bold ${d.balance>0?'text-red-600':'text-green-600'}">${(d.balance||0).toLocaleString()}</td><td class="p-2"><button onclick="openPayDebt('${d.id}')" class="bg-blue-600 text-white px-2 py-1 rounded text-[10px]">Pay</button></td></tr>`).join(''); payTable.innerHTML=pay.length===0?'<tr><td colspan="3" class="p-4 text-center text-gray-400 text-[11px]">No payables</td></tr>':pay.map(d=>`<tr class="border-b hover:bg-red-50"><td class="p-2"><span class="font-bold">${esc(d.party)}</span><br><span class="text-[9px] text-gray-500">${esc(d.date)}</span></td><td class="p-2 font-bold ${d.balance>0?'text-red-600':'text-green-600'}">${(d.balance||0).toLocaleString()}</td><td class="p-2"><button onclick="openPayDebt('${d.id}')" class="bg-red-600 text-white px-2 py-1 rounded text-[10px]">Pay</button></td></tr>`).join(''); }
 window.renderDebts=renderDebts;
-window.addDebt=async()=>{
-  const type=document.getElementById('debtType').value;
-  const party=document.getElementById('debtParty').value.trim();
-  const amount=parseInt(document.getElementById('debtAmount').value||0);
-  const paid=parseInt(document.getElementById('debtPaid').value||0);
-  const date=document.getElementById('debtDate').value||new Date().toISOString().slice(0,10);
-  const phone=document.getElementById('debtPhone').value.trim();
-  const note=document.getElementById('debtNote').value.trim();
-  if(!party||!amount){ showModal('Error','Party name and Amount are required'); return; }
-  if(paid>amount){ showModal('Error','Paid cannot be more than Total Amount'); return; }
-  const debt={id:safeId(), type, party:sanitizeStr(party,100), amount, paid, balance:amount-paid, date, phone:sanitizeStr(phone,30), note:sanitizeStr(note,200), by:currentUser.username, shift:getCurrentShiftByTime(), time:new Date().toISOString(), rate};
-  debts.unshift(debt);
-  localStorage.setItem('gp_debts', JSON.stringify(debts.slice(0,500)));
-  if(paid>0){
-    const payment={id:safeId(), debtId:debt.id, party:debt.party, type:debt.type, paidAmount:paid, remaining:debt.balance, date, note:'Initial payment', by:currentUser.username, time:new Date().toISOString()};
-    debtPayments.unshift(payment);
-    localStorage.setItem('gp_debt_payments', JSON.stringify(debtPayments.slice(0,500)));
-  }
-  if(firebaseEnabled){ try{ await setDoc(doc(db,'debts',debt.id), {...debt, ts:serverTimestamp()}); }catch(e){} }
-  await addAudit('DEBT_ADD', `${type} - ${party} - ${amount} SSP`,0);
-  renderDebts();
-  ['debtParty','debtAmount','debtPaid','debtPhone','debtNote'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=id==='debtPaid'?'0':''; });
-  document.getElementById('debtDate').value=new Date().toISOString().slice(0,10);
-};
-window.openPayDebt=(id)=>{
-  const debt=debts.find(d=>d.id===id);
-  if(!debt) return;
-  payingDebtId=id;
-  document.getElementById('payDebtName').textContent=debt.party+' - '+(debt.type==='receivable'?'لينا':'علينا');
-  document.getElementById('payDebtBalance').textContent=debt.balance.toLocaleString()+' SSP Remaining';
-  document.getElementById('payDebtAmount').value='';
-  document.getElementById('payDebtPayDate').value=new Date().toISOString().slice(0,10);
-  document.getElementById('payDebtNote').value='';
-  document.getElementById('payDebtModal').classList.remove('hidden');
-};
+window.addDebt=async()=>{ const type=document.getElementById('debtType').value; const party=document.getElementById('debtParty').value.trim(); const amount=parseInt(document.getElementById('debtAmount').value||0); const paid=parseInt(document.getElementById('debtPaid').value||0); const date=document.getElementById('debtDate').value||new Date().toISOString().slice(0,10); if(!party||!amount) return alert('Name & Amount required'); const debt={id:safeId(), type, party, amount, paid, balance:amount-paid, date, by:currentUser.username, shift:getCurrentShiftByTime(), time:new Date().toISOString(), rate}; debts.unshift(debt); localStorage.setItem('gp_debts', JSON.stringify(debts.slice(0,500))); if(paid>0){ const pay={id:safeId(), debtId:debt.id, party:debt.party, type:debt.type, paidAmount:paid, remaining:debt.balance, date, by:currentUser.username, time:new Date().toISOString()}; debtPayments.unshift(pay); localStorage.setItem('gp_debt_payments', JSON.stringify(debtPayments.slice(0,500))); } if(firebaseEnabled){ try{ await setDoc(doc(db,'debts',debt.id), {...debt, ts:serverTimestamp()}); }catch(e){} } renderDebts(); document.getElementById('debtParty').value=''; document.getElementById('debtAmount').value=''; document.getElementById('debtPaid').value='0'; };
+window.openPayDebt=(id)=>{ const d=debts.find(x=>x.id===id); if(!d) return; payingDebtId=id; document.getElementById('payDebtName').textContent=d.party; document.getElementById('payDebtBalance').textContent=d.balance.toLocaleString()+' SSP'; document.getElementById('payDebtAmount').value=''; document.getElementById('payDebtPayDate').value=new Date().toISOString().slice(0,10); document.getElementById('payDebtNote').value=''; document.getElementById('payDebtModal').classList.remove('hidden'); };
 window.closePayDebt=()=>{ document.getElementById('payDebtModal').classList.add('hidden'); payingDebtId=null; };
-window.savePayDebt=async()=>{
-  if(!payingDebtId) return;
-  const debt=debts.find(d=>d.id===payingDebtId);
-  if(!debt) return;
-  const payAmount=parseInt(document.getElementById('payDebtAmount').value||0);
-  const payDate=document.getElementById('payDebtPayDate').value||new Date().toISOString().slice(0,10);
-  const note=document.getElementById('payDebtNote').value.trim();
-  if(!payAmount || payAmount<=0){ showModal('Error','Enter valid payment amount'); return; }
-  if(payAmount>debt.balance){ showModal('Error','Payment cannot exceed remaining balance: '+debt.balance.toLocaleString()+' SSP'); return; }
-  debt.paid+=payAmount;
-  debt.balance-=payAmount;
-  const payment={id:safeId(), debtId:debt.id, party:debt.party, type:debt.type, paidAmount:payAmount, remaining:debt.balance, date:payDate, note:sanitizeStr(note,200), by:currentUser.username, time:new Date().toISOString()};
-  debtPayments.unshift(payment);
-  localStorage.setItem('gp_debts', JSON.stringify(debts));
-  localStorage.setItem('gp_debt_payments', JSON.stringify(debtPayments.slice(0,500)));
-  if(debt.type==='payable'){
-    const exp={id:safeId(), title:`Payable Debt Payment - ${debt.party}`, amount:payAmount, date:payDate, cat:'Supplier Payment (Payable Debt)', shift:getCurrentShiftByTime(), by:currentUser.username, time:new Date().toISOString(), rate};
-    expenses.unshift(exp);
-    localStorage.setItem('gp_expenses', JSON.stringify(expenses.slice(0,500)));
-    if(firebaseEnabled){ try{ await setDoc(doc(db,'expenses',exp.id), {...exp, ts:serverTimestamp()}); }catch(e){} }
-  }
-  if(firebaseEnabled){ try{ await setDoc(doc(db,'debts',debt.id), {...debt, ts:serverTimestamp()}); await addDoc(collection(db,'debtPayments'), {...payment, ts:serverTimestamp()}); }catch(e){} }
-  await addAudit('DEBT_PAYMENT', `${debt.party} paid ${payAmount} SSP - Remaining ${debt.balance}`,0);
-  closePayDebt();
-  renderDebts();
-  renderExpenses();
-  renderReports();
-  showModal('Payment Recorded', `Paid ${payAmount.toLocaleString()} SSP<br>Remaining: ${debt.balance.toLocaleString()} SSP<br>${debt.balance===0?'✅ Fully Paid!':''}`);
-};
-window.deleteDebt=async(id)=>{
-  if(currentUser.shift!=='Admin'){ showModal('Access Denied','Only Admin can delete debts'); return; }
-  if(!confirm('Delete this debt record?')) return;
-  debts=debts.filter(d=>d.id!==id);
-  localStorage.setItem('gp_debts', JSON.stringify(debts));
-  if(firebaseEnabled){ try{ await deleteDoc(doc(db,'debts',id)); }catch(e){} }
-  renderDebts();
-};
+window.savePayDebt=async()=>{ if(!payingDebtId) return; const debt=debts.find(d=>d.id===payingDebtId); if(!debt) return; const amt=parseInt(document.getElementById('payDebtAmount').value||0); const date=document.getElementById('payDebtPayDate').value||new Date().toISOString().slice(0,10); const note=document.getElementById('payDebtNote').value.trim(); if(!amt||amt<=0) return alert('Enter amount'); if(amt>debt.balance) return alert('Exceeds balance'); debt.paid+=amt; debt.balance-=amt; const pay={id:safeId(), debtId:debt.id, party:debt.party, type:debt.type, paidAmount:amt, remaining:debt.balance, date, note, by:currentUser.username, time:new Date().toISOString()}; debtPayments.unshift(pay); localStorage.setItem('gp_debts', JSON.stringify(debts)); localStorage.setItem('gp_debt_payments', JSON.stringify(debtPayments.slice(0,500))); if(debt.type==='payable'){ const exp={id:safeId(), title:`Payable - ${debt.party}`, amount:amt, date, cat:'Payable', shift:getCurrentShiftByTime(), by:currentUser.username, time:new Date().toISOString(), rate}; expenses.unshift(exp); localStorage.setItem('gp_expenses', JSON.stringify(expenses.slice(0,500))); } if(firebaseEnabled){ try{ await setDoc(doc(db,'debts',debt.id), {...debt, ts:serverTimestamp()}); }catch(e){} } closePayDebt(); renderDebts(); renderExpenses(); renderReports(); alert('Paid '+amt.toLocaleString()+' SSP'); };
 
-window.soAddRow=()=>{ const tbody=document.getElementById('soTableBody'); const tr=document.createElement('tr'); tr.innerHTML=`<td class="p-1"><input class="inp so-item" placeholder="Item"></td><td class="p-1"><input type="number" class="inp so-qty" placeholder="Qty"></td><td class="p-1"><input type="number" step="0.01" class="inp so-rate" placeholder="Rate $"></td><td class="p-1"><input type="number" step="0.01" class="inp so-amount" placeholder="Amount $"></td><td class="p-1"><input type="date" class="inp so-expiry"></td><td class="p-1"><button onclick="this.closest('tr').remove(); updateSOTotals();" class="text-red-500 px-2">X</button></td>`; tbody.appendChild(tr); tr.querySelectorAll('input').forEach(inp=>inp.addEventListener('input', updateSOTotals)); };
-function updateSOTotals(){ let total=0; document.querySelectorAll('#soTableBody tr').forEach(tr=>{ const amount=parseFloat(tr.querySelector('.so-amount')?.value||0)||0; total+=amount; }); const usdEl=document.getElementById('soTotalUSD'); const sspEl=document.getElementById('soTotalSSP'); if(usdEl) usdEl.textContent=`USD ${total.toFixed(2)}`; if(sspEl) sspEl.textContent=`${(total*rate).toLocaleString()} SSP`; }
-window.clearSalesOrder=()=>{ document.getElementById('soTableBody').innerHTML=''; for(let i=0;i<3;i++) soAddRow(); updateSOTotals(); };
-window.saveSalesOrder=async()=>{ const rows=document.querySelectorAll('#soTableBody tr'); let saved=0; for(const tr of rows){ const item=tr.querySelector('.so-item').value.trim(); const qty=parseInt(tr.querySelector('.so-qty').value||0); if(!item||!qty) continue; const costVal=parseFloat(tr.querySelector('.so-rate').value||0); const salesVal=parseFloat(tr.querySelector('.so-amount').value||0); const buySSP=Math.round(costVal*rate); const sellSSP=Math.round(salesVal*rate); const med={id:safeId(), name:sanitizeStr(item,100), salesPrice:salesVal, cost:costVal, buy:buySSP, sell:sellSSP, qty, forecasted:qty, unit:'Units', expiry:tr.querySelector('.so-expiry').value||'2027-12-31', date:new Date().toISOString(), rateAtAdd: rate, internal:'', resp:'Administrator', fav:'Normal'}; if(firebaseEnabled){ try{ await setDoc(doc(db,'meds',med.id), {...med, ts:serverTimestamp()}); }catch(e){} } meds.unshift(med); saved++; } localStorage.setItem('gp_meds', JSON.stringify(meds)); renderStock(); renderReports(); clearSalesOrder(); showModal('Saved',`Saved ${saved} items to stock`); };
 function updateLiveTime(){ const el=document.getElementById('liveTime'); if(el) el.textContent=formatJubaTime()+' • '+getCurrentShiftByTime(); }
 setInterval(updateLiveTime, 60000);
-async function loadDebtsFB(){ if(!firebaseEnabled){ renderDebts(); return; } try{ const snap=await getDocs(query(collection(db,'debts'), orderBy('date','desc'), limit(200))); if(snap.size>0){ debts=snap.docs.map(d=>d.data()); localStorage.setItem('gp_debts', JSON.stringify(debts)); } const paySnap=await getDocs(query(collection(db,'debtPayments'), orderBy('time','desc'), limit(200))); if(paySnap.size>0){ debtPayments=paySnap.docs.map(d=>d.data()); localStorage.setItem('gp_debt_payments', JSON.stringify(debtPayments)); } }catch(e){} renderDebts(); }
-(async function init(){ if(!currentUser){ document.getElementById('login').classList.remove('hidden'); document.getElementById('app').classList.add('hidden'); updateLiveTime(); await loadRateFromFirebase(); return; } document.getElementById('login').classList.add('hidden'); document.getElementById('app').classList.remove('hidden'); document.getElementById('userBadge').textContent=currentUser.username; await loadRateFromFirebase(); await loadMedsFB(); await loadDebtsFB(); for(let i=0;i<3;i++) soAddRow(); renderStock(); renderReports(); renderExpenses(); renderDebts(); loadShiftReports(); showTab('pos'); updateLiveTime(); searchMeds(''); document.getElementById('debtDate').value=new Date().toISOString().slice(0,10); document.getElementById('expDate').value=new Date().toISOString().slice(0,10); })();
+(async function init(){ if(!currentUser){ document.getElementById('login').classList.remove('hidden'); document.getElementById('app').classList.add('hidden'); updateLiveTime(); await loadRate(); return; } document.getElementById('login').classList.add('hidden'); document.getElementById('app').classList.remove('hidden'); document.getElementById('userBadge').textContent=currentUser.username; await loadRate(); await loadMedsFB(); renderStock(); renderReports(); renderExpenses(); renderDebts(); loadShiftReports(); showTab('reports'); updateLiveTime(); searchMeds(''); document.getElementById('debtDate').value=new Date().toISOString().slice(0,10); document.getElementById('expDate').value=new Date().toISOString().slice(0,10); })();
 </script>
-<script>
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('./sw.js').then(()=>console.log('Grace Pharmacy V18.1 - Accounting - SW Registered - Safe')).catch(()=>{});
-}
-</script>
+<script>if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js').then(()=>console.log('V18.2 Alerts SW')).catch(()=>{}); }</script>
 </body>
-</html>
+  </html>
