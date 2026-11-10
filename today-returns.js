@@ -1,4 +1,4 @@
-// The Grace Pharmacy - V18.2.1 - Returns Addon - Firebase - Part of V18.2.1 - Not a new version
+// The Grace Pharmacy - V18.2.1 - Returns Addon - Firebase - English Only - Part of V18.2.1
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, setDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -33,7 +33,7 @@ function addTab(){
   <div id="tab-today" class="tab-content hidden">
     <div class="card p-3">
       <div class="flex justify-between items-center flex-wrap gap-2">
-        <div><h3 class="font-bold text-[#0A5C36] text-[13px]">Today's Sales - V18.2.1 - مشتريات اليوم</h3><p class="text-[10px] text-gray-500">كل البيعات بتاعت الليلة - اضغط Return لإرجاع دوا ورد القروش - محفوظ في Firebase - Admin Only</p></div>
+        <div><h3 class="font-bold text-[#0A5C36] text-[13px]">Today's Sales - V18.2.1</h3><p class="text-[10px] text-gray-500">All sales for today - Click Return to return medicine and refund - Saved in Firebase - Admin Only</p></div>
         <div class="flex gap-1.5">
           <span id="todayTotalBadge" class="badge bg-[#0A5C36] text-white text-[10px]">Today: 0 SSP</span>
           <span id="todayReturnBadge" class="badge bg-red-100 text-red-700 text-[10px]">Returned: 0 SSP</span>
@@ -45,11 +45,11 @@ function addTab(){
       </div>
     </div>
     <div id="todayList" class="mt-3 space-y-2"></div>
-    <div class="card p-3 mt-3"><h4 class="font-bold text-[#0A5C36] text-[11px]">Today's Returns - المرتجعات - V18.2.1 - Firebase</h4><div id="todayReturnsList" class="mt-2 text-[11px]"></div></div>
+    <div class="card p-3 mt-3"><h4 class="font-bold text-[#0A5C36] text-[11px]">Today's Returns - V18.2.1 - Firebase</h4><div id="todayReturnsList" class="mt-2 text-[11px]"></div></div>
   </div>
   <div id="returnModal" class="hidden fixed inset-0 bg-black/60 z-[90] flex items-center justify-center p-4">
     <div class="card p-4 w-full max-w-sm shadow-2xl">
-      <h3 class="font-bold text-[#0A5C36] text-[13px]">Return Medicine - إرجاع دوا - V18.2.1</h3>
+      <h3 class="font-bold text-[#0A5C36] text-[13px]">Return Medicine - V18.2.1</h3>
       <p id="returnInfo" class="text-[11px] text-gray-500 mt-1 font-bold">-</p>
       <div class="mt-3 space-y-2">
         <div class="p-2 bg-gray-50 rounded-lg border"><p class="text-[10px] text-gray-500">Refund Amount</p><p id="returnRefund" class="font-bold text-[16px] text-red-600">0 SSP</p></div>
@@ -60,7 +60,7 @@ function addTab(){
         <button onclick="window.closeReturnModal()" class="flex-1 border bg-gray-50 px-3 py-2.5 rounded-lg font-bold text-[11px]">Cancel</button>
         <button onclick="window.confirmReturn()" class="flex-1 btn py-2.5 text-[11px] bg-red-600">Confirm Return + Refund</button>
       </div>
-      <p class="text-[9px] text-gray-400 mt-2 text-center">V18.2.1 - سيتم الحفظ في Firebase + تحديث المخزون في كل الأجهزة - Admin Only</p>
+      <p class="text-[9px] text-gray-400 mt-2 text-center">V18.2.1 - Will save in Firebase + Update stock on all devices - Admin Only</p>
     </div>
   </div>`);
 }
@@ -84,7 +84,7 @@ window.renderTodaySales = function(){
       const itemsHtml = (s.items||[]).map(it=>{
         const retQty = returns.filter(r=>String(r.saleId)===String(s.id) && String(r.itemId)===String(it.id)).reduce((a,r)=>a+r.qty,0);
         const left = it.qty - retQty;
-        return `<div class="flex justify-between items-center py-2 border-b text-[11px]"><div><b>${esc(it.name)}</b> <span class="text-gray-500">x ${it.qty} ${retQty?`• Returned ${retQty} • Left ${left}`:''}</span><br><span class="text-[10px] text-gray-400">${(it.sell*it.qty).toLocaleString()} SSP</span></div><div><button ${left<=0?'disabled':''} onclick="window.openReturnModal('${s.id}','${it.id}')" class="${left<=0?'bg-gray-300 text-gray-500':'bg-red-600 text-white'} px-2.5 py-1 rounded-full text-[10px] font-bold">${left<=0?'Returned':'↩ Return'}</button></div></div>`;
+        return `<div class="flex justify-between items-center py-2 border-b text-[11px]"><div><b>${esc(it.name)}</b> <span class="text-gray-500">x ${it.qty} ${retQty?`• Returned ${retQty} • Left ${left}`:''}</span><br><span class="text-[10px] text-gray-400">${(it.sell*it.qty).toLocaleString()} SSP</span></div><div><button ${left<=0?'disabled':''} onclick="window.openReturnModal('${s.id}','${it.id}')" class="${left<=0?'bg-gray-300 text-gray-500':'bg-red-600 text-white'} px-2.5 py-1 rounded-full text-[10px] font-bold">${left<=0?'Returned':'Return'}</button></div></div>`;
       }).join('');
       return `<div class="card p-3"><div class="flex justify-between"><b class="text-[12px]">Sale #${String(s.id).slice(-6)} • ${esc(s.by||'')} • ${esc(s.jubaShift||'')}</b><span class="text-[10px] text-gray-400">${new Date(s.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></div><div class="text-[11px] mt-1">Total: <b>${(s.total||0).toLocaleString()} SSP</b></div>${itemsHtml}</div>`;
     }).join('');
@@ -96,7 +96,7 @@ window.renderTodaySales = function(){
 };
 
 window.openReturnModal = function(saleId, itemId){
-  if(!isAdmin()){ alert('Admin Only - الإرجاع للمدير فقط'); return; }
+  if(!isAdmin()){ alert('Admin Only - Return is for Admin only'); return; }
   const sales = getLS('gp_sales'); const returns = getLS('gp_returns');
   const s = sales.find(x=>String(x.id)===String(saleId)); if(!s) return;
   const it = s.items.find(x=>String(x.id)===String(itemId)); if(!it) return;
@@ -117,7 +117,7 @@ window.updateReturnRefund = function(){
 };
 
 window.confirmReturn = async function(){
-  if(!isAdmin()){ alert('Admin Only - الإرجاع للمدير فقط'); return; }
+  if(!isAdmin()){ alert('Admin Only - Return is for Admin only'); return; }
   if(!pending) return;
   let q = parseInt(document.getElementById('returnQty').value||1); if(q<1||q>pending.max) return alert('Invalid qty');
   const reason = document.getElementById('returnReason').value;
@@ -136,7 +136,7 @@ window.confirmReturn = async function(){
   let returns = getLS('gp_returns'); returns.unshift(ret); setLS('gp_returns', returns.slice(0,500));
   if(db){ try{ await addDoc(collection(db,'returns'), {...ret, ts:serverTimestamp()}); }catch(e){ console.log('Firebase return save failed', e); } }
   if(db){ try{ await addDoc(collection(db,'audit'), {time:new Date().toISOString(), user:user.username||'cashier', action:'RETURN', details:`V18.2.1 Returned ${q} x ${pending.name} - Refund ${refund} SSP - ${reason}`, profit: -(q*(pending.sell-pending.buy)), ts:serverTimestamp()}); }catch(e){} }
-  alert('Return Saved in Firebase - V18.2.1 ✅\nRefunded: '+refund.toLocaleString()+' SSP\nPage will reload to sync stock');
+  alert('Return Saved in Firebase - V18.2.1\nRefunded: '+refund.toLocaleString()+' SSP\nPage will reload to sync stock');
   location.reload();
 };
 
